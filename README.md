@@ -1,16 +1,28 @@
-# Sistem Pintar IKM Nasional — Premium Modular Version
 
-Versi ini dipecahkan kepada beberapa fail `.py` untuk presentation yang lebih kemas dan mudah dikembangkan.
+# Sistem Pintar IKM Nasional — Premium V2
 
-## Fail Utama
-- `app.py` — aplikasi utama
-- `styles.py` — tema premium, CSS, warna, KPI card
-- `data_loader.py` — upload/load Excel dan filter data
-- `analytics.py` — pengiraan KPI, demografi, indikator, trend
-- `visualizations.py` — semua chart Plotly
-- `interventions.py` — logic amaran awal dan cadangan intervensi
-- `pages.py` — paparan dashboard mengikut modul
-- `IKM_Simulation_Data_Malaysia.xlsx` — data simulasi
+Versi ini membetulkan isu:
+- tulisan sidebar tidak nampak
+- peratus demografi salah
+- calculation hardcoded
+- tiada model pengiraan jelas
+- tiada perbandingan negeri/daerah
+- reka bentuk terlalu kosong
+
+## Struktur Modular
+- app.py
+- utils/style.py
+- utils/data_loader.py
+- utils/model_engine.py
+- utils/charts.py
+- modules/executive.py
+- modules/model_page.py
+- modules/demografi.py
+- modules/comparison.py
+- modules/intervensi.py
+- modules/indicators.py
+- modules/social_media.py
+- modules/warning_timeline.py
 
 ## Cara Run
 ```bash
@@ -18,14 +30,17 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-## Modul Dashboard
-1. Executive dashboard
-2. Analisis demografi
-3. Perbandingan lokasi dan intervensi
-4. Analisis indikator dan korelasi
-5. Analisis media sosial / big data
-6. Amaran awal
-7. Milestone 18 bulan
+## Nota Model
+IKM Survey = Σ(berat indikator × skor indikator)
 
-## Nota
-Data dalam fail Excel ialah data sintetik/simulasi sahaja untuk tujuan prototype.
+IKM Komposit Daerah = 0.60(IKM Survey) + 0.30(Risiko Digital) + 0.10(Kadar Hate Speech)
+
+
+## Premium V3 Update
+Tambah analisis demografi terperinci:
+- Kaum / etnik
+- Kumpulan pendapatan
+- Tahap pendidikan
+- Pecahan risiko dalam setiap kumpulan
+- Profil indikator mengikut kumpulan
+- Matriks gabungan demografi seperti etnik × pendapatan dan etnik × pendidikan
