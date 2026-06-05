@@ -303,9 +303,27 @@ def action_for(item, dim, score):
 # =========================================================
 st.markdown("""
 <div class="hero">
-<h1>National IKM Intelligence Command Centre v2</h1>
-<p>Dashboard bukan sekadar skor ekonomi: sistem ini mengesan item kritikal seperti isu rumah ibadat, masjid/kuil/gereja, fitnah agama, provokasi viral, aduan institusi dan kos sara hidup pada peringkat negeri, daerah dan lokaliti.</p>
-<span class="badge">Item-Level Action</span><span class="badge">Agama & Rumah Ibadat</span><span class="badge">Hotspot Intelligence</span><span class="badge">Intervensi Automatik</span><span class="badge">SEM-Ready</span>
+<h1>🇲🇾 Sistem Indeks Ketegangan Masyarakat (IKM) Malaysia</h1>
+
+<p style="font-size:18px; line-height:1.8;">
+Sistem Indeks Ketegangan Masyarakat (IKM) Malaysia merupakan platform analitik bersepadu yang dibangunkan bagi membantu Jabatan Perpaduan Negara dan Integrasi Nasional (JPNIN) memantau, mengukur dan menilai tahap ketegangan masyarakat secara sistematik di peringkat nasional, negeri, daerah dan lokaliti.
+</p>
+
+<p style="font-size:17px; line-height:1.8;">
+Sistem ini mengintegrasikan data kaji selidik nasional, data pentadbiran, maklumat lapangan serta dapatan analisis isu semasa bagi mengenal pasti kawasan berisiko, mengesan pola ketegangan masyarakat, menentukan faktor penyumbang utama dan menyokong pelaksanaan intervensi yang lebih tepat, cepat dan berkesan.
+</p>
+
+<p style="font-size:17px; line-height:1.8;">
+Melalui pendekatan berasaskan data, sistem ini membolehkan pengguna mengenal pasti <b>Hotspot</b>, <b>Tension Point</b> dan <b>Pain Point</b>, memantau perubahan skor indeks mengikut lokasi dan tempoh masa, serta menilai keberkesanan program intervensi yang dilaksanakan bagi memperkukuh perpaduan dan keharmonian masyarakat Malaysia.
+</p>
+
+<span class="badge">📊 Pemantauan Nasional</span>
+<span class="badge">🗺️ Analisis Negeri, Daerah & Lokaliti</span>
+<span class="badge">🔥 Hotspot & Tension Point</span>
+<span class="badge">🎯 Pain Point Analysis</span>
+<span class="badge">🤝 Cadangan Intervensi</span>
+<span class="badge">📈 Sistem Amaran Awal</span>
+
 </div>
 """, unsafe_allow_html=True)
 
