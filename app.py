@@ -146,7 +146,6 @@ class EnginDasarIKMM:
             self.respondent_data = pd.read_excel(xls, sheet_name='respondent_data')
             self.questionnaire_master = pd.read_excel(xls, sheet_name='questionnaire_master')
             
-            # Pengerasan terjemahan Bahasa Melayu di peringkat memori master
             self.questionnaire_master['Dimension'] = self.questionnaire_master['Dimension'].replace({
                 'D1 Ethnic Tension': 'D1 Ketegangan Etnik', 'D2 Religious Tension': 'D2 Ketegangan Agama',
                 'D3 Economic Tension': 'D3 Ketegangan Ekonomi', 'D4 Political Tension': 'D4 Ketegangan Politik',
@@ -375,10 +374,11 @@ def inisialisasi_sesi_papan_pemuka():
     if 'auth_state' not in st.session_state:
         st.session_state.auth_state = False
 
+# --- ENGINE UTAMA APLIKASI ---
 def main():
     inisialisasi_sesi_papan_pemuka()
     if not st.session_state.auth_state:
-        terapkan_tema_premium_eksekutif() # PEMBETULAN UTAMA: Memanggil fungsi bermelayu yang betul bagi menghapuskan NameError
+        terapkan_tema_premium_eksekutif() # Memanggil fungsi gaya gelap-mewah
         c1, c2, c3 = st.columns([1, 1.3, 1])
         with c2:
             st.markdown("<div style='text-align: center; padding-top: 130px;'><h2>🏛️ Urus Setia Polisi IKMM 2026</h2><p>Sistem Amaran Awal Konflik Kebangsaan (JPM)</p></div>", unsafe_allow_html=True)
@@ -392,7 +392,7 @@ def main():
                         st.error("Ralat: Pelepasan Keselamatan Ditolak. Token Tidak Sah.")
         return
         
-    terapkan_tema_premium_eksekutif() # PEMBETULAN UTAMA
+    terapkan_tema_premium_eksekutif()
     engine = st.session_state.engine
     
     tabs = st.tabs([
@@ -403,7 +403,7 @@ def main():
         "13 Dapatan FGD Pakar", "14 Dossier Report Cabinet", "15 Cell Data Explorer"
     ])
     
-    # --- TAB 1: PORTAL GATEWAY & KAWALAN GEOMATRIKS UTAMA (BERPUSAT DI ATAS ATAS SEPENUHNYA!) ---
+    # --- TAB 1: PORTAL GATEWAY & KAWALAN GEOMATRIKS UTAMA (BERPUSAT DI ATAS SEPENUHNYA) ---
     active_filters = {}
     with tabs[0]:
         st.subheader("📂 Pengurusan Fail & Pusat Penapis Geokomposit Berpusat")
@@ -420,14 +420,14 @@ def main():
             c_f1, c_f2, c_f3 = st.columns(3)
             with c_f1:
                 zon_options = engine.dapatkan_pilihan_penapis('Zone')
-                sel_zone = st.multiselect("🧭 1. Tapis mengikut Wilayah / Zon", zon_options)
+                sel_zone = st.multiselect("Compass 1. Tapis mengikut Wilayah / Zon", zon_options)
             with c_f2:
                 if sel_zone:
                     state_subset = engine.respondent_data[engine.respondent_data['Zone'].isin(sel_zone)]
                     state_options = sorted(state_subset['State'].dropna().unique().tolist())
                 else:
                     state_options = engine.dapatkan_pilihan_penapis('State')
-                sel_state = st.multiselect("🏛️ 2. Tapis mengikut Wilayah Negeri", state_options)
+                sel_state = st.multiselect("Building 2. Tapis mengikut Wilayah Negeri", state_options)
             with c_f3:
                 if sel_state:
                     district_subset = engine.respondent_data[engine.respondent_data['State'].isin(sel_state)]
@@ -437,27 +437,29 @@ def main():
                     district_options = sorted(district_subset['District'].dropna().unique().tolist())
                 else:
                     district_options = engine.dapatkan_pilihan_penapis('District')
-                sel_district = st.multiselect("🏙️ 3. Tapis mengikut Daerah / Parlimen", district_options)
+                sel_district = st.multiselect("City 3. Tapis mengikut Daerah / Parlimen", district_options)
                 
             if sel_zone: active_filters['Zone'] = sel_zone
             if sel_state: active_filters['State'] = sel_state
             if sel_district: active_filters['District'] = sel_district
 
-    # SINKRONISASI AKTIF: Mengikat kesemua data operasi kuantitatif kepada filtered_df rentas tab
+    # --- 🔒 DETEKTIF KESELAMATAN SEKATAN BARIS (SAFETY GUARD) AGAINST ATTRIBUTEERROR ---
+    if not engine.data_loaded:
+        with tabs[0]:
+            st.info("💡 Sila mulakan dengan memuat naik fail pangkalan data master Excel (.xlsx) di atas untuk mengaktifkan pemodelan sistem.")
+        return
+
+    # SINKRONISASI AKTIF: Selamat daripada AttributeError kerana engine.respondent_data pasti sudah wujud di sini
     filtered_df = engine.apply_filters(active_filters)
     sub_total = len(filtered_df)
     items_list_main = engine.dapatkan_senarai_item()
     
     # Pengiraan senarai rantaian peratusan geospasial bagi kegunaan Tab 08, 09, & 10
-    if sub_total > 0 and engine.data_loaded:
+    if sub_total > 0:
         geo_raw_main = filtered_df.groupby(['Zone', 'State', 'District', 'Urban_Rural'])[items_list_main].mean().mean(axis=1)
         geo_percents_main = ((geo_raw_main - 1) / 4 * 100).sort_values(ascending=False)
     else:
         geo_percents_main = pd.Series()
-
-    if not engine.data_loaded:
-        st.warning("⚠️ Sila muat naik fail Excel data master responden untuk mengaktifkan sistem.")
-        return
 
     # Paparan status pangkalan data ditapis
     st.markdown(f"""
@@ -465,6 +467,17 @@ def main():
             <p style='margin:0; font-size:13px; font-weight:700; color:#F8FAFC;'>🌐 KUMPULAN DATA AKTIF: Memproses {sub_total:,} daripada {len(engine.respondent_data):,} Kumpulan Responden Terpenapis.</p>
         </div>
     """, unsafe_allow_html=True)
+
+    # --- TAB 1: PENGISIAN GRAFIK ASAS PORTAL GATEWAY ---
+    with tabs[0]:
+        if sub_total > 0:
+            g_c1, g_c2 = st.columns(2)
+            with g_c1:
+                st.plotly_chart(px.pie(names=filtered_df['Zone'].value_counts().index, values=filtered_df['Zone'].value_counts().values, title="Pecahan mengikut Zon Ditapis"), use_container_width=True)
+            with g_c2:
+                st.plotly_chart(px.bar(x=filtered_df['State'].value_counts().values, y=filtered_df['State'].value_counts().index, orientation='h', title="Taburan Negeri Ditapis"), use_container_width=True)
+        else:
+            st.warning("Kombinasi tapisan menghasilkan 0 responden. Sila tukar pilihan geofilter anda.")
 
     # --- TAB 2: RINGKASAN EKSEKUTIF ---
     with tabs[1]:
@@ -535,7 +548,7 @@ def main():
                     sub_df = filtered_df[(filtered_df['Zone']==zn) & (filtered_df['State']==st_n) & (filtered_df['District']==ds_n) & (filtered_df['Urban_Rural']==ur_n)]
                     sub_item = sub_df[items_list_main].mean().idxmax()
                     sub_stmt = engine.questionnaire_master[engine.questionnaire_master['Item_Code'] == sub_item]['Statement'].values[0]
-                    st.markdown(f"<div class='loc-card-premium' style='border-left-color: #DB2777;'><b>📍 LOKASI #{rank_pp}: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>* Skor Indeks Komposit Sebenar: <b>{pct_v:.2f}%</b><br>* 🔍 Punca Utama (Stressor): Indikator {sub_item} &rarr; <i>\"{sub_stmt}\"</i></div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='kad-kpi-premium' style='border-left-color: #DB2777; text-align:left; background: rgba(30, 41, 59, 0.5);'><b>📍 LOKASI #{rank_pp}: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>* Skor Indeks Komposit Sebenar: <b>{pct_v:.2f}%</b><br>* 🔍 Punca Utama (Stressor): Indikator {sub_item} &rarr; <i>\"{sub_stmt}\"</i></div>", unsafe_allow_html=True)
                     rank_pp += 1
             if rank_pp == 1: st.info("Tiada lokasi di bawah kluster tapisan semasa yang berada dalam julat Pain Point (40%-59%).")
 
@@ -549,7 +562,7 @@ def main():
                     sub_df = filtered_df[(filtered_df['Zone']==zn) & (filtered_df['State']==st_n) & (filtered_df['District']==ds_n) & (filtered_df['Urban_Rural']==ur_n)]
                     sub_item = sub_df[items_list_main].mean().idxmax()
                     sub_stmt = engine.questionnaire_master[engine.questionnaire_master['Item_Code'] == sub_item]['Statement'].values[0]
-                    st.markdown(f"<div class='loc-card-premium' style='border-left-color: #F59E0B;'><b>📍 LOKASI #{rank_tp}: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>* Skor Indeks Komposit Sebenar: <b>{pct_v:.2f}%</b><br>* 🔍 Punca Utama (Stressor): Indikator {sub_item} &rarr; <i>\"{sub_stmt}\"</i></div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='kad-kpi-premium' style='border-left-color: #F59E0B; text-align:left; background: rgba(30, 41, 59, 0.5);'><b>📍 LOKASI #{rank_tp}: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>* Skor Indeks Komposit Sebenar: <b>{pct_v:.2f}%</b><br>* 🔍 Punca Utama (Stressor): Indikator {sub_item} &rarr; <i>\"{sub_stmt}\"</i></div>", unsafe_allow_html=True)
                     rank_tp += 1
             if rank_tp == 1: st.info("Tiada lokasi di bawah kluster tapisan semasa yang berada dalam julat Tension Point (60%-79%).")
 
@@ -563,7 +576,7 @@ def main():
                     sub_df = filtered_df[(filtered_df['Zone']==zn) & (filtered_df['State']==st_n) & (filtered_df['District']==ds_n) & (filtered_df['Urban_Rural']==ur_n)]
                     sub_item = sub_df[items_list_main].mean().idxmax()
                     sub_stmt = engine.questionnaire_master[engine.questionnaire_master['Item_Code'] == sub_item]['Statement'].values[0]
-                    st.markdown(f"<div class='loc-card-premium' style='border-left-color: #EF4444; background-color: rgba(239, 68, 68, 0.1);'><b style='color: #EF4444;'>💥 CRITICAL ZON #{rank_hs}: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>* Skor Indeks Komposit Sebenar EWS: <b>{pct_v:.2f}%</b><br>* 🛑 Punca Utama (Stressor): Indikator {sub_item} &rarr; <i>\"{sub_stmt}\"</i></div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='kad-kpi-premium' style='border-left-color: #EF4444; text-align:left; background: rgba(239, 68, 68, 0.1);'><b style='color: #EF4444;'>💥 CRITICAL ZON #{rank_hs}: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>* Skor Indeks Komposit Sebenar EWS: <b>{pct_v:.2f}%</b><br>* 🛑 Punca Utama (Stressor): Indikator {sub_item} &rarr; <i>\"{sub_stmt}\"</i></div>", unsafe_allow_html=True)
                     rank_hs += 1
             if rank_hs == 1: st.info("✓ Bersyukur, tiada zon bahaya amaran merah (&ge;80%) dikesan di dalam kluster tapisan geografi semasa.")
 
@@ -587,7 +600,7 @@ def main():
                     current_lead = row.get('Agency', 'N/A')
                     context_data = agency_mapping_context.get(current_lead, {"PBT": "Menyelaras operasi municipal", "Swasta": "Sokongan komersial swasta", "Komuniti": "Mobilisasi akar umbi"})
                     st.markdown(f"""
-                    <div class='loc-card-premium' style='border-left-color: #3B82F6; padding: 25px;'>
+                    <div class='kad-kpi-premium' style='border-left-color: #3B82F6; text-align:left; padding: 25px;'>
                         <h4>🏛️ Agensi Peneraju Kabinet: {current_lead}</h4>
                         <p><b>Nama Program Modul:</b> {row.get('Intervention_Name', 'N/A')}</p>
                         <p><b>Deskripsi Dasar:</b> {row.get('Description', 'N/A')}</p>
