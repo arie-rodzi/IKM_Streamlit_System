@@ -195,7 +195,7 @@ class IKMMDasarEngine:
             
         return pd.DataFrame(records).sort_values('Indeks Ketegangan (IKM %)', ascending=False)
 
-    # --- JANAAN MANUSKRIP HTML AGUNG LENGKAP TANPA HAD SEKATAN (KALIS NAMEERROR & REDUNDANCY SINTAKS) ---
+    # --- JANAAN MANUSKRIP HTML AGUNG YANG DINAMIK (MEMBACA FAIL DATA EXCEL ANDA 100% TANPA SEKATAN BARIS) ---
     def generate_html_dossier_report(self, title, officer, branch):
         score, tier = self.calculate_composite_index()
         total_resp = len(self.respondent_data)
@@ -205,10 +205,10 @@ class IKMMDasarEngine:
         dim_labels = list(self.dim_item_ranges.keys())
         dim_values = [self.calculate_single_dimension_score(d) for d in dim_labels]
         
-        # PENGISYTIHARAN AWAL: Melakukan pengiraan data geospasial sebelum blok rentetan string HTML dimulakan
-        geo_means_calc = self.respondent_data.groupby(['Zone', 'State', 'District', 'Urban_Rural'])[items].mean().mean(axis=1).sort_values(ascending=False)
+        # Pengisytiharan selamat pemolah-ubah data geospasial khusus bagi fungsi HTML
+        geo_means_html = self.respondent_data.groupby(['Zone', 'State', 'District', 'Urban_Rural'])[items].mean().mean(axis=1).sort_values(ascending=False)
 
-        # SECTOR 1: HEAD, STYLE & BANNER
+        # BLOCK 1: HEADER & STYLE DEFINITION
         html_master = f"""
         <!DOCTYPE html>
         <html lang="ms">
@@ -303,7 +303,7 @@ class IKMMDasarEngine:
         html_master += """
                 <div class="section-title">4.0 Analisis Keamatan Aras Ketegangan Komposit 9 Dimensi Utama</div>
                 <table class="table-premium">
-                    <thead><tr><th>Kod</th><th>Nama Dimensi Skrining Kebangsaan</th><th>Skor Ketegangan (%)</th><th>Klasifikasi Risiko Sektoral</th></tr></thead>
+                    <thead><tr><th>Kod</th><th>Nama Dimensi Skrining Kebangsaan</th><th>Skor Peratusan Ketegangan (%)</th><th>Klasifikasi Risiko Sektoral</th></tr></thead>
                     <tbody>"""
         for d_key in self.dim_item_ranges.keys():
             d_score = self.calculate_single_dimension_score(d_key)
@@ -338,7 +338,7 @@ class IKMMDasarEngine:
             },
             "General Strain Theory": {
                 "Pengasas": "Robert Agnew (1992)", "Dimensi": "D5 Generational Tension",
-                "Analisis": "Skor tinggi mengesahkan kohort umur belia mengalami anomi emosi (strain) yang parah akibat kegagalan mencapai matlamat hidup seperti pemilikan rumah pertama dan pekerjaan premium. Agnew membuktikan strain yang tidak diredakan dasar kabinet akan melahirkan reaksi kemarahan kolektif, memicu jurang ideologi yang menolak nilai tradisional veteran."
+                "Analisis": "Skor tinggi mengesahkan kohort umur belia mengalami anomi emosi (strain) yang parah akibat kegagalan mencapai matlamat hidup seperti pemilikan rumah pertama and pekerjaan premium. Agnew membuktikan strain yang tidak diredakan dasar kabinet akan melahirkan reaksi kemarahan kolektif, memicu jurang ideologi yang menolak nilai tradisional veteran."
             },
             "Social Disorganization Theory": {
                 "Pengasas": "Clifford Shaw & Henry McKay (1942)", "Dimensi": "D6 Urban-Rural Tension",
@@ -370,15 +370,14 @@ class IKMMDasarEngine:
                     </div>"""
         html_master += """<div class="page-break"></div>"""
 
-        # SECTOR 5: DYNAMIC GEOGRAPHICAL SPATIAL LOOP (Membaca dari pemolehubah geo_means_calc yang telah diisytiharkan di atas)
+        # SECTOR 5: GEOGRAPHICAL SPATIAL LOOP UNRESTRICTED FOR HTML REPORT
         html_master += """
                 <div class="section-title">6.0 Laporan Hierarki Spasial Rantaian Lokasi Terjejas & Sebab Utama (Stressor)</div>
                 <p>Berikut diperincikan rantaian geografi berstruktur penuh (Zon &rarr; Negeri &rarr; Daerah &rarr; Lokaliti) yang dikesan mengalami pola ketegangan berserta punca item konkrit:</p>"""
         
-        for rank, ((zn, st_n, ds_n, ur_n), v_score) in enumerate(geo_means_calc.items()):
+        for rank, ((zn, st_n, ds_n, ur_n), v_score) in enumerate(geo_means_html.items()):
             pct_v = ((v_score - 1) / 4) * 100
             
-            # Tampilkan kawasan parlimen/daerah yang mencatatkan ketegangan di atas paras asas sahaja (.head() dipadam secara penuh)
             if pct_v >= 50.0:
                 sub_df = self.respondent_data[(self.respondent_data['Zone']==zn) & (self.respondent_data['State']==st_n) & (self.respondent_data['District']==ds_n) & (self.respondent_data['Urban_Rural']==ur_n)]
                 sub_item = sub_df[items].mean().idxmax()
@@ -393,7 +392,7 @@ class IKMMDasarEngine:
                 </div>"""
         html_master += """<div class="page-break"></div>"""
 
-        # SECTOR 6: ALL MEDIA SCRAPING RECORDS
+        # SECTOR 6: ALL OSINT MEDIA RECORDS
         html_master += """
                 <div class="section-title">7.0 Log Tangkapan Data Scraping Siber Digital (OSINT Logs Lengkap)</div>
                 <p>Berikut dipaparkan keseluruhan data perbincangan siber asli secara telus daripada lembaran <i>media_issue_summary</i>:</p>
@@ -559,6 +558,10 @@ def main():
 
     if not engine.data_loaded: return
 
+    # --- PEMBETULAN UTAMA: Pengisytiharan pemboleh ubah geo_means_main di dalam main() bagi dikongsi selamat oleh Tab 08, 09, & 10 ---
+    items_list_main = engine.get_registered_items()
+    geo_means_main = engine.respondent_data.groupby(['Zone', 'State', 'District', 'Urban_Rural'])[items_list_main].mean().mean(axis=1).sort_values(ascending=False)
+
     # --- TAB 2: RINGKASAN EKSEKUTIF ---
     with tabs[1]:
         st.subheader("📈 Pusat Kawalan KPI Ketegangan Nasional")
@@ -612,11 +615,11 @@ def main():
                 st.markdown(f"#### 🛑 Kedudukan #{rank+1}: {code} — [Indeks Ketegangan: {item_pct:.1f}%]")
                 st.markdown(f"**Dimensi Terikat:** {d_name} | **Pernyataan Soalan Isu:** *{stmt}*")
                 if "Economic" in d_name:
-                    desc_text = f"Indikator {code} menuntut perhatian kecemasan kabinet kerana ia merekodkan aras ketegangan tertinggi bagi sub-sektor ekonomi isi rumah. Kenyataan maklum balas daripada warganegara mengesahkan berlakunya himpitan psikologi yang kronik akibat ketidakseimbangan kos sara hidup harian berbanding unjuran upah realiti. Kegagalan pasaran buruh untuk melaraskan tangga gaji premium menyebabkan majoriti responden berpendapatan rendah (B40) berasa terpinggir secara struktural. Kemarahan ini diklasifikasikan sebagai ancaman keselamatan primer kerana ia menurunkan keupayaan isi rumah menampung keperluan asas, memicu kadar keberhutangan yang high, serta melumpuhkan daya beli setempat. Pihak kementerian tidak boleh sekadar meluncurkan tindakan intervensi bersifat ad-hoc, sebaliknya memerlukan campur tangan makro bagi merombak pasaran upah minimum."
+                    desc_text = f"Indikator {code} menuntut perhatian kecemasan kabinet kerana ia merekodkan aras ketegangan tertinggi bagi sub-sektor ekonomi isi rumah. Kenyataan maklum balas daripada warganegara mengesahkan berlakunya himpitan psikologi yang kronik akibat ketidakseimbangan kos sara hidup harian berbanding unjuran upah realiti. Kegagalan pasaran buruh untuk melaraskan tangga gaji premium menyebabkan majoriti responden berpendapatan rendah (B40) berasa terpinggir secara struktural. Kemarahan ini diklasifikasikan sebagai ancaman keselamatan primer kerana ia menurunkan keupayaan isi rumah menampung keperluan asas, memicu kadar keberhutangan yang tinggi, serta melumpuhkan daya beli setempat. Pihak kementerian tidak boleh sekadar meluncurkan tindakan intervensi bersifat ad-hoc, sebaliknya memerlukan campur tangan makro bagi merombak pasaran upah minimum."
                 elif "Digital" in d_name:
                     desc_text = f"Lonjakan ketegangan pada indikator siber {code} mendedahkan kerentanan kritikal dalam landskap komunikasi maya negara. Kenyataan ini membuktikan sebahagian besar pengguna media sosial di peringkat akar umbi terdedah kepada manipulasi algoritma komersial yang sengaja menularkan sentimen provokasi kaum demi 'engagement'. Kebimbangan awam ini mencerminkan kegagalan regulasi digital sedia ada untuk menapis khabar angin dan berita palsu. Anomi siber ini sangat berbahaya kerana ia membina ruang gema (echo chambers) yang mengeksploitasi emosi sensitif, menyebabkan sebarang isu kecil di luar talian mudah dieksploitasi menjadi krisis keselamatan sivil terbuka."
                 else:
-                    desc_text = f"Data psikometrik bagi indikator {code} mengesahkan wujudnya garis retakan sosiopolitik yang rapuh dalam komuniti setempat. Maklum balas high daripada responden melambangkan kekecewaan kolektif yang berpunca daripada kelemahan perlindungan kebajikan awam atau jurang pengagihan prasarana pembangunan di lapangan. Penumpuan skor pada zon hotspot amaran ini menandakan berlakunya kelesuan struktur modal sosial, di mana masyarakat merasa suara rintihan mereka tidak sampai ke peringkat pembuat dasar utama kerajaan."
+                    desc_text = f"Data psikometrik bagi indikator {code} mengesahkan wujudnya garis retakan sosiopolitik yang rapuh dalam komuniti setempat. Maklum balas tinggi daripada responden melambangkan kekecewaan kolektif yang berpunca daripada kelemahan perlindungan kebajikan awam atau jurang pengagihan prasarana pembangunan di lapangan. Penumpuan skor pada zon hotspot amaran ini menandakan berlakunya kelesuan struktur modal sosial, di mana masyarakat merasa suara rintihan mereka tidak sampai ke peringkat pembuat dasar utama kerajaan."
                 st.markdown(f"<div class='danger-analysis-box'><b>HURAIAN ANALISIS IMPAK INDIKATOR KERAJAAN:</b><br>{desc_text}</div>", unsafe_allow_html=True)
                 st.markdown("---")
 
@@ -674,77 +677,83 @@ def main():
                         with c_box2: st.success(f"💚 **Item Anchor Terendah ({id_lowest}): Score {val_lowest:.2f} ({pct_lowest:.1f}%)**\n\n*Pernyataan:* {stmt_lowest}")
                         st.markdown(f"<div class='highlight-analysis-box'><b>ANALISIS HUBUNGAN STRATEGIK DATA-TEORI:</b><br>Analisis kuantitatif membuktikan penumpuan min data berkait rapat dengan konstruk teori sosiologi yang digariskan. Isu utama bertindak sebagai strain sosiopolitik utama.</div>", unsafe_allow_html=True)
 
-    # --- TAB 08: PAIN POINTS ---
+    # --- TAB 08: PAIN POINTS (PEMBETULAN: Menggunakan geo_means_main yang sah) ---
     with tabs[7]:
         st.subheader("⚠️ Pengelasan Petunjuk Titik Kelemahan Struktur (Pain Points)")
         st.markdown("**Maksud Fungsi:** Mengesan penunjuk makro yang mula menunjukkan tanda kegelisahan awal di peringkat akar umbi (Skor $40\% - 59\%$). Sesuai untuk menyekat isu kejiranan berkembang menjadi polarisasi dasar.")
-        pp_geo = geo_means_calc[(geo_means_calc >= 2.6) & (geo_means_calc < 3.4)]
         
         st.markdown("##### 📍 Pengesanan Rantaian Lokasi Berstruktur Penuh (Zon &rarr; Negeri &rarr; Daerah &rarr; Lokaliti)")
-        if not pp_geo.empty:
-            for rank, ((zn, st_n, ds_n, ur_n), v_val) in enumerate(pp_geo.items()):
+        if not geo_means_main.empty:
+            rank_pp = 1
+            for (zn, st_n, ds_n, ur_n), v_val in geo_means_main.items():
                 pct_v = ((v_val - 1) / 4) * 100
                 if pct_v >= 40.0 and pct_v < 60.0:
                     sub_df = engine.respondent_data[(engine.respondent_data['Zone']==zn) & (engine.respondent_data['State']==st_n) & (engine.respondent_data['District']==ds_n) & (engine.respondent_data['Urban_Rural']==ur_n)]
-                    sub_item = sub_df[items_list].mean().idxmax()
+                    sub_item = sub_df[items_list_main].mean().idxmax()
                     sub_stmt = engine.questionnaire_master[engine.questionnaire_master['Item_Code'] == sub_item]['Statement'].values[0]
                     
                     st.markdown(f"""
                     <div class='loc-card-premium' style='border-left-color: #DB2777;'>
-                        <b>📍 RANTAIAN LOKASI #{rank+1}: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>
+                        <b>📍 RANTAIAN LOKASI #{rank_pp}: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>
                         * **Skor Ketegangan Setempat:** {pct_v:.2f}% (Status: PAIN POINT RINGAN)<br>
                         * 🔍 **Punca Utama (Stressor):** Item {sub_item} &rarr; <i>"{sub_stmt}"</i>
                     </div>
                     """, unsafe_allow_html=True)
+                    rank_pp += 1
         else:
             st.info("✓ Tiada rantaian geografi dikesan dalam parameter Pain Points.")
         st.markdown("<div class='warning-analysis-box'><b>ANALISIS RISIKO LOKASI STRUKTURAL PAIN POINTS:</b><br>Berdasarkan rantaian lokasi di atas, keretakan ringan dikesan bertumpu akibat ketidakseimbangan pengagihan logistik birokrasi perlesenan setempat. Rakyat mengekspresikan kelesuan ringan terhadap prasarana. Agensi disyorkan segera menyerap aduan tersebut sebelum dimanipulasi oleh anasir subversif siber.</div>", unsafe_allow_html=True)
 
-    # --- TAB 09: TENSION POINTS ---
+    # --- TAB 09: TENSION POINTS (PEMBETULAN: Menggunakan geo_means_main yang sah) ---
     with tabs[8]:
         st.subheader("🔥 Kerangka Eskalasi Indikator Titik Ketegangan (Tension Points)")
         st.markdown("**Maksud Fungsi:** Mengesan petunjuk yang berada pada tahap Amaran Tinggi ($60\% - 79\%$) di mana isu sosiopolitik telah berulang dan mula membina tembok polarisasi rentas kumpulan.")
-        tp_geo = geo_means_calc[(geo_means_calc >= 3.4) & (geo_means_calc < 4.2)]
+        
         st.markdown("##### 📍 Pengesanan Rantaian Lokasi Berstruktur Penuh (Zon &rarr; Negeri &rarr; Daerah &rarr; Lokaliti)")
-        if not tp_geo.empty:
-            for rank, ((zn, st_n, ds_n, ur_n), v_val) in enumerate(tp_geo.items()):
+        if not geo_means_main.empty:
+            rank_tp = 1
+            for (zn, st_n, ds_n, ur_n), v_val in geo_means_main.items():
                 pct_v = ((v_val - 1) / 4) * 100
                 if pct_v >= 60.0 and pct_v < 80.0:
                     sub_df = engine.respondent_data[(engine.respondent_data['Zone']==zn) & (engine.respondent_data['State']==st_n) & (engine.respondent_data['District']==ds_n) & (engine.respondent_data['Urban_Rural']==ur_n)]
-                    sub_item = sub_df[items_list].mean().idxmax()
+                    sub_item = sub_df[items_list_main].mean().idxmax()
                     sub_stmt = engine.questionnaire_master[engine.questionnaire_master['Item_Code'] == sub_item]['Statement'].values[0]
                     
                     st.markdown(f"""
                     <div class='loc-card-premium' style='border-left-color: #F59E0B;'>
-                        <b>📍 RANTAIAN LOKASI #{rank+1}: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>
+                        <b>📍 RANTAIAN LOKASI #{rank_tp}: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>
                         * **Skor Ketegangan Setempat:** {pct_v:.2f}% (Status: TENSION POINT AMARAN)<br>
                         * 🔍 **Punca Utama (Stressor):** Item {sub_item} &rarr; <i>"{sub_stmt}"</i>
                     </div>
                     """, unsafe_allow_html=True)
+                    rank_tp += 1
         else:
             st.info("✓ Tiada rantaian geografi dikesan dalam parameter Tension Points.")
-        st.markdown("<div class='danger-analysis-box'><b>ANALISIS RISIKO LOKASI STRUKTURAL TENSION POINTS:</b><br>Rantaian geografi di atas memberikan amaran high taktikal. Konflik dikesan dipicu oleh persaingan ruang legislatif dan pertindihan jurisdiksi sivil-syariah yang dipercayai berat sebelah oleh kumpulan luar, menuntut pengaktifan segera mediasi perdamaian komuniti.</div>", unsafe_allow_html=True)
+        st.markdown("<div class='danger-analysis-box'><b>ANALISIS RISIKO LOKASI STRUKTURAL TENSION POINTS:</b><br>Rantaian geografi di atas memberikan amaran tinggi taktikal. Konflik dikesan dipicu oleh persaingan ruang legislatif dan pertindihan jurisdiksi sivil-syariah yang dipercayai berat sebelah oleh kumpulan luar, menuntut pengaktifan segera mediasi perdamaian komuniti.</div>", unsafe_allow_html=True)
 
-    # --- TAB 10: AMARAN HOTSPOT ---
+    # --- TAB 10: AMARAN HOTSPOT (PEMBETULAN: Menggunakan geo_means_main yang sah) ---
     with tabs[9]:
         st.subheader("🚨 Early Warning System (EWS) — Sempadan Amaran Hotspot Kritikal")
         st.markdown("**Maksud Fungsi:** Pusat pemantauan utama keselamatan sivil nasional untuk mengelaskan rantaian geografi zon bahaya merah ($\ge 80\%$) yang menuntut pelancaran pelan kontingensi dalam tempoh 72 jam.")
-        hot_geo = geo_means_calc
+        
         st.markdown("##### 📍 Rantaian Lokasi Hotspot Paling Kritikal (EWS Emergency Trigger)")
-        for rank, ((zn, st_n, ds_n, ur_n), v_val) in enumerate(hot_geo.items()):
-            pct_v = ((v_val - 1) / 4) * 100
-            if pct_v >= 80.0:
-                sub_df = engine.respondent_data[(engine.respondent_data['Zone']==zn) & (engine.respondent_data['State']==st_n) & (engine.respondent_data['District']==ds_n) & (engine.respondent_data['Urban_Rural']==ur_n)]
-                sub_item = sub_df[items_list].mean().idxmax()
-                sub_stmt = engine.questionnaire_master[engine.questionnaire_master['Item_Code'] == sub_item]['Statement'].values[0]
-                
-                st.markdown(f"""
-                <div class='loc-card-premium' style='border-left-color: #EF4444; background-color: #FEF2F2;'>
-                    <b style='color: #DC2626;'>💥 CRITICAL ZON #{rank+1}: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>
-                    * **Skor Komposit EWS Bahaya:** {pct_v:.2f}% (Status: HOTSPOT KRITIKAL MUTLAK)<br>
-                    * 🛑 **PUNCA SEBENAR KRITIKAL (Stressor):** Item {sub_item} &rarr; <i style='color: #991B1B;'>"{sub_stmt}"</i>
-                </div>
-                """, unsafe_allow_html=True)
+        if not geo_means_main.empty:
+            rank_hs = 1
+            for (zn, st_n, ds_n, ur_n), v_val in geo_means_main.items():
+                pct_v = ((v_val - 1) / 4) * 100
+                if pct_v >= 80.0:
+                    sub_df = engine.respondent_data[(engine.respondent_data['Zone']==zn) & (engine.respondent_data['State']==st_n) & (engine.respondent_data['District']==ds_n) & (engine.respondent_data['Urban_Rural']==ur_n)]
+                    sub_item = sub_df[items_list_main].mean().idxmax()
+                    sub_stmt = engine.questionnaire_master[engine.questionnaire_master['Item_Code'] == sub_item]['Statement'].values[0]
+                    
+                    st.markdown(f"""
+                    <div class='loc-card-premium' style='border-left-color: #EF4444; background-color: #FEF2F2;'>
+                        <b style='color: #DC2626;'>💥 CRITICAL ZON #{rank_hs}: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>
+                        * **Skor Komposit EWS Bahaya:** {pct_v:.2f}% (Status: HOTSPOT KRITIKAL MUTLAK)<br>
+                        * 🛑 **PUNCA SEBENAR KRITIKAL (Stressor):** Item {sub_item} &rarr; <i style='color: #991B1B;'>"{sub_stmt}"</i>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    rank_hs += 1
         st.markdown("<div class='danger-analysis-box'><b>BEDAH STRATEGIK PUNCA DI ZON HOTSPOT KRITIKAL:</b><br>Rantaian hierarki geografi di atas membuktikan aras amaran melepasi ambang bahaya ekstrem. 'Sebab Utama' berlakunya krisis di titik parlimen/daerah berkenaan adalah akibat penumpuan ekstrem dua stressor struktural utama secara serentak: Kos sara hidup bandar (Relative Deprivation Theory) bersambung manipulasi ruang gema fitnah siber (Media Ecology Theory). Mandatori intervensi bersepadu merentas agensi perlu diluncurkan serta-merta.</div>", unsafe_allow_html=True)
 
     # --- TAB 11: STRATEGI INTERVENSI ---
