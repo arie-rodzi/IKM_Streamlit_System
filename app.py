@@ -223,6 +223,51 @@ class IKMMDasarEngine:
             }
         return scores
 
+    def get_registered_items(self):
+        if self.questionnaire_master is None: return []
+        return sorted(self.questionnaire_master['Item_Code'].dropna().unique().tolist())
+
+    def get_demographic_columns(self):
+        if self.respondent_data is None: return []
+        demo_cols = ['Zone', 'State', 'District', 'Locality', 'Type_of_Respondent', 
+                     'Gender', 'Generation', 'Urban_Rural', 'Income_Group', 'Ethnicity', 'Religion']
+        return [col for col in demo_cols if col in self.respondent_data.columns]
+
+    def get_filter_options(self, column_name):
+        if self.respondent_data is None or column_name not in self.respondent_data.columns:
+            return []
+        return sorted(self.respondent_data[column_name].dropna().astype(str).unique().tolist())
+
+    def apply_filters(self, filters_dict):
+        data = self.respondent_data.copy()
+        for col, values in filters_dict.items():
+            if values and col in data.columns:
+                data = data[data[col].isin(values)]
+        return data
+
+    def get_state_geospatial_matrix(self):
+        if 'State' not in self.respondent_data.columns: return pd.DataFrame()
+        items = self.get_registered_items()
+        
+        records = []
+        for state, group in self.respondent_data.groupby('State'):
+            raw_mean = group[items].mean().mean()
+            tension_index = ((raw_mean - 1) / 4) * 100
+            
+            if tension_index >= 80.0: classification = "¼ Hotspot / Kritikal"
+            elif tension_index >= 60.0: classification = "¾ Pain Point"
+            elif tension_index >= 40.0: classification = "½ Tension Point"
+            else: classification = "¼ Rendah / Stabil"
+                
+            records.append({
+                'Negeri / Wilayah': state, 
+                'Indeks Ketegangan (IKM %)': tension_index, 
+                'Klasifikasi Risiko': classification,
+                'Populasi Sampel': len(group)
+            })
+            
+        return pd.DataFrame(records).sort_values('Indeks Ketegangan (IKM %)', ascending=False)
+
     def generate_html_dossier_report(self, title, officer, branch):
         score, tier = self.calculate_composite_index()
         now_str = datetime.now().strftime('%d %B %Y')
@@ -334,11 +379,10 @@ def main():
         "13 Dapatan FGD", "14 Dossier Report", "15 Cell Data Explorer"
     ])
     
-    # --- TAB 1: PORTAL GATEWAY (SUNTIKAN KOD FILE UPLOADER YANG BETUL) ---
+    # --- TAB 1: PORTAL GATEWAY ---
     with tabs[0]:
         st.subheader("📂 Pengurusan Pangkalan Data & Struktur Lembaran")
         
-        # SINI CARA UPLOAD DATA MELALUI INTERFACE WEB
         uploaded_file = st.file_uploader("Sila Pilih / Lepaskan Fail Pangkalan Data Excel Master IKMM (.xlsx)", type=['xlsx'])
         if uploaded_file:
             if st.button("Proses & Hubungkan Fail Excel Baharu", use_container_width=True):
@@ -468,3 +512,117 @@ def main():
                 "Latar Belakang & Huraian": "Konflik sosial berakar daripada persaingan berterusan kelompok manusia untuk merebut penguasaan sumber, legislatif, dan ruang perlembagaan yang terhad. Memandu geseran pentadbiran undang-undang sivil dan Syariah (D2).",
                 "Dimensi Sasaran": "D2 Religious Tension"
             },
+            "Relative Deprivation Theory": {
+                "Pengasas": "Samuel Stouffer (1949), dikembangkan oleh Ted Robert Gurr (1970)",
+                "Latar Belakang & Huraian": "Kemarahan struktur tercetus bukan sekadar akibat kemiskinan mutlak, tetapi muncul daripada jurang psikologi ketidakadilan apabila melihat kelompok sosioekonomi lain meraih kekayaan jauh lebih dominan.",
+                "Dimensi Sasaran": "D3 Economic Tension"
+            },
+            "Institutional Trust Theory": {
+                "Pengasas": "Niklas Luhmann / Bernard Barber",
+                "Latar Belakang & Huraian": "Integriti institusi penguatkuasaan, kehakiman, dan ketelusan parlimen adalah tiang sokongan ketenteraman awam. Apabila persepsi salah guna kuasa meningkat (D7), legitimasi politik (D4) akan lumpuh.",
+                "Dimensi Sasaran": "D4 Political Tension & D7 Institutional and Governance Tension"
+            },
+            "General Strain Theory": {
+                "Pengasas": "Robert Agnew (1992)",
+                "Latar Belakang & Huraian": "Kekecewaan atau tekanan sistemik persekitaran (seperti pengangguran, ketidakmampuan memiliki aset/perumahan) mewujudkan anomi emosi yang memandu jurang ketegangan antara generasi muda dan veteran (D5).",
+                "Dimensi Sasaran": "D5 Generational Tension"
+            },
+            "Social Disorganization Theory": {
+                "Pengasas": "Clifford Shaw & Henry McKay (1942)",
+                "Latar Belakang & Huraian": "Kawasan geografi yang mengalami urbanisasi terlalu agresif atau pembangunan infrastruktur tidak setara akan mengalami kelemahan kawalan sosial komuniti setempat, mencetuskan polarisasi sempadan bandar dan luar bandar (D6).",
+                "Dimensi Sasaran": "D6 Urban-Rural Tension"
+            },
+            "Social Cohesion Theory": {
+                "Pengasas": "Émile Durkheim, dikembangkan oleh OECD",
+                "Latar Belakang & Huraian": "Mengukur kekuatan jaringan sosial, kepercayaan sesama jiran, dan kesediaan masyarakat untuk saling membantu ketika krisis. Bertindak sebagai indikator pelindung yang meredakan ketegangan.",
+                "Dimensi Sasaran": "D8 Social Resilience"
+            },
+            "Media Ecology Theory": {
+                "Pengasas": "Marshall McLuhan (1964) & Neil Postman",
+                "Latar Belakang & Huraian": "Medium teknologi membentuk persepsi manusia. Algoritma media digital siber sengaja mencipta ruang gema (echo chambers) dan menularkan berita palsu demi keuntungan komersial, mempercepatkan konflik siber.",
+                "Dimensi Sasaran": "D9 Digital Tension"
+            }
+        }
+        
+        for name, meta in theory_dictionary.items():
+            with st.expander(f"📚 {name} (Kerangka Pengukuran {meta['Dimensi Sasaran']})"):
+                st.markdown(f"**Pelopor / Tokoh Pengasas:** *{meta['Pengasas']}*")
+                st.markdown(f"**Aplikasi Sains Sosial Dasar:** {meta['Latar Belakang & Huraian']}")
+                
+                if engine.questionnaire_master is not None:
+                    qm_subset = engine.questionnaire_master[engine.questionnaire_master['Theory'] == name]
+                    if not qm_subset.empty:
+                        item_codes = qm_subset['Item_Code'].tolist()
+                        valid_codes = [c for c in item_codes if c in engine.respondent_data.columns]
+                        if valid_codes:
+                            t_mean = engine.respondent_data[valid_codes].mean().mean()
+                            t_index = ((t_mean - 1) / 4) * 100
+                            st.metric("Theory Strain Index (%)", f"{t_index:.2f}%")
+
+    # --- TAB 8: PAIN POINTS ---
+    with tabs[7]:
+        st.subheader("⚠️ Pengelasan Petunjuk Titik Kelemahan (Pain Points)")
+        if engine.pain_point_mapping is not None:
+            st.dataframe(engine.pain_point_mapping, use_container_width=True, hide_index=True)
+        else:
+            st.info("Helaian 'pain_point_mapping' tidak ditemui.")
+
+    # --- TAB 9: TENSION POINTS ---
+    with tabs[8]:
+        st.subheader("🔥 Kerangka Eskalasi Indikator Titik Ketegangan (Tension Points)")
+        if engine.tension_point_mapping is not None:
+            st.dataframe(engine.tension_point_mapping, use_container_width=True, hide_index=True)
+        else:
+            st.info("Helaian 'tension_point_mapping' tidak ditemui.")
+
+    # --- TAB 10: AMARAN HOTSPOT ---
+    with tabs[9]:
+        st.subheader("🚨 Early Warning System (EWS) — Sempadan Amaran Hotspot Kritikal")
+        if engine.dashboard_config is not None:
+            st.dataframe(engine.dashboard_config, use_container_width=True, hide_index=True)
+        else:
+            st.info("Helaian 'dashboard_config' tidak ditemui.")
+
+    # --- TAB 11: STRATEGI INTERVENSI ---
+    with tabs[10]:
+        st.subheader("💡 Perpusat Strategi Dasar & Syor Intervensi Agensi Kabinet")
+        if engine.intervention_library is not None:
+            st.dataframe(engine.intervention_library, use_container_width=True, hide_index=True)
+        else:
+            st.info("Helaian 'intervention_library' tidak ditemui.")
+
+    # --- TAB 12: MEDIA SCRAPING ---
+    with tabs[11]:
+        st.subheader("📰 Papan Pemantauan Media Cetak & Aliran Sentimen Siber Digital")
+        if engine.media_issue_summary is not None:
+            st.dataframe(engine.media_issue_summary, use_container_width=True, hide_index=True)
+        else:
+            st.info("Helaian 'media_issue_summary' tidak ditemui.")
+
+    # --- TAB 13: DAPATAN FGD ---
+    with tabs[12]:
+        st.subheader("👥 Transkrip Konsensus Panel Pakar & Dapatan Bengkel FGD")
+        if engine.fgd_expert is not None:
+            st.dataframe(engine.fgd_expert, use_container_width=True, hide_index=True)
+        else:
+            st.info("Helaian 'fgd_expert' tidak ditemui.")
+
+    # --- TAB 14: REPORT GENERATOR ---
+    with tabs[13]:
+        st.subheader("📄 Penjanaan HTML Briefing Dossier Rasmi JPM")
+        rep_title = st.text_input("Tajuk Laporan Eksekutif", "Laporan Ringkasan Keselamatan Sosial Negara & Indeks IKMM 2026")
+        rep_officer = st.text_input("Nama Pegawai Pelapor Muktamad", "Urus Setia Kanan JPNIN")
+        rep_branch = st.text_input("Cawangan Bahagian", "Kluster Pemetaan Risiko Perpaduan")
+        
+        if st.button("Kompilasikan Dokumen Dossier Rasmi", use_container_width=True):
+            html_code = engine.generate_html_dossier_report(rep_title, rep_officer, rep_branch)
+            st.success("✅ Dokumen Dossier Berjaya Dikompilasikan Tanpa Ralat!")
+            st.download_button("⬇️ Muat Turun Fail Laporan HTML Dossier", html_code, "IKMM_Executive_Brief_Dossier.html", "text/html", use_container_width=True)
+
+    # --- TAB 15: CELL DATA EXPLORER ---
+    with tabs[14]:
+        st.subheader("🔎 Advanced Database Structural Cell Matrix Explorer")
+        st.dataframe(engine.respondent_data, use_container_width=True)
+
+if __name__ == "__main__":
+    main()
