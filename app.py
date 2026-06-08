@@ -17,7 +17,7 @@ st.set_page_config(
 
 ADMIN_PASSWORD = "admin123"
 
-# --- REKA BENTUK VISUAL: LIGHT EXECUTIVE WINDOWS THEME (HIGH CONTRAST) ---
+# --- 1. REKA BENTUK VISUAL: LIGHT EXECUTIVE WINDOWS THEME (HIGH CONTRAST) ---
 def apply_executive_premium_theme():
     st.markdown("""
         <style>
@@ -195,7 +195,7 @@ class IKMMDasarEngine:
             
         return pd.DataFrame(records).sort_values('Indeks Ketegangan (IKM %)', ascending=False)
 
-    # --- JANAAN MANUSKRIP HTML AGUNG YANG DINAMIK (MEMBACA FAIL DATA EXCEL ANDA 100% TANPA SEKATAN BARIS) ---
+    # --- JANAAN MANUSKRIP HTML AGUNG LENGKAP TANPA HAD SEKATAN (KALIS NAMEERROR & REDUNDANCY SINTAKS) ---
     def generate_html_dossier_report(self, title, officer, branch):
         score, tier = self.calculate_composite_index()
         total_resp = len(self.respondent_data)
@@ -205,10 +205,10 @@ class IKMMDasarEngine:
         dim_labels = list(self.dim_item_ranges.keys())
         dim_values = [self.calculate_single_dimension_score(d) for d in dim_labels]
         
-        # PEMBETULAN UTAMA: Mengisytiharkan pemoleh-ubah geo_means di baris teratas fungsi bagi mengelakkan NameError
-        geo_means = self.respondent_data.groupby(['Zone', 'State', 'District', 'Urban_Rural'])[items].mean().mean(axis=1).sort_values(ascending=False)
+        # PENGISYTIHARAN AWAL: Melakukan pengiraan data geospasial sebelum blok rentetan string HTML dimulakan
+        geo_means_calc = self.respondent_data.groupby(['Zone', 'State', 'District', 'Urban_Rural'])[items].mean().mean(axis=1).sort_values(ascending=False)
 
-        # BLOCK 1: HEADER & STYLE DEFINITION
+        # SECTOR 1: HEAD, STYLE & BANNER
         html_master = f"""
         <!DOCTYPE html>
         <html lang="ms">
@@ -244,7 +244,7 @@ class IKMMDasarEngine:
                     <div class="confidential-tag">SULIT — MANUSKRIP LAPORAN KESELAMATAN SOSIAL NASIONAL JPM</div>
                     <h1 style="margin: 0; font-size: 26px;">{title}</h1>
                     <p style="margin: 10px 0 0 0; font-size: 14px; color: #94A3B8;">Analisis Komposit Model Kesiagaan Sosial Negara (IKMM 2026)</p>
-                    <p style="margin: 5px 0 0 0; font-size: 12px; color: #CBD5E1;">Tarikh Kompleks: {now_str} | ID Arkib Pelepasan Dasar: JPM-IKMM-2026-FULLV2</p>
+                    <p style="margin: 5px 0 0 0; font-size: 12px; color: #CBD5E1;">Tarikh Kompleks: {now_str} | ID Arkib Pelepasan Dasar: JPM-IKMM-2026-UNLIMITED_V3</p>
                 </div>
                 
                 <div class="section-title">1.0 Ringkasan Petunjuk Prestasi Utama (KPI)</div>
@@ -281,10 +281,10 @@ class IKMMDasarEngine:
                 <div class="page-break"></div>
         """
 
-        # BLOCK 2: UNRESTRICTED ALL DEMOGRAPHIC TABLES
+        # SECTOR 2: ALL 11 DEMOGRAPHIC TABLES UNRESTRICTED
         html_master += """
                 <div class="section-title">3.0 Jadual Komprehensif Taburan Profil 11 Pemboleh Ubah Demografi</div>
-                <p>Berikut diperperinci agihan peratusan dan frekuensi lengkap responden tanpa sebarang pemotongan baris:</p>
+                <p>Berikut diperincikan agihan peratusan dan frekuensi lengkap responden tanpa sebarang pemotongan baris:</p>
                 <table class="table-premium">
                     <thead><tr><th>Pemboleh Ubah Demografi</th><th>Klasifikasi Parameter Kumpulan Sasar</th><th>Frekuensi (Bil.)</th><th>Peratusan (%)</th></tr></thead>
                     <tbody>"""
@@ -299,7 +299,7 @@ class IKMMDasarEngine:
                 <div class="page-break"></div>
         """
 
-        # BLOCK 3: ALL 9 SECTOR DIMENSIONS INDEX CORES
+        # SECTOR 3: ALL 9 DIMENSIONS TABLE
         html_master += """
                 <div class="section-title">4.0 Analisis Keamatan Aras Ketegangan Komposit 9 Dimensi Utama</div>
                 <table class="table-premium">
@@ -314,7 +314,7 @@ class IKMMDasarEngine:
                 <div class="page-break"></div>
         """
 
-        # BLOCK 4: PSYCHOMETRIC THEORY ANALYSIS LENGKAP
+        # SECTOR 4: SOCIOLOGICAL THEORIES SUMMARY
         html_master += """
                 <div class="section-title">5.0 Pemodelan Teori & Huraian Keputusan Konkreta Item Pangkalan Data</div>
                 <p>Analisis penumpuan teori-data (Theory-Data Convergence Analysis) menghubungkan angka kuantitatif secara langsung dengan kerangka teori dasar:</p>"""
@@ -322,27 +322,27 @@ class IKMMDasarEngine:
         theory_dictionary = {
             "Social Identity Theory": {
                 "Pengasas": "Henri Tajfel & John Turner (1979)", "Dimensi": "D1 Ethnic Tension",
-                "Analisis": "Hasil dapatan pemodelan membuktikan polarisasi kaum dipacu oleh penebalan sempadan identiti kelompok (In-group vs Out-group) akibat prasangka rentas etnik. Keamatan tinggi pada item stressor mengesahkan interaksi sosial wujud tetapi rapuh tanpa modal amanah (social trust) yang mendalam. Mengikut lensa Tajfel, apabila benteng identiti merasa diancam retorik siber, penolakan kelompok luar akan meningkat secara drastik. Keadaan ini memerlukan strategi bridging capital untuk meruntuhkan dinding stereotaip pramatang di peringkat komuniti kejiranan harian."
+                "Analisis": "Hasil dapatan pemodelan membuktikan polarisasi kaum dipacu oleh penebalan sempadan identiti kelompok (In-group vs Out-group) akibat prasangka rentas etnik. Keamatan tinggi pada item stressor mengesahkan interaksi sosial wujud tetapi rapuh tanpa modal amanah (social trust) yang mendalam. Mengikut lensa Tajfel, apabila benteng identiti merasa diancam retorik siber, penolakan kelompok luar akan meningkat secara drastik. Keadaan ini memerlukan strategi bridging capital."
             },
             "Conflict Theory": {
                 "Pengasas": "Karl Marx / Max Weber", "Dimensi": "D2 Religious Tension",
-                "Analisis": "Data merekodkan konflik struktural terbuka di mana kumpulan ideologi agama yang berbeza bersaing menggunakan saluran legislatif dan perlembagaan sivil-syariah untuk mendapatkan pengaruh dominasi institusi. Weber menjustifikasikan persaingan ini sebagai zero-sum game; sekiranya satu pihak mendapat ruang kuasa, pihak lain menganggapnya sebagai ancaman hak eksistensial eksklusif. Perdebatan ini memerlukan pembinaan ruang hujah yang objektif."
+                "Analisis": "Data merekodkan konflik struktural terbuka di mana kumpulan ideologi agama yang berbeza bersaing menggunakan saluran legislatif dan perlembagaan sivil-syariah untuk mendapatkan pengaruh dominasi institusi. Weber menjustifikasikan persaingan ini sebagai zero-sum game; sekiranya satu pihak mendapat ruang kuasa, pihak lain menganggapnya sebagai ancaman hak eksistensial eksklusif."
             },
             "Relative Deprivation Theory": {
                 "Pengasas": "Samuel Stouffer (1949) / Ted Robert Gurr (1970)", "Dimensi": "D3 Economic Tension",
-                "Analisis": "Keputusan empirikal membuktikan kemarahan kelas bawah bukan disebabkan kemiskinan mutlak, tetapi akibat tekanan psikologi apabila melihat agihan kekayaan dan ekuiti korporat dinikmati kelas kapitalis tertentu secara tidak adil. Mengikut Gurr, jurang harapan (expectations gap) yang membesar melahirkan rasa terpinggir, menurunkan daya toleransi kaum, dan menyuburkan bibit protes sosial. Langkah pemulihan menuntut reformasi pasaran upah."
+                "Analisis": "Keputusan empirikal membuktikan kemarahan kelas bawah bukan disebabkan kemiskinan mutlak, tetapi akibat tekanan psikologi apabila melihat agihan kekayaan dan ekuiti korporat dinikmati kelas kapitalis tertentu secara tidak adil. Mengikut Gurr, jurang harapan (expectations gap) yang membesar melahirkan rasa terpinggir, menurunkan daya toleransi kaum, dan menyuburkan bibit protes sosial."
             },
             "Institutional Trust Theory": {
                 "Pengasas": "Niklas Luhmann", "Dimensi": "D4 Political & D7 Governance Tension",
-                "Analisis": "Kejatuhan graf kepercayaan institusi mengesahkan erosi legitimasi sivil secara kritikal. Apabila majoriti responden mempercayai agensi penguatkuasaan lapangan tidak lagi telus dan korup, kepatuhan sukarela terhadap undang-undang akan lumpuh. Luhmann menegaskan amanah institusi adalah elemen primer peningkatan kestabilan sosiopolitik negara. Kerajaan mesti menunjukkan komitmen integriti tanpa toleransi."
+                "Analisis": "Kejatuhan graf kepercayaan institusi mengesahkan erosi legitimasi sivil secara kritikal. Apabila majoriti responden mempercayai agensi penguatkuasaan lapangan tidak lagi telus dan korup, kepatuhan sukarela terhadap undang-undang akan lumpuh. Luhmann menegaskan amanah institusi adalah elemen primer peningkatan kestabilan sosiopolitik negara."
             },
             "General Strain Theory": {
                 "Pengasas": "Robert Agnew (1992)", "Dimensi": "D5 Generational Tension",
-                "Analisis": "Skor tinggi mengesahkan kohort umur belia mengalami anomi emosi (strain) yang parah akibat kegagalan mencapai matlamat hidup seperti pemilikan rumah pertama dan pekerjaan premium. Agnew membuktikan strain yang tidak diredakan dasar kabinet akan melahirkan reaksi kemarahan kolektif, memicu jurang ideologi yang menolak nilai tradisional veteran. Penyelesaian dasar wajib menumpukan belia sasar."
+                "Analisis": "Skor tinggi mengesahkan kohort umur belia mengalami anomi emosi (strain) yang parah akibat kegagalan mencapai matlamat hidup seperti pemilikan rumah pertama dan pekerjaan premium. Agnew membuktikan strain yang tidak diredakan dasar kabinet akan melahirkan reaksi kemarahan kolektif, memicu jurang ideologi yang menolak nilai tradisional veteran."
             },
             "Social Disorganization Theory": {
                 "Pengasas": "Clifford Shaw & Henry McKay (1942)", "Dimensi": "D6 Urban-Rural Tension",
-                "Analisis": "Keputusan data membuktikan pembangunan geografi tidak setara atau urbanisasi drastik melemahkan ikatan kawalan sosial setempat. Kawasan yang mengalami jurang prasarana tinggi kehilangan keupayaan kawalan kejiranan, mempercepatkan kadar anomali sosial, serta melahirkan sentimen pengabaian kawasan oleh pentadbiran pusat. PBT wajib meningkatkan kualiti delivery sistem."
+                "Analisis": "Keputusan data membuktikan pembangunan geografi tidak setara atau urbanisasi drastik melemahkan ikatan kawalan sosial setempat. Kawasan yang mengalami jurang prasarana tinggi kehilangan keupayaan kawalan kejiranan, mempercepatkan kadar anomali sosial, serta melahirkan sentimen pengabaian kawasan oleh pentadbiran pusat."
             }
         }
 
@@ -370,14 +370,15 @@ class IKMMDasarEngine:
                     </div>"""
         html_master += """<div class="page-break"></div>"""
 
-        # BLOCK 5: ALL GEOGRAPHICAL LOCATION CHAINS UNRESTRICTED
+        # SECTOR 5: DYNAMIC GEOGRAPHICAL SPATIAL LOOP (Membaca dari pemolehubah geo_means_calc yang telah diisytiharkan di atas)
         html_master += """
                 <div class="section-title">6.0 Laporan Hierarki Spasial Rantaian Lokasi Terjejas & Sebab Utama (Stressor)</div>
                 <p>Berikut diperincikan rantaian geografi berstruktur penuh (Zon &rarr; Negeri &rarr; Daerah &rarr; Lokaliti) yang dikesan mengalami pola ketegangan berserta punca item konkrit:</p>"""
         
-        for rank, ((zn, st_n, ds_n, ur_n), v_score) in enumerate(geo_means.items()):
+        for rank, ((zn, st_n, ds_n, ur_n), v_score) in enumerate(geo_means_calc.items()):
             pct_v = ((v_score - 1) / 4) * 100
             
+            # Tampilkan kawasan parlimen/daerah yang mencatatkan ketegangan di atas paras asas sahaja (.head() dipadam secara penuh)
             if pct_v >= 50.0:
                 sub_df = self.respondent_data[(self.respondent_data['Zone']==zn) & (self.respondent_data['State']==st_n) & (self.respondent_data['District']==ds_n) & (self.respondent_data['Urban_Rural']==ur_n)]
                 sub_item = sub_df[items].mean().idxmax()
@@ -392,7 +393,7 @@ class IKMMDasarEngine:
                 </div>"""
         html_master += """<div class="page-break"></div>"""
 
-        # BLOCK 6: UNRESTRICTED ALL SCRAPING OSINT DATA LOGS FROM SHEET 8
+        # SECTOR 6: ALL MEDIA SCRAPING RECORDS
         html_master += """
                 <div class="section-title">7.0 Log Tangkapan Data Scraping Siber Digital (OSINT Logs Lengkap)</div>
                 <p>Berikut dipaparkan keseluruhan data perbincangan siber asli secara telus daripada lembaran <i>media_issue_summary</i>:</p>
@@ -611,11 +612,11 @@ def main():
                 st.markdown(f"#### 🛑 Kedudukan #{rank+1}: {code} — [Indeks Ketegangan: {item_pct:.1f}%]")
                 st.markdown(f"**Dimensi Terikat:** {d_name} | **Pernyataan Soalan Isu:** *{stmt}*")
                 if "Economic" in d_name:
-                    desc_text = f"Indikator {code} menuntut perhatian kecemasan kabinet kerana ia merekodkan aras ketegangan tertinggi bagi sub-sektor ekonomi isi rumah. Kenyataan maklum balas daripada warganegara mengesahkan berlakunya himpitan psikologi yang kronik akibat ketidakseimbangan kos sara hidup harian berbanding unjuran upah realiti. Kegagalan pasaran buruh untuk melaraskan tangga gaji premium menyebabkan majoriti responden berpendapatan rendah (B40) berasa terpinggir secara struktural. Kemarahan ini diklasifikasikan sebagai ancaman keselamatan primer kerana ia menurunkan keupayaan isi rumah menampung keperluan asas, memicu kadar keberhutangan yang tinggi, serta melumpuhkan daya beli setempat. Pihak kementerian tidak boleh sekadar meluncurkan tindakan intervensi bersifat ad-hoc, sebaliknya memerlukan campur tangan makro bagi merombak pasaran upah minimum."
+                    desc_text = f"Indikator {code} menuntut perhatian kecemasan kabinet kerana ia merekodkan aras ketegangan tertinggi bagi sub-sektor ekonomi isi rumah. Kenyataan maklum balas daripada warganegara mengesahkan berlakunya himpitan psikologi yang kronik akibat ketidakseimbangan kos sara hidup harian berbanding unjuran upah realiti. Kegagalan pasaran buruh untuk melaraskan tangga gaji premium menyebabkan majoriti responden berpendapatan rendah (B40) berasa terpinggir secara struktural. Kemarahan ini diklasifikasikan sebagai ancaman keselamatan primer kerana ia menurunkan keupayaan isi rumah menampung keperluan asas, memicu kadar keberhutangan yang high, serta melumpuhkan daya beli setempat. Pihak kementerian tidak boleh sekadar meluncurkan tindakan intervensi bersifat ad-hoc, sebaliknya memerlukan campur tangan makro bagi merombak pasaran upah minimum."
                 elif "Digital" in d_name:
                     desc_text = f"Lonjakan ketegangan pada indikator siber {code} mendedahkan kerentanan kritikal dalam landskap komunikasi maya negara. Kenyataan ini membuktikan sebahagian besar pengguna media sosial di peringkat akar umbi terdedah kepada manipulasi algoritma komersial yang sengaja menularkan sentimen provokasi kaum demi 'engagement'. Kebimbangan awam ini mencerminkan kegagalan regulasi digital sedia ada untuk menapis khabar angin dan berita palsu. Anomi siber ini sangat berbahaya kerana ia membina ruang gema (echo chambers) yang mengeksploitasi emosi sensitif, menyebabkan sebarang isu kecil di luar talian mudah dieksploitasi menjadi krisis keselamatan sivil terbuka."
                 else:
-                    desc_text = f"Data psikometrik bagi indikator {code} mengesahkan wujudnya garis retakan sosiopolitik yang rapuh dalam komuniti setempat. Maklum balas tinggi daripada responden melambangkan kekecewaan kolektif yang berpunca daripada kelemahan perlindungan kebajikan awam atau jurang pengagihan prasarana pembangunan di lapangan. Penumpuan skor pada zon hotspot amaran ini menandakan berlakunya kelesuan struktur modal sosial, di mana masyarakat merasa suara rintihan mereka tidak sampai ke peringkat pembuat dasar utama kerajaan."
+                    desc_text = f"Data psikometrik bagi indikator {code} mengesahkan wujudnya garis retakan sosiopolitik yang rapuh dalam komuniti setempat. Maklum balas high daripada responden melambangkan kekecewaan kolektif yang berpunca daripada kelemahan perlindungan kebajikan awam atau jurang pengagihan prasarana pembangunan di lapangan. Penumpuan skor pada zon hotspot amaran ini menandakan berlakunya kelesuan struktur modal sosial, di mana masyarakat merasa suara rintihan mereka tidak sampai ke peringkat pembuat dasar utama kerajaan."
                 st.markdown(f"<div class='danger-analysis-box'><b>HURAIAN ANALISIS IMPAK INDIKATOR KERAJAAN:</b><br>{desc_text}</div>", unsafe_allow_html=True)
                 st.markdown("---")
 
@@ -640,12 +641,12 @@ def main():
     with tabs[6]:
         st.subheader("🧠 Pusat Interpretasi Psikometrik & Analisis Penumpuan Teori-Data")
         theory_blueprint = {
-            "Social Identity Theory": {"Pengasas": "Henri Tajfel & John Turner (1979)", "Dimensi": "D1 Ethnic Tension", "Huraresan": "Manusia membahagikan kelompok sosial kepada 'In-group' (kelompok kita) dan 'Out-group' (kelompok mereka). Jika benteng identiti merasa terancam, prasangka rentas kaum akan melonjak."},
-            "Conflict Theory": {"Pengasas": "Karl Marx / Max Weber", "Dimensi": "D2 Religious Tension", "Huraresan": "Konflik berakar daripada perebutan dominasi ruang undang-undang, legislatif, dan pengaruh institusi syariah-sivil yang disifatkan sebagai zero-sum game."},
-            "Relative Deprivation Theory": {"Pengasas": "Samuel Stouffer (1949) / Ted Robert Gurr (1970)", "Dimensi": "D3 Economic Tension", "Huraresan": "Ketegangan timbul akibat jurang persepsi apabila sesuatu kelompok merasa dipinggirkan secara tidak adil selepas membandingkan pencapaian ekonomi mereka dengan kelas komuniti lain."},
-            "Institutional Trust Theory": {"Pengasas": "Niklas Luhmann", "Dimensi": "D4 Political Tension & D7 Institutional and Governance Tension", "Huraresan": "Tahap kestabilan negara berpaksi kepada keyakinan integriti urus tadbir. Kejatuhan amanah kepada badan penguatkuasa akan melumpuhkan legitimasi undang-undang sivil."},
-            "General Strain Theory": {"Pengasas": "Robert Agnew (1992)", "Dimensi": "D5 Generational Tension", "Huraresan": "Tekanan struktur (pengangguran, ketidakmampuan memiliki aset/perumahan) melahirkan anomi emosi kekecewaan dalam kalangan belia, memicu jurang ketegangan nilai dengan generasi veteran."},
-            "Social Disorganization Theory": {"Pengasas": "Clifford Shaw & Henry McKay (1942)", "Dimensi": "D6 Urban-Rural Tension", "Huraresan": "Pembangunan lokaliti yang tidak setara atau urbanisasi drastik melemahkan ikatan kawalan sosial komuniti setempat, mencetuskan polarisasi sempadan bandar-luar bandar."}
+            "Social Identity Theory": {"Pengasas": "Henri Tajfel & John Turner (1979)", "Dimensi": "D1 Ethnic Tension", "Huraian": "Manusia membahagikan kelompok sosial kepada 'In-group' (kelompok kita) dan 'Out-group' (kelompok mereka). Jika benteng identiti merasa terancam, prasangka rentas kaum akan melonjak."},
+            "Conflict Theory": {"Pengasas": "Karl Marx / Max Weber", "Dimensi": "D2 Religious Tension", "Huraian": "Konflik berakar daripada perebutan dominasi ruang undang-undang, legislatif, dan pengaruh institusi syariah-sivil yang disifatkan sebagai zero-sum game."},
+            "Relative Deprivation Theory": {"Pengasas": "Samuel Stouffer (1949) / Ted Robert Gurr (1970)", "Dimensi": "D3 Economic Tension", "Huraian": "Ketegangan timbul akibat jurang persepsi apabila sesuatu kelompok merasa dipinggirkan secara tidak adil selepas membandingkan pencapaian ekonomi mereka dengan kelas komuniti lain."},
+            "Institutional Trust Theory": {"Pengasas": "Niklas Luhmann", "Dimensi": "D4 Political Tension & D7 Institutional and Governance Tension", "Huraian": "Tahap kestabilan negara berpaksi kepada keyakinan integriti urus tadbir. Kejatuhan amanah kepada badan penguatkuasa akan melumpuhkan legitimasi undang-undang sivil."},
+            "General Strain Theory": {"Pengasas": "Robert Agnew (1992)", "Dimensi": "D5 Generational Tension", "Huraian": "Tekanan struktur (pengangguran, ketidakmampuan memiliki aset/perumahan) melahirkan anomi emosi kekecewaan dalam kalangan belia, memicu jurang ketegangan nilai dengan generasi veteran."},
+            "Social Disorganization Theory": {"Pengasas": "Clifford Shaw & Henry McKay (1942)", "Dimensi": "D6 Urban-Rural Tension", "Huraian": "Pembangunan lokaliti yang tidak setara atau urbanisasi drastik melemahkan ikatan kawalan sosial komuniti setempat, mencetuskan polarisasi sempadan bandar-luar bandar."}
         }
         for name, meta in theory_blueprint.items():
             qm_sub = engine.questionnaire_master[engine.questionnaire_master['Theory'] == name]
@@ -666,7 +667,7 @@ def main():
                     with st.expander(f"📚 {name} (Kerangka Pengukuran {meta['Dimensi']})"):
                         col_l, col_r = st.columns([1, 2])
                         with col_l: st.metric("Theory Strain Index (%)", f"{t_index_val:.2f}%")
-                        with col_r: st.markdown(f"**Huraian Landasan Ilmiah:** {meta['Huraresan']}")
+                        with col_r: st.markdown(f"**Huraian Landasan Ilmiah:** {meta['Huraian']}")
                         st.markdown("---")
                         c_box1, c_box2 = st.columns(2)
                         with c_box1: st.error(f"🚨 **Item Stressor Utama ({id_highest}): Score {val_highest:.2f} ({pct_highest:.1f}%)**\n\n*Pernyataan:* {stmt_highest}")
@@ -675,11 +676,9 @@ def main():
 
     # --- TAB 08: PAIN POINTS ---
     with tabs[7]:
-        st.subheader("⚠️ Pengelasan Petunjuk Titik Kelemahan Structure (Pain Points)")
+        st.subheader("⚠️ Pengelasan Petunjuk Titik Kelemahan Struktur (Pain Points)")
         st.markdown("**Maksud Fungsi:** Mengesan penunjuk makro yang mula menunjukkan tanda kegelisahan awal di peringkat akar umbi (Skor $40\% - 59\%$). Sesuai untuk menyekat isu kejiranan berkembang menjadi polarisasi dasar.")
-        items_list = engine.get_registered_items()
-        geo_means = engine.respondent_data.groupby(['Zone', 'State', 'District', 'Urban_Rural'])[items_list].mean().mean(axis=1)
-        pp_geo = geo_means[(geo_means >= 2.6) & (geo_means < 3.4)].sort_values(ascending=False)
+        pp_geo = geo_means_calc[(geo_means_calc >= 2.6) & (geo_means_calc < 3.4)]
         
         st.markdown("##### 📍 Pengesanan Rantaian Lokasi Berstruktur Penuh (Zon &rarr; Negeri &rarr; Daerah &rarr; Lokaliti)")
         if not pp_geo.empty:
@@ -705,7 +704,7 @@ def main():
     with tabs[8]:
         st.subheader("🔥 Kerangka Eskalasi Indikator Titik Ketegangan (Tension Points)")
         st.markdown("**Maksud Fungsi:** Mengesan petunjuk yang berada pada tahap Amaran Tinggi ($60\% - 79\%$) di mana isu sosiopolitik telah berulang dan mula membina tembok polarisasi rentas kumpulan.")
-        tp_geo = geo_means[(geo_means >= 3.4) & (geo_means < 4.2)].sort_values(ascending=False)
+        tp_geo = geo_means_calc[(geo_means_calc >= 3.4) & (geo_means_calc < 4.2)]
         st.markdown("##### 📍 Pengesanan Rantaian Lokasi Berstruktur Penuh (Zon &rarr; Negeri &rarr; Daerah &rarr; Lokaliti)")
         if not tp_geo.empty:
             for rank, ((zn, st_n, ds_n, ur_n), v_val) in enumerate(tp_geo.items()):
@@ -724,13 +723,13 @@ def main():
                     """, unsafe_allow_html=True)
         else:
             st.info("✓ Tiada rantaian geografi dikesan dalam parameter Tension Points.")
-        st.markdown("<div class='danger-analysis-box'><b>ANALISIS RISIKO LOKASI STRUKTURAL TENSION POINTS:</b><br>Rantaian geografi di atas memberikan amaran tinggi taktikal. Konflik dikesan dipicu oleh persaingan ruang legislatif dan pertindihan jurisdiksi sivil-syariah yang dipercayai berat sebelah oleh kumpulan luar, menuntut pengaktifan segera mediasi perdamaian komuniti.</div>", unsafe_allow_html=True)
+        st.markdown("<div class='danger-analysis-box'><b>ANALISIS RISIKO LOKASI STRUKTURAL TENSION POINTS:</b><br>Rantaian geografi di atas memberikan amaran high taktikal. Konflik dikesan dipicu oleh persaingan ruang legislatif dan pertindihan jurisdiksi sivil-syariah yang dipercayai berat sebelah oleh kumpulan luar, menuntut pengaktifan segera mediasi perdamaian komuniti.</div>", unsafe_allow_html=True)
 
     # --- TAB 10: AMARAN HOTSPOT ---
     with tabs[9]:
         st.subheader("🚨 Early Warning System (EWS) — Sempadan Amaran Hotspot Kritikal")
         st.markdown("**Maksud Fungsi:** Pusat pemantauan utama keselamatan sivil nasional untuk mengelaskan rantaian geografi zon bahaya merah ($\ge 80\%$) yang menuntut pelancaran pelan kontingensi dalam tempoh 72 jam.")
-        hot_geo = geo_means.sort_values(ascending=False)
+        hot_geo = geo_means_calc
         st.markdown("##### 📍 Rantaian Lokasi Hotspot Paling Kritikal (EWS Emergency Trigger)")
         for rank, ((zn, st_n, ds_n, ur_n), v_val) in enumerate(hot_geo.items()):
             pct_v = ((v_val - 1) / 4) * 100
@@ -751,6 +750,8 @@ def main():
     # --- TAB 11: STRATEGI INTERVENSI ---
     with tabs[10]:
         st.subheader("💡 Enjin Pemetaan Strategi Intervensi Dasar Agensi Kabinet")
+        st.markdown("**Maksud Fungsi:** Modul ini bertindak sebagai *Policy Blueprint Engine* yang memadankan masalah di lapangan secara langsung dengan tindakan mitigasi kabinet berserta rakan pelaksana lapangan (PBT, Swasta, Komuniti).")
+        
         if engine.intervention_library is not None:
             int_df = engine.intervention_library
             
