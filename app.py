@@ -374,11 +374,10 @@ def inisialisasi_sesi_papan_pemuka():
     if 'auth_state' not in st.session_state:
         st.session_state.auth_state = False
 
-# --- ENGINE UTAMA APLIKASI ---
 def main():
     inisialisasi_sesi_papan_pemuka()
     if not st.session_state.auth_state:
-        terapkan_tema_premium_eksekutif() # Memanggil fungsi gaya gelap-mewah
+        terapkan_tema_premium_eksekutif() # Memanggil fungsi tema komersial baharu
         c1, c2, c3 = st.columns([1, 1.3, 1])
         with c2:
             st.markdown("<div style='text-align: center; padding-top: 130px;'><h2>🏛️ Urus Setia Polisi IKMM 2026</h2><p>Sistem Amaran Awal Konflik Kebangsaan (JPM)</p></div>", unsafe_allow_html=True)
@@ -392,7 +391,7 @@ def main():
                         st.error("Ralat: Pelepasan Keselamatan Ditolak. Token Tidak Sah.")
         return
         
-    terapkan_tema_premium_eksekutif()
+    terapkan_tema_premium_eksekutif() # Menetapkan perlindungan tema premium gelap-lutsinar
     engine = st.session_state.engine
     
     tabs = st.tabs([
@@ -403,7 +402,7 @@ def main():
         "13 Dapatan FGD Pakar", "14 Dossier Report Cabinet", "15 Cell Data Explorer"
     ])
     
-    # --- TAB 1: PORTAL GATEWAY & KAWALAN GEOMATRIKS UTAMA (BERPUSAT DI ATAS SEPENUHNYA) ---
+    # --- TAB 1: PORTAL GATEWAY & KAWALAN PENAPIS BERPUSA ---
     active_filters = {}
     with tabs[0]:
         st.subheader("📂 Pengurusan Fail & Pusat Penapis Geokomposit Berpusat")
@@ -443,14 +442,14 @@ def main():
             if sel_state: active_filters['State'] = sel_state
             if sel_district: active_filters['District'] = sel_district
 
-    # --- 🔒 DETEKTIF KESELAMATAN SEKATAN BARIS (SAFETY GUARD) AGAINST ATTRIBUTEERROR ---
+    # --- 🔒 SEKATAN KESELAMATAN KEDUA (DATA LOADING SAFETY GUARD): Membasmi AttributeError Secara Mutlak ---
     if not engine.data_loaded:
         with tabs[0]:
-            st.info("💡 Sila mulakan dengan memuat naik fail pangkalan data master Excel (.xlsx) di atas untuk mengaktifkan pemodelan sistem.")
+            st.info("💡 Sila hubungkan fail master pangkalan data Excel (.xlsx) di atas untuk mengaktifkan pemodelan sistem.")
         return
 
-    # SINKRONISASI AKTIF: Selamat daripada AttributeError kerana engine.respondent_data pasti sudah wujud di sini
-    filtered_df = engine.apply_filters(active_filters)
+    # SINKRONISASI ELEMEN: Kod di bawah hanya dieksekusi apabila pangkalan data sah wujud di dalam RAM
+    filtered_df = engine.tapis_pangkalan_data(active_filters)
     sub_total = len(filtered_df)
     items_list_main = engine.dapatkan_senarai_item()
     
@@ -464,11 +463,11 @@ def main():
     # Paparan status pangkalan data ditapis
     st.markdown(f"""
         <div style='background-color: rgba(59, 130, 246, 0.2); padding: 12px; border-radius: 8px; border-left: 5px solid #3B82F6; margin-bottom: 20px;'>
-            <p style='margin:0; font-size:13px; font-weight:700; color:#F8FAFC;'>🌐 KUMPULAN DATA AKTIF: Memproses {sub_total:,} daripada {len(engine.respondent_data):,} Kumpulan Responden Terpenapis.</p>
+            <p style='margin:0; font-size:13px; font-weight:700; color:#F8FAFC;'>🌐 REKOD KLUSTER: Memproses {sub_total:,} daripada {len(engine.respondent_data):,} Kumpulan Responden Terpenapis.</p>
         </div>
     """, unsafe_allow_html=True)
 
-    # --- TAB 1: PENGISIAN GRAFIK ASAS PORTAL GATEWAY ---
+    # --- TAB 1: PENGISIEN VISUAL GATEWAY TAB ---
     with tabs[0]:
         if sub_total > 0:
             g_c1, g_c2 = st.columns(2)
@@ -477,7 +476,7 @@ def main():
             with g_c2:
                 st.plotly_chart(px.bar(x=filtered_df['State'].value_counts().values, y=filtered_df['State'].value_counts().index, orientation='h', title="Taburan Negeri Ditapis"), use_container_width=True)
         else:
-            st.warning("Kombinasi tapisan menghasilkan 0 responden. Sila tukar pilihan geofilter anda.")
+            st.warning("Kombinasi tapisan menghasilkan 0 responden. Sila ubah pilihan penapis anda.")
 
     # --- TAB 2: RINGKASAN EKSEKUTIF ---
     with tabs[1]:
@@ -621,7 +620,7 @@ def main():
             display_media = m_df.copy()
             if sel_state: display_media = display_media[display_media['State'].isin(sel_state)]
             for idx, row in display_media.iterrows():
-                st.markdown(f"🔹 **Tarikh: {row.get('Date','N/A')} | Platform: {row.get('Source','N/A')} | Wilayah: {row.get('State','N/A')}**\n* 💬 Rumusan Siber: \"{row.get('Summary','N/A')}\"")
+                st.markdown(f"🔹 **Tarikh: {row.get('Date','N/A')} | Platform: {row.get('Source','N/A')} | Wilayah: {row.get('State','N/A')}**\n* 💬 Rumusan Siber Asli Excel: \"{row.get('Summary','N/A')}\"")
                 st.markdown("---")
 
     # --- TAB 13: DAPATAN FGD PAKAR ---
