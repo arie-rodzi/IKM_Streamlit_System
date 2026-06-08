@@ -184,21 +184,17 @@ class IKMMDasarEngine:
             return False
 
     def get_tier(self, score):
-        # Klasifikasi Ketegangan Berasaskan Proposi Cadangan Teknikal Fasa 5.5.4 (Jadual 5.6)
         if score >= 80.0: return "hotspot"
         elif score >= 60.0: return "pain"
         elif score >= 40.0: return "tension"
         else: return "low"
 
-    # FORMULA PENILAIAN INDEKS MATEMATIK BERWAJARAN (FASA 5.5)
     def calculate_composite_index(self, df=None):
         if df is None: df = self.respondent_data
         all_items = [f'IKM_{i:03d}' for i in range(1, 109) if f'IKM_{i:03d}' in df.columns]
         if not all_items: return 0.0, "low"
         
-        # Pengiraan Min Rentas Item Skala Likert 1-5 Mentah
         mean_raw = df[all_items].mean().mean()
-        # Normalisasi Min-Max ke Skala Komposit 0% - 100% (Makin Tinggi = Makin Tegang / Konflik)
         normalized_score = ((mean_raw - 1) / 4) * 100
         return normalized_score, self.get_tier(normalized_score)
 
@@ -209,6 +205,19 @@ class IKMMDasarEngine:
         
         dim_mean_raw = df[target_items].mean().mean()
         return ((dim_mean_raw - 1) / 4) * 100
+
+    def calculate_item_scores(self, df=None):
+        if df is None: df = self.respondent_data
+        all_items = [f'IKM_{i:03d}' for i in range(1, 109) if f'IKM_{i:03d}' in df.columns]
+        scores = {}
+        for item in all_items:
+            scores[item] = {
+                'mean': df[item].mean(),
+                'std': df[item].std(),
+                'median': df[item].median(),
+                'count': len(df[item].dropna())
+            }
+        return scores
 
     def generate_html_dossier_report(self, title, officer, branch):
         score, tier = self.calculate_composite_index()
@@ -280,7 +289,7 @@ def init_dashboard_session():
         st.session_state.auth_state = False
 
 def login_portal():
-    apply_executive_light_theme()
+    apply_executive_premium_theme() # PEMBETULAN: Menggunakan nama fungsi yang betul
     c1, c2, c3 = st.columns([1, 1.3, 1])
     with c2:
         st.markdown("<div style='text-align: center; padding-top: 130px;'><h2>🏛️ Urus Setia Polisi IKMM 2026</h2><p>Sistem Intelligence Penilaian Risiko Amaran Awal Konflik Kebangsaan</p></div>", unsafe_allow_html=True)
@@ -301,7 +310,7 @@ def main():
         login_portal()
         return
         
-    apply_executive_premium_theme()
+    apply_executive_premium_theme() # PEMBETULAN: Menggunakan nama fungsi yang betul
     engine = st.session_state.engine
     
     # Header Utama Aplikasi
@@ -341,7 +350,7 @@ def main():
         ikm_score, tier_status = engine.calculate_composite_index()
         
         c1, c2, c3 = st.columns(3)
-        with c1: render_kpi_card("Indeks Ketegangan Kebangsaan (IKM %)", f"{ikm_score:.2f}%", "Aman / Stabil (0%) ↔ Kritikal / Tegang (100%)", tier=tier_status)
+        with c1: render_kpi_card("Indeks Ketegangan Masyarakat (IKM %)", f"{ikm_score:.2f}%", "Aman / Stabil (0%) ↔ Kritikal / Tegang (100%)", tier=tier_status)
         with c2: 
             status_labels = {"low": "STABIL / TERKAWAL", "tension": "TENSION POINT (AMARAN AWAL)", "pain": "PAIN POINT (KRITIKAL SEKTOR)", "hotspot": "HOTSPOT (BAHAYA EKSTREM)"}
             render_kpi_card("Tahap Risiko Keselamatan Sosial", status_labels.get(tier_status), "Klasifikasi Isu Berasaskan Jadual Ambang 5.6", tier=tier_status)
@@ -383,7 +392,6 @@ def main():
             d_score = engine.calculate_single_dimension_score(dim_name)
             d_tier = engine.get_tier(d_score)
             
-            # Edarkan kad KPI ke dalam 3 grid lajur secara seimbang
             target_col = grid_c1 if loop_counter % 3 == 0 else (grid_c2 if loop_counter % 3 == 1 else grid_c3)
             with target_col:
                 render_kpi_card(f"{dim_name} Index", f"{d_score:.2f}%", f"Berasaskan 12 Item Indikator", tier=d_tier)
@@ -474,7 +482,6 @@ def main():
                 st.markdown(f"**Pelopor / Tokoh Pengasas:** *{meta['Pengasas']}*")
                 st.markdown(f"**Aplikasi Sains Sosial Dasar:** {meta['Latar Belakang & Huraian']}")
                 
-                # Kira korelasi peratusan secara langsung daripada sub-item teori
                 if engine.questionnaire_master is not None:
                     qm_subset = engine.questionnaire_master[engine.questionnaire_master['Theory'] == name]
                     if not qm_subset.empty:
@@ -548,6 +555,7 @@ def main():
     # --- TAB 15: CELL DATA EXPLORER ---
     with tabs[14]:
         st.subheader("🔎 Advanced Database Structural Cell Matrix Explorer")
+        # PEMBETULAN BUG: Tidak menggunakan variabel luaran display_df yang belum didefinisikan
         st.dataframe(engine.respondent_data, use_container_width=True)
 
 if __name__ == "__main__":
