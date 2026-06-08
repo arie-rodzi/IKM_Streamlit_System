@@ -170,22 +170,6 @@ def apply_executive_premium_theme():
             .highlight-box { background: linear-gradient(90deg, #EFF6FF 0%, #F8FAFC 100%); border-left: 5px solid #3B82F6; padding: 22px; border-radius: 0 10px 10px 0; margin: 20px 0; font-size: 14px; color: #1E3A8A; font-weight: 500; }
             .page-break { page-break-before: always; }
             .meta-footer { margin-top: 50px; padding-top: 20px; border-top: 2px dashed #CBD5E1; text-align: center; font-size: 12px; color: #64748B; }
-            
-            .stButton>button {
-                background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%) !important;
-                color: #FFFFFF !important;
-                border: none !important;
-                padding: 12px 28px !important;
-                border-radius: 12px !important;
-                font-weight: 700 !important;
-                box-shadow: 0 4px 15px rgba(15, 23, 42, 0.15) !important;
-                transition: all 0.3s ease !important;
-            }
-            .stButton>button:hover {
-                transform: translateY(-2px) !important;
-                box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3) !important;
-                background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
-            }
         </style>
     """, unsafe_allow_html=True)
 
@@ -318,8 +302,9 @@ class IKMMDasarEngine:
         return scores
 
     def get_registered_items(self):
-        if self.questionnaire_master is None: return []
-        return sorted(self.questionnaire_master['Item_Code'].dropna().unique().tolist())
+        if self.questionnaire_master is None or self.respondent_data is None: return []
+        master_list = self.questionnaire_master['Item_Code'].dropna().unique().tolist()
+        return sorted([item for item in master_list if item in self.respondent_data.columns])
 
     def get_demographic_columns(self):
         if self.respondent_data is None: return []
@@ -539,22 +524,23 @@ class IKMMDasarEngine:
                 <div class="page-break"></div>
         """
 
+        # RENDER BLOK DATA TEORI SUB-ITEM DENGAN COLORFUL UNTUK OUTPUT HTML DOCK REPORT LENGKAP
         html_master += """
                 <div class="section-title">5.0 Pemodelan Teori & Huraian Keputusan Konkreta Item Pangkalan Data</div>
-                <p>Analisis penumpuan teori-data menghubungkan angka kuantitatif secara langsung dengan kerangka teori dasar:</p>"""
+                <p>Analisis penumpuan teori-data menghubungkan angka kuantitatif secara langsung dengan kerangka teori dasar serta sub-item stressor:</p>"""
 
         theory_dictionary = {
             "Social Identity Theory": {
                 "Pengasas": "Henri Tajfel & John Turner (1979)", "Dimensi": "D1 Ethnic Tension",
-                "Analisis": "Henri Tajfel membuktikan sempadan In-group vs Out-group menebal akibat prasangka rentas etnik. Keamatan tinggi pada item stressor mengesahkan interaksi sosial wujud tetapi rapuh tanpa modal amanah."
+                "Analisis": "Membuktikan sempadan In-group vs Out-group menebal akibat prasangka rentas etnik. Mengesahkan modal amanah rentas kaum wujud tetapi berada pada tahap rapuh."
             },
             "Conflict Theory": {
                 "Pengasas": "Karl Marx / Max Weber", "Dimensi": "D2 Religious Tension",
-                "Analisis": "Data merekodkan konflik struktural terbuka di mana kumpulan ideologi agama bersaing merebut ruang jurisdiksi undang-undang. Weber menjustifikasikannya sebagai persaingan sifar-jumlah."
+                "Analisis": "Data merekodkan wujudnya perebutan berterusan antara kumpulan ideologi bagi mendominasi pengaruh institusi dan perundangan dasar."
             },
             "Relative Deprivation Theory": {
                 "Pengasas": "Samuel Stouffer (1949) / Ted Robert Gurr (1970)", "Dimensi": "D3 Economic Tension",
-                "Analisis": "Kemarahan dipicu akibat tekanan psikologi apabila melihat agihan ekuiti korporat dinikmati kelas kapitalis tertentu secara tidak adil, membina jurang harapan yang memicu protes sosial."
+                "Analisis": "Kemarahan psikologi terhasıl akibat jurang kos sara hidup yang mendadak. Rakyat membandingkan status ekonomi mereka dengan kelas kapitalis, memicu risiko eskalasi protes fizikal terbuka."
             }
         }
 
@@ -564,20 +550,29 @@ class IKMMDasarEngine:
                 codes = [c for c in qm_subset['Item_Code'].tolist() if c in self.respondent_data.columns]
                 if codes:
                     t_means = self.respondent_data[codes].mean()
-                    id_max = t_means.idxmax()
-                    val_max = t_means.max()
-                    pct_max = ((val_max - 1) / 4) * 100
-                    stmt_max = self.questionnaire_master[self.questionnaire_master['Item_Code'] == id_max]['Statement'].values[0]
                     t_index_pct = ((t_means.mean() - 1) / 4) * 100
                     
                     html_master += f"""
-                    <div style='margin-bottom: 20px; padding: 15px; border: 1px solid #CBD5E1; border-radius: 8px;'>
-                        <h4>📚 {t_name} — Mapped to {t_meta['Dimensi']}</h4>
-                        <p style='margin:0; font-size:11.5px; color:#475569;'><b>Tokoh Pelopor:</b> {t_meta['Pengasas']} | <b>Theory Index:</b> {t_index_pct:.2f}%</p>
-                        <p style='margin-top:8px; font-size:13px;'><b>Analisis Dinamika Teori-Data:</b> {t_meta['Analisis']}</p>
-                        <div style='margin-top:10px; background-color:#FEE2E2; padding:10px; border-radius:4px; border-left:5px solid #EF4444; font-size:12px; color:#991B1B;'>
-                            🚨 <b>Stressor Utama Terkesan ({id_max}): Min Skala {val_max:.2f} ({pct_max:.1f}%)</b><br>
-                            <i>Kenyataan Item Soalan:</i> "{stmt_max}"
+                    <div style='margin-bottom: 25px; padding: 22px; border: 1px solid #E2E8F0; border-radius: 12px; background: #FFFFFF; box-shadow: 0 4px 6px rgba(0,0,0,0.01); border-left: 6px solid #8B5CF6;'>
+                        <h4 style='margin:0 0 8px 0; color:#4C1D95; font-size:15px;'>📚 Kerangka Kerja: {t_name} — Mapped to {t_meta['Dimensi']}</h4>
+                        <p style='margin:0 0 10px 0; font-size:12px; color:#64748B;'><b>Tokoh Pelopor:</b> {t_meta['Pengasas']} | <b style='color:#6D28D9;'>Theory Composite Index: {t_index_pct:.2f}%</b></p>
+                        <p style='margin:0 0 15px 0; font-size:13.5px; color:#334155;'><b>Analisis Dinamika Teori-Data JPM:</b> {t_meta['Analisis']}</p>
+                        
+                        <div style='background-color:#F8FAFC; padding:15px; border-radius:8px; border:1px solid #E2E8F0;'>
+                            <b style='font-size:12.5px; color:#0F172A; text-transform:uppercase; letter-spacing:0.5px;'>🗂️ Pecahan Isu Sub-Item Akar Umbi (Stressor Real-Time):</b>
+                            <table style='width:100%; border-collapse:collapse; margin-top:10px; font-size:12px;'>"""
+                    
+                    for c_code in codes:
+                        c_mean = t_means[c_code]
+                        c_stmt = self.questionnaire_master[self.questionnaire_master['Item_Code'] == c_code]['Statement'].values[0]
+                        html_master += f"""
+                                <tr style='border-bottom:1px solid #F1F5F9;'>
+                                    <td style='padding:8px 0; width:15%; color:#2563EB;'><b>{c_code}</b></td>
+                                    <td style='padding:8px 0; width:70%; color:#475569;'><i>{c_stmt}</i></td>
+                                    <td style='padding:8px 0; width:15%; text-align:right; color:#111827;'><b>Min Sebenar: {c_mean:.2f}/5</b></td>
+                                </tr>"""
+                    html_master += """
+                            </table>
                         </div>
                     </div>"""
         html_master += """<div class="page-break"></div>"""
@@ -586,23 +581,25 @@ class IKMMDasarEngine:
                 <div class="section-title">6.0 Laporan Hierarki Spasial Rantaian Lokasi Paling Terjejas (Top 10 Hotspots)</div>
                 <p>Rantaian geografi kritikal di bawah dipaparkan mengikut skema impak suhu konflik siber setempat:</p>"""
         
-        for rank, ((zn, st_n, ds_n, ur_n), v_score) in enumerate(geo_means_html.head(10).items()):
-            pct_v = ((v_score - 1) / 4) * 100
-            sub_df = self.respondent_data[(self.respondent_data['Zone']==zn) & (self.respondent_data['State']==st_n) & (self.respondent_data['District']==ds_n) & (self.respondent_data['Urban_Rural']==ur_n)]
-            if not sub_df.empty:
-                sub_item = sub_df[items].mean().idxmax()
-                sub_stmt = self.questionnaire_master[self.questionnaire_master['Item_Code'] == sub_item]['Statement'].values[0]
-                zone_color_style = "danger-zone" if pct_v >= 70.0 else "warning-zone"
-                
-                html_master += f"""
-                <div class="loc-card-html {zone_color_style}">
-                    <span style="font-weight:800; text-transform:uppercase; font-size:11px; color:#1E3A8A;">🔥 Hotspot Rank #{rank+1}</span>
-                    <h3 style="margin:4px 0 8px 0; font-size:15px; color:#111827;">📍 Wilayah {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} ({ur_n})</h3>
-                    <p style="margin:0; font-size:13px; color:#475569;">
-                        * Skor Komposit Komparatif Indeks: <b style="color:#EF4444;">{pct_v:.2f}%</b> (EWS Klasifikasi: {self.get_tier(pct_v).upper()})<br>
-                        * 🔍 <b>Punca Akar Umbi Utama (Stressor):</b> Item {sub_item} &rarr; <i style="color:#0F172A; font-weight:500;">"{sub_stmt}"</i>
-                    </p>
-                </div>"""
+        if not geo_means_html.empty:
+            for rank, ((zn, st_n, ds_n, ur_n), v_score) in enumerate(geo_means_html.head(10).items()):
+                pct_v = ((v_score - 1) / 4) * 100
+                sub_df = self.respondent_data[(self.respondent_data['Zone']==zn) & (self.respondent_data['State']==st_n) & (self.respondent_data['District']==ds_n) & (self.respondent_data['Urban_Rural']==ur_n)]
+                if not sub_df.empty:
+                    sub_item = sub_df[items].mean().idxmax() if items else None
+                    if sub_item:
+                        sub_stmt = self.questionnaire_master[self.questionnaire_master['Item_Code'] == sub_item]['Statement'].values[0]
+                        zone_color_style = "danger-zone" if pct_v >= 70.0 else "warning-zone"
+                        
+                        html_master += f"""
+                        <div class="loc-card-html {zone_color_style}">
+                            <span style="font-weight:800; text-transform:uppercase; font-size:11px; color:#1E3A8A;">🔥 Hotspot Rank #{rank+1}</span>
+                            <h3 style="margin:4px 0 8px 0; font-size:15px; color:#111827;">📍 Wilayah {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} ({ur_n})</h3>
+                            <p style="margin:0; font-size:13px; color:#475569;">
+                                * Skor Komposit Komparatif Indeks: <b style="color:#EF4444;">{pct_v:.2f}%</b> (EWS Klasifikasi: {self.get_tier(pct_v).upper()})<br>
+                                * 🔍 <b>Punca Akar Umbi Utama (Stressor):</b> Item {sub_item} &rarr; <i style="color:#0F172A; font-weight:500;">"{sub_stmt}"</i>
+                            </p>
+                        </div>"""
         html_master += """<div class="page-break"></div>"""
 
         html_master += """
@@ -711,57 +708,56 @@ def main():
         </div>
     """, unsafe_allow_html=True)
 
-    # --- INITIALISE FILTER LOGIC BEFORE RENDERING ANY GRAPH/TABS (CRITICAL FIX) ---
+    # --- INITIALISE SIDEBAR PENAPIS SECARA MANDATORI (ANTI-GHAIB & KALIS CRASH) ---
     active_filters = {}
     sel_state = []
     
-    # --- SIDEBAR GENERATOR RENDERS FIRST TO SECURE EXECUTION ORDER ---
+    with st.sidebar:
+        st.markdown("### 🗺️ Pengendali Penapis Geografi Dinamik")
+        zon_options = engine.get_filter_options('Zone') if engine.data_loaded else []
+        sel_zone = st.multiselect("🧭 1. Pilih Wilayah / Zon", zon_options)
+        
+        if sel_zone and engine.data_loaded:
+            state_subset = engine.respondent_data[engine.respondent_data['Zone'].isin(sel_zone)]
+            state_options = sorted(state_subset['State'].dropna().unique().tolist())
+        else:
+            state_options = engine.get_filter_options('State') if engine.data_loaded else []
+        sel_state = st.multiselect("🏛️ 2. Pilih Negeri", state_options)
+        
+        if sel_state and engine.data_loaded:
+            district_subset = engine.respondent_data[engine.respondent_data['State'].isin(sel_state)]
+            district_options = sorted(district_subset['District'].dropna().unique().tolist())
+        elif sel_zone and engine.data_loaded:
+            district_subset = engine.respondent_data[engine.respondent_data['Zone'].isin(sel_zone)]
+            district_options = sorted(district_subset['District'].dropna().unique().tolist())
+        else:
+            district_options = engine.get_filter_options('District') if engine.data_loaded else []
+        sel_district = st.multiselect("🏙️ 3. Pilih Daerah / Parlimen", district_options)
+        
+        st.markdown("---")
+        st.markdown("### 📊 Tapisan Sosioekonomi Kumpulan")
+        urban_opts = engine.get_filter_options('Urban_Rural') if engine.data_loaded else []
+        income_opts = engine.get_filter_options('Income_Group') if engine.data_loaded else []
+        
+        sel_urban = st.multiselect("🏢 Klasifikasi Lokaliti", urban_opts)
+        sel_income = st.multiselect("💰 Kumpulan Pendapatan", income_opts)
+        
+        if sel_zone: active_filters['Zone'] = sel_zone
+        if sel_state: active_filters['State'] = sel_state
+        if sel_district: active_filters['District'] = sel_district
+        if sel_urban: active_filters['Urban_Rural'] = sel_urban
+        if sel_income: active_filters['Income_Group'] = sel_income
+
+    # --- EMULASI PROSES DATA SETELAH PENAPIS SELESAI DIBACA ---
     if engine.data_loaded and engine.respondent_data is not None:
-        with st.sidebar:
-            st.markdown("### 🗺️ Pengendali Penapis Geografi Dinamik")
-            
-            zon_options = engine.get_filter_options('Zone')
-            sel_zone = st.multiselect("🧭 1. Pilih Wilayah / Zon", zon_options)
-            
-            if sel_zone:
-                state_subset = engine.respondent_data[engine.respondent_data['Zone'].isin(sel_zone)]
-                state_options = sorted(state_subset['State'].dropna().unique().tolist())
-            else:
-                state_options = engine.get_filter_options('State')
-            sel_state = st.multiselect("🏛️ 2. Pilih Negeri", state_options)
-            
-            if sel_state:
-                district_subset = engine.respondent_data[engine.respondent_data['State'].isin(sel_state)]
-                district_options = sorted(district_subset['District'].dropna().unique().tolist())
-            elif sel_zone:
-                district_subset = engine.respondent_data[engine.respondent_data['Zone'].isin(sel_zone)]
-                district_options = sorted(district_subset['District'].dropna().unique().tolist())
-            else:
-                district_options = engine.get_filter_options('District')
-            sel_district = st.multiselect("🏙️ 3. Pilih Daerah / Parlimen", district_options)
-            
-            st.markdown("---")
-            st.markdown("### 📊 Tapisan Sosioekonomi Kumpulan")
-            sel_urban = st.multiselect("🏢 Klasifikasi Lokaliti", engine.get_filter_options('Urban_Rural'))
-            sel_income = st.multiselect("💰 Kumpulan Pendapatan", engine.get_filter_options('Income_Group'))
-            
-            if sel_zone: active_filters['Zone'] = sel_zone
-            if sel_state: active_filters['State'] = sel_state
-            if sel_district: active_filters['District'] = sel_district
-            if sel_urban: active_filters['Urban_Rural'] = sel_urban
-            if sel_income: active_filters['Income_Group'] = sel_income
-            
-            filtered_df = engine.apply_filters(active_filters)
-            sub_total = len(filtered_df)
-            items_list_main = engine.get_registered_items()
-            if sub_total > 0 and items_list_main:
-                geo_means_main = filtered_df.groupby(['Zone', 'State', 'District', 'Urban_Rural'])[items_list_main].mean().mean(axis=1).sort_values(ascending=False)
-            else:
-                geo_means_main = pd.Series()
+        filtered_df = engine.apply_filters(active_filters)
+        sub_total = len(filtered_df)
+        items_list_main = engine.get_registered_items()
+        if sub_total > 0 and items_list_main:
+            geo_means_main = filtered_df.groupby(['Zone', 'State', 'District', 'Urban_Rural'])[items_list_main].mean().mean(axis=1).sort_values(ascending=False)
+        else:
+            geo_means_main = pd.Series()
     else:
-        with st.sidebar:
-            st.markdown("### 🗺️ Pengendali Penapis Geografi")
-            st.info("Sila muat naik fail data induk (.xlsx) untuk mengaktifkan fungsi tapisan.")
         filtered_df = pd.DataFrame()
         sub_total = 0
         items_list_main = []
@@ -792,12 +788,11 @@ def main():
         
         st.markdown("---")
 
-    # --- RENDER TAB KANDUNGAN HANYA JIKA DATA SUDAH LOAD ---
+    # --- MENYEKAT PAPARAN KANDUNGAN TAB JIKA DATA BELUM DIMUAT NAIK ---
     if not engine.data_loaded or engine.respondent_data is None:
         with tabs[0]:
-            st.warning("⚠️ Amaran Kesselamatan Model: Sila muat naik fail data induk atau pastikan fail 'IKM_Master_Dataset_20000_Respondents.xlsx' tersedia untuk memulakan pemodelan analitik.")
+            st.warning("⚠️ Amaran Keselamatan Model: Sila muat naik fail data induk atau letakkan dokumen 'IKM_Master_Dataset_20000_Respondents.xlsx' untuk membongkar portal analitik premium.")
     else:
-        # Papan Grafik Tab 1 (Demografi)
         with tabs[0]:
             if sub_total > 0:
                 st.markdown(f"#### 📊 Hasil Penemuan Profil Semasa: {sub_total:,} Responden Aktif Mapped")
@@ -882,9 +877,65 @@ def main():
                 st.markdown(f"#### 🎯 Dapatan Ekstraksi Algoritma NLP bagi Wilayah: **{st_sel_q}**")
                 st.markdown("> *Contoh Petikan Teks Rakyat (Verbatim):* \"Gaji tak naik-naik tapi harga barang dapur makin melampau.\"")
 
+        # --- TAB 7: PUSAT INTERPRETASI PSIKOMETRIK LENGKAP BERSERTA PECAHAN SUB-ITEM ---
         with tabs[6]:
             st.subheader("🧠 Pusat Interpretasi Psikometrik & Analisis Penumpuan Teori-Data")
-            st.info("Pusat semakan rujukan teori Tajfel, Gurr, and Agnew diaktifkan.")
+            st.markdown("#### Kerangka Tafsir Konvergen Teori Dasar Sosial Nasional (JPM)")
+            
+            theory_map_dashboard = {
+                "Social Identity Theory": {
+                    "Dimensi": "D1 Ethnic Tension",
+                    "Desc": "Membuktikan sempadan In-group vs Out-group menebal akibat prasangka rentas etnik. Mengesahkan modal amanah rentas kaum wujud tetapi berada pada tahap rapuh."
+                },
+                "Conflict Theory": {
+                    "Dimensi": "D2 Religious Tension",
+                    "Desc": "Data merekodkan wujudnya perebutan berterusan antara kumpulan ideologi bagi mendominasi pengaruh institusi dan perundangan dasar."
+                },
+                "Relative Deprivation Theory": {
+                    "Dimensi": "D3 Economic Tension",
+                    "Desc": "Kemarahan psikologi terhasıl akibat jurang kos sara hidup yang mendadak. Rakyat membandingkan status ekonomi mereka dengan kelas kapitalis, memicu risiko eskalasi protes fizikal terbuka."
+                }
+            }
+            
+            for t_name, t_meta in theory_map_dashboard.items():
+                qm_sub = engine.questionnaire_master[engine.questionnaire_master['Theory'] == t_name]
+                if not qm_sub.empty:
+                    valid_codes = [c for c in qm_sub['Item_Code'].tolist() if c in filtered_df.columns]
+                    if valid_codes:
+                        # Kirim matriks pengiraan index peratusan teori
+                        t_means = filtered_df[valid_codes].mean()
+                        t_index_pct = ((t_means.mean() - 1) / 4) * 100
+                        t_tier = engine.get_tier(t_index_pct)
+                        
+                        st.markdown(f"""
+                        <div class="loc-card-premium" style="border-left: 6px solid #8B5CF6; background: linear-gradient(90deg, #F5F3FF 0%, #FFFFFF 100%); margin-bottom:25px;">
+                            <span style="font-weight:800; font-size:11px; color:#6D28D9; text-transform:uppercase; letter-spacing:0.8px;">Model Teras Analitik Strategik</span>
+                            <h3 style="margin:4px 0 6px 0; color:#4C1D95; font-size:16px;">📚 Kerangka Teori: {t_name} (&rarr; Terikat {t_meta['Dimensi']})</h3>
+                            <p style="margin:0 0 12px 0; font-size:13.5px; color:#475569;">{t_meta['Desc']}</p>
+                            <div style="font-size:14px; font-weight:700; color:#6D28D9; margin-bottom:15px;">📈 Hasil Keamatan Indeks Teori: {t_index_pct:.2f}% (Status: {t_tier.upper()})</div>
+                            
+                            <div style="background:#F8FAFC; padding:12px; border-radius:8px; border:1px solid #E2E8F0;">
+                                <span style="font-size:11.5px; font-weight:700; color:#0F172A; text-transform:uppercase;">🗂️ Pecahan Isu Sub-Item Stressor Real-Time:</span>
+                                <table style="width:100%; border-collapse:collapse; margin-top:8px; font-size:12.5px; color:#334155;">
+                        """, unsafe_allow_html=True)
+                        
+                        # Loop sub-item untuk dipaparkan secara details
+                        for c_code in valid_codes:
+                            c_mean = t_means[c_code]
+                            c_stmt = engine.questionnaire_master[engine.questionnaire_master['Item_Code'] == c_code]['Statement'].values[0]
+                            st.markdown(f"""
+                                    <tr style="border-bottom:1px solid #EFF6FF;">
+                                        <td style="padding:6px 0; width:12%; color:#2563EB;"><b>{c_code}</b></td>
+                                        <td style="padding:6px 0; width:73%; color:#475569;"><i>{c_stmt}</i></td>
+                                        <td style="padding:6px 0; width:15%; text-align:right; color:#111827;"><b>Skala Min: {c_mean:.2f}/5</b></td>
+                                    </tr>
+                            """, unsafe_allow_html=True)
+                            
+                        st.markdown("""
+                                </table>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
 
         with tabs[7]:
             st.subheader("⚠️ Pengelasan Petunjuk Titik Kelemahan Struktur (Pain Points)")
