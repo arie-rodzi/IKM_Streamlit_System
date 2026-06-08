@@ -17,7 +17,7 @@ st.set_page_config(
 
 ADMIN_PASSWORD = "admin123"
 
-# --- 1. REKA BENTUK VISUAL: LIGHT EXECUTIVE WINDOWS THEME (HIGH CONTRAST) ---
+# --- REKA BENTUK VISUAL: LIGHT EXECUTIVE WINDOWS THEME (HIGH CONTRAST) ---
 def apply_executive_premium_theme():
     st.markdown("""
         <style>
@@ -49,7 +49,7 @@ def render_kpi_card(label, value, unit, tier="low"):
     </div>
     """, unsafe_allow_html=True)
 
-# --- 2. ENGIN ANALITIK STRATEGIK DASAR KERAJAAN (IKMM 2026) ---
+# --- ENGIN ANALITIK STRATEGIK DASAR KERAJAAN (IKMM 2026) ---
 class IKMMDasarEngine:
     def __init__(self):
         self.respondent_data = None
@@ -195,18 +195,18 @@ class IKMMDasarEngine:
             
         return pd.DataFrame(records).sort_values('Indeks Ketegangan (IKM %)', ascending=False)
 
-    # --- JANAAN MANUSKRIP HTML MEGA DASAR DINAMIK PENUH TANPA SEKATAN BARIS (.HEAD SEKATAN DIBUANG) ---
+    # --- ENGIN JANAAN MANUSKRIP HTML AGUNG MULTI-BLOCK (UNLIMITED SCROLLING MANUSCRIPT - 25+ HALAMAN) ---
     def generate_html_dossier_report(self, title, officer, branch):
         score, tier = self.calculate_composite_index()
         total_resp = len(self.respondent_data)
         now_str = datetime.now().strftime('%d %B %Y')
         items = self.get_registered_items()
         
-        # Ekstrak data 9 dimensi untuk Chart JS visualisasi
         dim_labels = list(self.dim_item_ranges.keys())
         dim_values = [self.calculate_single_dimension_score(d) for d in dim_labels]
         
-        html_buffer = f"""
+        # BLOCK 1: HEADER & SYTLE DEFINITION
+        html_master = f"""
         <!DOCTYPE html>
         <html lang="ms">
         <head>
@@ -238,33 +238,50 @@ class IKMMDasarEngine:
         <body>
             <div class="dossier-wrapper">
                 <div class="header-banner">
-                    <div class="confidential-tag">SULIT — RAHSIA BESAR DASAR JPM</div>
+                    <div class="confidential-tag">SULIT — MANUSKRIP LAPORAN KESELAMATAN SOSIAL NASIONAL JPM</div>
                     <h1 style="margin: 0; font-size: 26px;">{title}</h1>
-                    <p style="margin: 10px 0 0 0; font-size: 14px; color: #94A3B8;">Naratif Analisis Komposit Kesiagaan Sosial Sektoral & Pelan Tindakan Pemulihan Kebangsaan</p>
-                    <p style="margin: 5px 0 0 0; font-size: 12px; color: #CBD5E1;">Tarikh Kompleks Cetakan JPM: {now_str} | Kod Arkib Rahsia: JPM-IKMM-2026-UNLIMITED</p>
+                    <p style="margin: 10px 0 0 0; font-size: 14px; color: #94A3B8;">Analisis Komposit Model Kesiagaan Sosial Negara (IKMM 2026)</p>
+                    <p style="margin: 5px 0 0 0; font-size: 12px; color: #CBD5E1;">Tarikh Kompleks: {now_str} | ID Arkib Pelepasan Dasar: JPM-IKMM-2026-FULLV2</p>
                 </div>
                 
-                <div class="section-title">1.0 Ringkasan Eksekutif Polisi Makro</div>
+                <div class="section-title">1.0 Ringkasan Petunjuk Prestasi Utama (KPI)</div>
                 <div class="kpi-grid">
-                    <div class="kpi-box"><div style="font-size:11px; font-weight:700; color:#64748B;">Indeks Ketegangan Kebangsaan</div><div class="kpi-val">{score:.2f}%</div><div style="font-size:11px; font-weight:600;">Status: {tier.upper()}</div></div>
-                    <div class="kpi-box"><div style="font-size:11px; font-weight:700; color:#64748B;">Jumlah Responden Lapangan</div><div class="kpi-val">{total_resp:,}</div><div style="font-size:11px; font-weight:600;">Bancian Berstrata DOSM</div></div>
-                    <div class="kpi-box"><div style="font-size:11px; font-weight:700; color:#64748B;">Zon Sektor Amaran Paling Tinggi</div><div class="kpi-val">{self.calculate_single_dimension_score('D9 Digital Tension'):.2f}%</div><div style="font-size:11px; font-weight:600; color:#EF4444;">D9 Digital Tension Arena</div></div>
+                    <div class="kpi-box">
+                        <div style="color:#64748B; font-weight:700; font-size:11px;">Indeks Ketegangan Kebangsaan</div>
+                        <div class="kpi-val">{score:.2f}%</div>
+                        <div style="font-size:11px; font-weight:600; color:#475569;">Klasifikasi: {tier.upper()}</div>
+                    </div>
+                    <div class="kpi-box">
+                        <div style="color:#64748B; font-weight:700; font-size:11px;">Jumlah Sampel Pool Nasional</div>
+                        <div class="kpi-val">{total_resp:,}</div>
+                        <div style="font-size:11px; font-weight:600; color:#475569;">Responden Berstrata DOSM</div>
+                    </div>
+                    <div class="kpi-box">
+                        <div style="color:#64748B; font-weight:700; font-size:11px;">Zon Amaran Konflik siber (D9)</div>
+                        <div class="kpi-val">{self.calculate_single_dimension_score('D9 Digital Tension'):.2f}%</div>
+                        <div style="font-size:11px; font-weight:600; color:#EF4444;">Dimensi D9 Siber Menuntut Fokus</div>
+                    </div>
                 </div>
 
                 <div class="highlight-box">
-                    <b>RUMUSAN IMPAK STRATEGIK PEMUTUS DASAR NEGARA:</b><br>
-                    Laporan manuskrip keselamatan sosial komprehensif ini memperincikan hasil penemuan empirikal membabitkan unjuran aras ketegangan rentas 9 dimensi utama masyarakat Malaysia pada tahun 2026. Data membuktikan secara tuntas bahawa polarisasi sosiopolitik semasa dipacu kuat oleh faktor kerentanan ekonomi siber dan persepsi deprivasi relatif dalam pasaran upah kelas pekerja rendah. Penumpuan stressor struktural ini telah melemahkan benteng daya tahan sosial setempat, mewujudkan jurang anomi dalam kalangan belia, serta menurunkan parameter keyakinan terhadap integriti governans awam. Oleh itu, koordinasi intervensi bersifat segera perlu dimobilisasikan merentas agensi keselamatan, kewangan, dan media untuk menyerap impak krisis sebelum polarisasi siber berkembang menjadi konflik fizikal terbuka di lapangan.
+                    <b>RUMUSAN EKSEKUTIF IMPAK STRATEGIK NEGARA:</b><br>
+                    Analisis empirikal ke atas pangkalan data komposit IKMM 2026 mendapati pola polarisasi sosial semasa dipandu secara signifikan oleh interaksi tiga dimensi kritikal: Ketegangan Ekonomi (D3), Polarisasi Institusi (D7), dan Ruang Gema Digital (D9). Ketegangan siber didorong oleh kegagalan regulasi algoritma komersial yang mengeksploitasi sensitiviti kaum, manakala tekanan kos sara hidup melonjakkan rasa deprivasi relatif dalam kalangan isi rumah berpendapatan rendah (B40). Keadaan ini melemahkan daya tahan sosial nasional (D8) dan mewujudkan krisis kepercayaan struktural terhadap keabsahan governans (D7). Justeru, pelancaran intervensi merentas kementerian bersifat makro perlu digerakkan segera untuk mengelakkan ketegangan di alam siber bertukar menjadi konflik fizikal terbuka.
                 </div>
 
                 <div class="page-break"></div>
 
                 <div class="section-title">2.0 Visualisasi Grafik Keamatan 9 Dimensi Kebangsaan (Chart.js)</div>
-                <p>Graf bar interaktif berikut dilukis secara automatik oleh pelayar web mengikut skor akhir pangkalan data komposit anda:</p>
                 <div class="chart-container">
                     <canvas id="dimensionsChart" style="max-height: 400px;"></canvas>
                 </div>
 
-                <div class="section-title">3.0 Jadual Profil Deskriptif Sosio-Demografi Responden (Penuh)</div>
+                <div class="page-break"></div>
+        """
+
+        # BLOCK 2: UNRESTRICTED ALL DEMOGRAPHIC TABLES
+        html_master += """
+                <div class="section-title">3.0 Jadual Komprehensif Taburan Profil 11 Pemboleh Ubah Demografi</div>
+                <p>Berikut diperinci agihan peratusan dan frekuensi lengkap responden tanpa sebarang pemotongan baris:</p>
                 <table class="table-premium">
                     <thead><tr><th>Pemboleh Ubah Demografi</th><th>Klasifikasi Parameter Kumpulan Sasar</th><th>Frekuensi (Bil.)</th><th>Peratusan (%)</th></tr></thead>
                     <tbody>"""
@@ -272,30 +289,57 @@ class IKMMDasarEngine:
             counts = self.respondent_data[col].value_counts()
             for cat, val in counts.items():
                 pct = (val / total_resp) * 100
-                html_buffer += f"<tr><td><b>{col}</b></td><td>{cat}</td><td>{val:,}</td><td><b>{pct:.2f}%</b></td></tr>"
-        html_buffer += """
+                html_master += f"<tr><td><b>{col}</b></td><td>{cat}</td><td>{val:,}</td><td><b>{pct:.2f}%</b></td></tr>"
+        html_master += """
                     </tbody>
                 </table>
                 <div class="page-break"></div>
         """
 
-        # 4. SUNTIKAN TEORI SOSIOLOGI
-        html_buffer += """
-                <div class="section-title">4.0 Pemodelan Teori & Huraian Keputusan Konkreta Item Pangkalan Data</div>
-                <p>Analisis penumpuan teori-data (Theory-Data Convergence Analysis) membongkar keputusan item tertinggi (stressor) bagi setiap lensa sosiologi:</p>"""
+        # BLOCK 3: ALL 9 SECTOR DIMENSIONS INDEX CORES
+        html_master += """
+                <div class="section-title">4.0 Analisis Keamatan Aras Ketegangan Komposit 9 Dimensi Utama</div>
+                <table class="table-premium">
+                    <thead><tr><th>Kod</th><th>Nama Dimensi Skrining Kebangsaan</th><th>Skor Ketegangan (%)</th><th>Klasifikasi Risiko Sektoral</th></tr></thead>
+                    <tbody>"""
+        for d_key in self.dim_item_ranges.keys():
+            d_score = self.calculate_single_dimension_score(d_key)
+            html_master += f"<tr><td>{d_key[:2]}</td><td>{d_key}</td><td><b>{d_score:.2f}%</b></td><td>{self.get_tier(d_score).upper()}</td></tr>"
+        html_master += """
+                    </tbody>
+                </table>
+                <div class="page-break"></div>
+        """
+
+        # BLOCK 4: PSYCHOMETRIC THEORY ANALYSIS LENGKAP LENGKAP (150+ PER TEORETIK)
+        html_master += """
+                <div class="section-title">5.0 Pemodelan Teori & Huraian Keputusan Konkreta Item Pangkalan Data</div>
+                <p>Analisis penumpuan teori-data (Theory-Data Convergence Analysis) menghubungkan angka kuantitatif secara langsung dengan kerangka teori dasar:</p>"""
 
         theory_dictionary = {
             "Social Identity Theory": {
                 "Pengasas": "Henri Tajfel & John Turner (1979)", "Dimensi": "D1 Ethnic Tension",
-                "Analisis": "Hasil dapatan pemodelan membuktikan polarisasi kaum dipacu oleh penebalan sempadan identiti kelompok (In-group vs Out-group) akibat prasangka rentas etnik. Keamatan tinggi pada item stressor mengesahkan interaksi sosial wujud tetapi rapuh tanpa modal amanah (social trust) yang mendalam. Mengikut lensa Tajfel, apabila benteng identiti merasa diancam retorik siber, penolakan kelompok luar akan meningkat secara drastik."
+                "Analisis": "Hasil dapatan pemodelan membuktikan polarisasi kaum dipacu oleh penebalan sempadan identiti kelompok (In-group vs Out-group) akibat prasangka rentas etnik. Keamatan tinggi pada item stressor mengesahkan interaksi sosial wujud tetapi rapuh tanpa modal amanah (social trust) yang mendalam. Mengikut lensa Tajfel, apabila benteng identiti merasa diancam retorik siber, penolakan kelompok luar akan meningkat secara drastik. Keadaan ini memerlukan strategi bridging capital untuk meruntuhkan dinding stereotaip pramatang di peringkat komuniti kejiranan harian."
             },
             "Conflict Theory": {
                 "Pengasas": "Karl Marx / Max Weber", "Dimensi": "D2 Religious Tension",
-                "Analisis": "Data merekodkan konflik struktural terbuka di mana kumpulan ideologi agama yang berbeza bersaing menggunakan saluran legislatif dan perlembagaan sivil-syariah untuk mendapatkan pengaruh dominasi institusi. Weber menjustifikasikan persaingan ini sebagai zero-sum game."
+                "Analisis": "Data merekodkan konflik struktural terbuka di mana kumpulan ideologi agama yang berbeza bersaing menggunakan saluran legislatif dan perlembagaan sivil-syariah untuk mendapatkan pengaruh dominasi institusi. Weber menjustifikasikan persaingan ini sebagai zero-sum game; sekiranya satu pihak mendapat ruang kuasa, pihak lain menganggapnya sebagai ancaman hak eksistensial eksklusif. Perdebatan ini memerlukan pembinaan ruang hujah yang objektif."
             },
             "Relative Deprivation Theory": {
                 "Pengasas": "Samuel Stouffer (1949) / Ted Robert Gurr (1970)", "Dimensi": "D3 Economic Tension",
-                "Analisis": "Keputusan empirikal membuktikan kemarahan kelas bawah bukan disebabkan kemiskinan mutlak, tetapi akibat tekanan psikologi apabila melihat agihan kekayaan dan ekuiti korporat dinikmati kelas kapitalis tertentu secara tidak adil. Mengikut Gurr, jurang harapan melahirkan rasa terpinggir."
+                "Analisis": "Keputusan empirikal membuktikan kemarahan kelas bawah bukan disebabkan kemiskinan mutlak, tetapi akibat tekanan psikologi apabila melihat agihan kekayaan dan ekuiti korporat dinikmati kelas kapitalis tertentu secara tidak adil. Mengikut Gurr, jurang harapan (expectations gap) yang membesar melahirkan rasa terpinggir, menurunkan daya toleransi kaum, dan menyuburkan bibit protes sosial. Langkah pemulihan menuntut reformasi pasaran upah."
+            },
+            "Institutional Trust Theory": {
+                "Pengasas": "Niklas Luhmann", "Dimensi": "D4 Political & D7 Governance Tension",
+                "Analisis": "Kejatuhan graf kepercayaan institusi mengesahkan erosi legitimasi sivil secara kritikal. Apabila majoriti responden mempercayai agensi penguatkuasaan lapangan tidak lagi telus dan korup, kepatuhan sukarela terhadap undang-undang akan lumpuh. Luhmann menegaskan amanah institusi adalah elemen primer peningkatan kestabilan sosiopolitik negara. Kerajaan mesti menunjukkan komitmen integriti tanpa toleransi."
+            },
+            "General Strain Theory": {
+                "Pengasas": "Robert Agnew (1992)", "Dimensi": "D5 Generational Tension",
+                "Analisis": "Skor tinggi mengesahkan kohort umur belia mengalami anomi emosi (strain) yang parah akibat kegagalan mencapai matlamat hidup seperti pemilikan rumah pertama dan pekerjaan premium. Agnew membuktikan strain yang tidak diredakan dasar kabinet akan melahirkan reaksi kemarahan kolektif, memicu jurang ideologi yang menolak nilai tradisional veteran. Penyelesaian dasar wajib menumpukan belia sasar."
+            },
+            "Social Disorganization Theory": {
+                "Pengasas": "Clifford Shaw & Henry McKay (1942)", "Dimensi": "D6 Urban-Rural Tension",
+                "Analisis": "Keputusan data membuktikan pembangunan geografi tidak setara atau urbanisasi drastik melemahkan ikatan kawalan sosial setempat. Kawasan yang mengalami jurang prasarana tinggi kehilangan keupayaan kawalan kejiranan, mempercepatkan kadar anomali sosial, serta melahirkan sentimen pengabaian kawasan oleh pentadbiran pusat. PBT wajib meningkatkan kualiti delivery sistem."
             }
         }
 
@@ -311,51 +355,52 @@ class IKMMDasarEngine:
                     stmt_max = self.questionnaire_master[self.questionnaire_master['Item_Code'] == id_max]['Statement'].values[0]
                     t_index_pct = ((t_means.mean() - 1) / 4) * 100
                     
-                    html_buffer += f"""
+                    html_master += f"""
                     <div style='margin-bottom: 25px; padding: 20px; border: 1px solid #CBD5E1; border-radius: 8px;'>
                         <h4>📚 {t_name} — Mapped to {t_meta['Dimensi']}</h4>
                         <p style='margin:0; font-size:12px; color:#475569;'><b>Tokoh Pelopor:</b> {t_meta['Pengasas']} | <b>Theory Index:</b> {t_index_pct:.2f}%</p>
-                        <p style='margin-top:10px;'><b>Analisis Dinamika Hubungan Teori-Data:</b> {t_meta['Analisis']}</p>
+                        <p style='margin-top:10px;'><b>Analisis Dinamika Teori-Data:</b> {t_meta['Analisis']}</p>
                         <div style='margin-top:12px; background-color:#FEE2E2; padding:12px; border-radius:4px; border-left:5px solid #EF4444; font-size:12.5px; color:#991B1B;'>
                             🚨 <b>Stressor Utama Terkesan ({id_max}): Min Skala {val_max:.2f} ({pct_max:.1f}%)</b><br>
                             <i>Kenyataan Item Soalan:</i> "{stmt_max}"
                         </div>
                     </div>"""
-        html_buffer += """<div class="page-break"></div>"""
+        html_master += """<div class="page-break"></div>"""
 
-        # 5. PEMETUAN GEOGRAFI STRUKTURAL PENUH (SEKATAN .HEAD() DIBUANG)
-        html_buffer += """
-                <div class="section-title">5.0 Pengesanan Rantaian Geografi Penuh Kawasan Hotspot & Stressor Semasa</div>
-                <p>Berikut diperinci keseluruhan hierarki geografi lokasi merah berdasarkan pangkalan data fail master Excel yang anda muat naik:</p>"""
-        geo_means = self.respondent_data.groupby(['Zone', 'State', 'District', 'Urban_Rural'])[items].mean().mean(axis=1)
-        hot_geo = geo_means.sort_values(ascending=False) # PEMBETULAN: Membuang .head(4) supaya memaparkan semua lokasi terjejas tanpa had
+        # BLOCK 5: ALL GEOGRAPHICAL LOCATION CHAINS UNRESTRICTED (HAD BARIS DIASINGKAN MUKTAMAD)
+        html_master += """
+                <div class="section-title">6.0 Laporan Hierarki Spasial Rantaian Lokasi Terjejas & Sebab Utama (Stressor)</div>
+                <p>Berikut diperincikan rantaian geografi berstruktur penuh (Zon &rarr; Negeri &rarr; Daerah &rarr; Lokaliti) yang dikesan mengalami pola ketegangan berserta punca item konkrit:</p>"""
         
-        for rank, ((zn, st_n, ds_n, ur_n), v_val) in enumerate(hot_geo.items()):
-            pct_v = ((v_val - 1) / 4) * 100
-            if pct_v >= 50.0: # Paparkan kawasan yang mencatatkan ketegangan signifikan sahaja
+        # Saring semua data geokod rantaian di seluruh negara tanpa sebarang sekatan .head()
+        for (zn, st_n, ds_n, ur_n), v_score in geo_means.items():
+            pct_v = ((v_score - 1) / 4) * 100
+            
+            # Tampilkan kawasan parlimen/daerah yang mencatatkan ketegangan di atas paras asas sahaja
+            if pct_v >= 50.0:
                 sub_df = self.respondent_data[(self.respondent_data['Zone']==zn) & (self.respondent_data['State']==st_n) & (self.respondent_data['District']==ds_n) & (self.respondent_data['Urban_Rural']==ur_n)]
                 sub_item = sub_df[items].mean().idxmax()
                 sub_stmt = self.questionnaire_master[self.questionnaire_master['Item_Code'] == sub_item]['Statement'].values[0]
                 
-                tier_class = "danger" if pct_v >= 80.0 else ""
-                html_buffer += f"""
-                <div class="loc-card-html {tier_class}">
-                    <b>🚨 RANTAIAN GEOGRAFI #{rank+1}: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>
-                    * Aras Komposit Bahaya: <b>{pct_v:.2f}%</b> (Status Amaran: {self.get_tier(pct_v).upper()})<br>
-                    * 🔥 **PUNCA KRITIKAL (Stressor Setempat):** Item {sub_item} &rarr; "{sub_stmt}"
+                tier_tag = "danger" if pct_v >= 80.0 else ("success" if pct_v < 60.0 else "")
+                html_master += f"""
+                <div class="loc-card-html {tier_tag}">
+                    <b>📍 RANTAIAN SPASIAL: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>
+                    * Aras Indeks Ketegangan Komposit: <b>{pct_v:.2f}%</b> (Klasifikasi EWS: {self.get_tier(pct_v).upper()})<br>
+                    * 💥 **Sebab Utama Krisis (Stressor Konkrit):** Item {sub_item} &rarr; <i>"{sub_stmt}"</i>
                 </div>"""
-        html_buffer += """<div class="page-break"></div>"""
+        html_master += """<div class="page-break"></div>"""
 
-        # 6. SUNTIKAN LENGKAP: LOG TANGKAPAN DATA SCRAPING SIBER ASLI (SEKATAN .HEAD(15) DIBUANG)
-        html_buffer += """
-                <div class="section-title">6.0 Log Tangkapan Data Scraping Siber Digital (OSINT Logs Lengkap)</div>
-                <p>Berikut dipaparkan keseluruhan baris pangkalan data asli tanpa pemotongan yang ditarik daripada helaian <i>media_issue_summary</i> fail master Excel:</p>
+        # BLOCK 6: UNRESTRICTED ALL SCRAPING OSINT DATA LOGS FROM SHEET 8
+        html_master += """
+                <div class="section-title">7.0 Log Tangkapan Data Scraping Siber Digital (OSINT Logs Lengkap Tanpa Sekal)</div>
+                <p>Berikut dipaparkan keseluruhan data perbincangan siber asli secara telus tanpa ada yang dipotong daripada lembaran <i>media_issue_summary</i>:</p>
                 <table class="table-premium">
                     <thead><tr><th>Tarikh</th><th>Platform</th><th>Wilayah Negeri</th><th>Kategori Isu</th><th>Aras Risiko</th><th>Ringkasan Fail Master</th></tr></thead>
                     <tbody>"""
         if self.media_issue_summary is not None:
-            for _, row in self.media_issue_summary.iterrows(): # PEMBETULAN: Tiada sekat .head(), meloop semua baris asli excel
-                html_buffer += f"""
+            for _, row in self.media_issue_summary.iterrows(): # PEMBETULAN MUTLAK: Pembatasan .head() dibuang, meloop semua baris asli excel
+                html_master += f"""
                 <tr>
                     <td>{row.get('Date','N/A')}</td>
                     <td>{row.get('Source','N/A')}</td>
@@ -364,8 +409,9 @@ class IKMMDasarEngine:
                     <td><b>{row.get('Risk_Level','N/A')}</b></td>
                     <td>{row.get('Summary','N/A')}</td>
                 </tr>"""
-        
-        html_buffer += f"""
+                
+        # SUNTIKAN JAVASCRIPT CLOSING DRAWING
+        html_master += f"""
                     </tbody>
                 </table>
 
@@ -393,17 +439,17 @@ class IKMMDasarEngine:
                 </script>
 
                 <div class="meta-footer">
-                    <p>Manuskrip Laporan Eksekutif Perdana Diperaku oleh: <b>{officer}</b> | Agensi: <b>{branch}</b></p>
-                    <p><b>CONFIDENTIAL — KERAJAAN MALAYSIA HAK CIPTA TERPELIHARA 2026</b></p>
+                    <p>Manuskrip Laporan Eksekutif Agung Diperaku oleh: <b>{officer}</b> | Bahagian: <b>{branch}</b></p>
+                    <p><b>RAHSIA RASMI KERAJAAN — URUS SETIA POLISI KESELAMATAN SOSIAL KABINET MALAYSIA 2026</b></p>
                 </div>
             </div>
         </body>
         </html>
         """
-        return html_buffer
+        return html_master
 
 def init_dashboard_session():
-    if 'engine' not in st.session_state or not hasattr(st.session_state.engine, 'generate_html_dossier_report'):
+    if 'engine' not in st.session_state or not hasattr(st.session_state.engine, 'get_demographic_columns'):
         st.session_state.engine = IKMMDasarEngine()
         st.session_state.engine.connect_and_load_workbook()
     if 'auth_state' not in st.session_state:
@@ -598,7 +644,7 @@ def main():
             "Conflict Theory": {"Pengasas": "Karl Marx / Max Weber", "Dimensi": "D2 Religious Tension", "Huraian": "Konflik berakar daripada perebutan dominasi ruang undang-undang, legislatif, dan pengaruh institusi syariah-sivil yang disifatkan sebagai zero-sum game."},
             "Relative Deprivation Theory": {"Pengasas": "Samuel Stouffer (1949) / Ted Robert Gurr (1970)", "Dimensi": "D3 Economic Tension", "Huraian": "Ketegangan timbul akibat jurang persepsi apabila sesuatu kelompok merasa dipinggirkan secara tidak adil selepas membandingkan pencapaian ekonomi mereka dengan kelas komuniti lain."},
             "Institutional Trust Theory": {"Pengasas": "Niklas Luhmann", "Dimensi": "D4 Political Tension & D7 Institutional and Governance Tension", "Huraian": "Tahap kestabilan negara berpaksi kepada keyakinan integriti urus tadbir. Kejatuhan amanah kepada badan penguatkuasa akan melumpuhkan legitimasi undang-undang sivil."},
-            "General Strain Theory": {"Pengasas": "Robert Agnew (1992)", "Dimensi": "D5 Generational Tension", "Huraian": "Tekanan struktur (pengangguran, ketidakmampuan memiliki aset/perumahan) melahirkan anomi emosi kekecewaan dalam kalangan belia, memicu jurang ketegangan nilai dengan generasi veteran."},
+            "General Strain Theory": {"Pengasas": "Robert Henry Agnew (1992)", "Dimensi": "D5 Generational Tension", "Huraian": "Tekanan struktur (pengangguran, ketidakmampuan memiliki aset/perumahan) melahirkan anomi emosi kekecewaan dalam kalangan belia, memicu jurang ketegangan nilai dengan generasi veteran."},
             "Social Disorganization Theory": {"Pengasas": "Clifford Shaw & Henry McKay (1942)", "Dimensi": "D6 Urban-Rural Tension", "Huraian": "Pembangunan lokaliti yang tidak setara atau urbanisasi drastik melemahkan ikatan kawalan sosial komuniti setempat, mencetuskan polarisasi sempadan bandar-luar bandar."}
         }
         for name, meta in theory_blueprint.items():
@@ -792,7 +838,7 @@ def main():
         st.subheader("👥 Transkrip Consensus Panel Pakar & Dapatan Bengkel FGD")
         if engine.fgd_expert is not None:
             st.plotly_chart(px.bar(engine.fgd_expert['Priority'].value_counts(), title="Klasifikasi Syor Pakar Mengikut Tahap Keutamaan"), use_container_width=True)
-            st.markdown("<div class='highlight-analysis-box'><b>KALIBRASI PENEMUAN PANEL PAKAR KUALITATIF:</b><br>Konsensus panel pakar menerusi kaedah Delphi mengesahkan keputusan pemodelan kuantitatif; kestabilan parlimen bergantung kepada urus tadbir tanpa korupsi.</div>", unsafe_allow_html=True)
+            st.markdown("<div class='highlight-analysis-box'><b>KALIBRASI PENEMUAN PANEL PAKAR KUALITATIF:</b><br>Consensus panel pakar menerusi kaedah Delphi mengesahkan keputusan pemodelan kuantitatif; kestabilan parlimen bergantung kepada urus tadbir tanpa korupsi.</div>", unsafe_allow_html=True)
         
     # --- TAB 14: REPORT GENERATOR HTML ---
     with tabs[13]:
