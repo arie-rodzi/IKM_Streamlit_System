@@ -172,29 +172,6 @@ class IKMMDasarEngine:
                 data = data[data[col].isin(values)]
         return data
 
-    def get_state_geospatial_matrix(self):
-        if 'State' not in self.respondent_data.columns: return pd.DataFrame()
-        items = self.get_registered_items()
-        
-        records = []
-        for state, group in self.respondent_data.groupby('State'):
-            raw_mean = group[items].mean().mean()
-            tension_index = ((raw_mean - 1) / 4) * 100
-            
-            if tension_index >= 80.0: classification = "🔴 Hotspot / Kritikal"
-            elif tension_index >= 60.0: classification = "💗 Pain Point"
-            elif tension_index >= 40.0: classification = "💛 Tension Point"
-            else: classification = "💚 Rendah / Stabil"
-                
-            records.append({
-                'Negeri / Wilayah': state, 
-                'Indeks Ketegangan (IKM %)': tension_index, 
-                'Klasifikasi Risiko': classification,
-                'Populasi Sampel': len(group)
-            })
-            
-        return pd.DataFrame(records).sort_values('Indeks Ketegangan (IKM %)', ascending=False)
-
     # --- JANAAN MANUSKRIP HTML AGUNG YANG DINAMIK (MEMBACA FAIL DATA EXCEL ANDA 100% TANPA SEKATAN BARIS) ---
     def generate_html_dossier_report(self, title, officer, branch):
         score, tier = self.calculate_composite_index()
@@ -205,10 +182,8 @@ class IKMMDasarEngine:
         dim_labels = list(self.dim_item_ranges.keys())
         dim_values = [self.calculate_single_dimension_score(d) for d in dim_labels]
         
-        # Pengisytiharan selamat pemolah-ubah data geospasial khusus bagi fungsi HTML
         geo_means_html = self.respondent_data.groupby(['Zone', 'State', 'District', 'Urban_Rural'])[items].mean().mean(axis=1).sort_values(ascending=False)
 
-        # BLOCK 1: HEADER & STYLE DEFINITION
         html_master = f"""
         <!DOCTYPE html>
         <html lang="ms">
@@ -244,7 +219,7 @@ class IKMMDasarEngine:
                     <div class="confidential-tag">SULIT — MANUSKRIP LAPORAN KESELAMATAN SOSIAL NASIONAL JPM</div>
                     <h1 style="margin: 0; font-size: 26px;">{title}</h1>
                     <p style="margin: 10px 0 0 0; font-size: 14px; color: #94A3B8;">Analisis Komposit Model Kesiagaan Sosial Negara (IKMM 2026)</p>
-                    <p style="margin: 5px 0 0 0; font-size: 12px; color: #CBD5E1;">Tarikh Kompleks: {now_str} | ID Arkib Pelepasan Dasar: JPM-IKMM-2026-UNLIMITED_V3</p>
+                    <p style="margin: 5px 0 0 0; font-size: 12px; color: #CBD5E1;">Tarikh Kompleks: {now_str} | ID Arkib Pelepasan Dasar: JPM-IKMM-2026-FULLV2</p>
                 </div>
                 
                 <div class="section-title">1.0 Ringkasan Petunjuk Prestasi Utama (KPI)</div>
@@ -268,7 +243,7 @@ class IKMMDasarEngine:
 
                 <div class="highlight-box">
                     <b>RUMUSAN EKSEKUTIF IMPAK STRATEGIK NEGARA:</b><br>
-                    Analisis empirikal ke atas pangkalan data komposit IKMM 2026 mendapati pola polarisasi sosial semasa dipandu secara signifikan oleh interaksi tiga dimensi kritikal: Ketegangan Ekonomi (D3), Polarisasi Institusi (D7), dan Ruang Gema Digital (D9). Ketegangan siber didorong oleh kegagalan regulasi algoritma komersial yang mengeksploitasi sensitiviti kaum, manakala tekanan kos sara hidup melonjakkan rasa deprivasi relatif dalam kalangan isi rumah berpendapatan rendah (B40). Keadaan ini melemahkan daya tahan sosial nasional (D8) dan mewujudkan krisis kepercayaan struktural terhadap keabsahan governans (D7). Justeru, pelancaran intervensi merentas kementerian bersifat makro perlu digerakkan segera untuk mengelakkan ketegangan di alam siber bertukar menjadi konflik fizikal terbuka.
+                    Analisis empirikal ke atas pangkalan data komposit IKMM 2026 mendapati pola polarisasi sosial semasa dipandu secara signifikan oleh interaksi tiga dimensi kritikal: Ketegangan Ekonomi (D3), Polarisasi Institusi (D7), dan Ruang Gema Digital (D9). Ketegangan siber didorong oleh kegagalan regulasi algoritma komersial yang mengeksploitasi sensitiviti kaum, manakala tekanan kos sara hidup melonjakkan rasa deprivasi relatif dalam kalangan isi rumah berpendapatan rendah (B40). Keadaan ini melemahkan daya tahan sosial nasional (D8) and mewujudkan krisis kepercayaan struktural terhadap keabsahan governans (D7). Justeru, pelancaran intervensi merentas kementerian bersifat makro perlu digerakkan segera untuk mengelakkan ketegangan di alam siber bertukar menjadi konflik fizikal terbuka.
                 </div>
 
                 <div class="page-break"></div>
@@ -281,10 +256,10 @@ class IKMMDasarEngine:
                 <div class="page-break"></div>
         """
 
-        # SECTOR 2: ALL 11 DEMOGRAPHIC TABLES UNRESTRICTED
+        # BLOCK 2: UNRESTRICTED ALL DEMOGRAPHIC TABLES
         html_master += """
                 <div class="section-title">3.0 Jadual Komprehensif Taburan Profil 11 Pemboleh Ubah Demografi</div>
-                <p>Berikut diperincikan agihan peratusan dan frekuensi lengkap responden tanpa sebarang pemotongan baris:</p>
+                <p>Berikut diperincikan agihan peratusan and frekuensi lengkap responden tanpa sebarang pemotongan baris:</p>
                 <table class="table-premium">
                     <thead><tr><th>Pemboleh Ubah Demografi</th><th>Klasifikasi Parameter Kumpulan Sasar</th><th>Frekuensi (Bil.)</th><th>Peratusan (%)</th></tr></thead>
                     <tbody>"""
@@ -299,11 +274,11 @@ class IKMMDasarEngine:
                 <div class="page-break"></div>
         """
 
-        # SECTOR 3: ALL 9 DIMENSIONS TABLE
+        # BLOCK 3: ALL 9 SECTOR DIMENSIONS INDEX CORES
         html_master += """
                 <div class="section-title">4.0 Analisis Keamatan Aras Ketegangan Komposit 9 Dimensi Utama</div>
                 <table class="table-premium">
-                    <thead><tr><th>Kod</th><th>Nama Dimensi Skrining Kebangsaan</th><th>Skor Peratusan Ketegangan (%)</th><th>Klasifikasi Risiko Sektoral</th></tr></thead>
+                    <thead><tr><th>Kod</th><th>Nama Dimensi Skrining Kebangsaan</th><th>Skor Ketegangan (%)</th><th>Klasifikasi Risiko Sektoral</th></tr></thead>
                     <tbody>"""
         for d_key in self.dim_item_ranges.keys():
             d_score = self.calculate_single_dimension_score(d_key)
@@ -314,7 +289,7 @@ class IKMMDasarEngine:
                 <div class="page-break"></div>
         """
 
-        # SECTOR 4: SOCIOLOGICAL THEORIES SUMMARY
+        # BLOCK 4: PSYCHOMETRIC THEORY ANALYSIS LENGKAP
         html_master += """
                 <div class="section-title">5.0 Pemodelan Teori & Huraian Keputusan Konkreta Item Pangkalan Data</div>
                 <p>Analisis penumpuan teori-data (Theory-Data Convergence Analysis) menghubungkan angka kuantitatif secara langsung dengan kerangka teori dasar:</p>"""
@@ -322,27 +297,15 @@ class IKMMDasarEngine:
         theory_dictionary = {
             "Social Identity Theory": {
                 "Pengasas": "Henri Tajfel & John Turner (1979)", "Dimensi": "D1 Ethnic Tension",
-                "Analisis": "Hasil dapatan pemodelan membuktikan polarisasi kaum dipacu oleh penebalan sempadan identiti kelompok (In-group vs Out-group) akibat prasangka rentas etnik. Keamatan tinggi pada item stressor mengesahkan interaksi sosial wujud tetapi rapuh tanpa modal amanah (social trust) yang mendalam. Mengikut lensa Tajfel, apabila benteng identiti merasa diancam retorik siber, penolakan kelompok luar akan meningkat secara drastik. Keadaan ini memerlukan strategi bridging capital."
+                "Analisis": "Henri Tajfel membuktikan sempadan In-group vs Out-group menebal akibat prasangka rentas etnik. Keamatan tinggi pada item stressor mengesahkan interaksi sosial wujud tetapi rapuh tanpa modal amanah."
             },
             "Conflict Theory": {
                 "Pengasas": "Karl Marx / Max Weber", "Dimensi": "D2 Religious Tension",
-                "Analisis": "Data merekodkan konflik struktural terbuka di mana kumpulan ideologi agama yang berbeza bersaing menggunakan saluran legislatif dan perlembagaan sivil-syariah untuk mendapatkan pengaruh dominasi institusi. Weber menjustifikasikan persaingan ini sebagai zero-sum game; sekiranya satu pihak mendapat ruang kuasa, pihak lain menganggapnya sebagai ancaman hak eksistensial eksklusif."
+                "Analisis": "Data merekodkan konflik struktural terbuka di mana kumpulan ideologi agama bersaing merebut ruang jurisdiksi undang-undang. Weber menjustifikasikannya sebagai persaingan sifar-jumlah."
             },
             "Relative Deprivation Theory": {
                 "Pengasas": "Samuel Stouffer (1949) / Ted Robert Gurr (1970)", "Dimensi": "D3 Economic Tension",
-                "Analisis": "Keputusan empirikal membuktikan kemarahan kelas bawah bukan disebabkan kemiskinan mutlak, tetapi akibat tekanan psikologi apabila melihat agihan kekayaan dan ekuiti korporat dinikmati kelas kapitalis tertentu secara tidak adil. Mengikut Gurr, jurang harapan (expectations gap) yang membesar melahirkan rasa terpinggir, menurunkan daya toleransi kaum, dan menyuburkan bibit protes sosial."
-            },
-            "Institutional Trust Theory": {
-                "Pengasas": "Niklas Luhmann", "Dimensi": "D4 Political & D7 Governance Tension",
-                "Analisis": "Kejatuhan graf kepercayaan institusi mengesahkan erosi legitimasi sivil secara kritikal. Apabila majoriti responden mempercayai agensi penguatkuasaan lapangan tidak lagi telus dan korup, kepatuhan sukarela terhadap undang-undang akan lumpuh. Luhmann menegaskan amanah institusi adalah elemen primer peningkatan kestabilan sosiopolitik negara."
-            },
-            "General Strain Theory": {
-                "Pengasas": "Robert Agnew (1992)", "Dimensi": "D5 Generational Tension",
-                "Analisis": "Skor tinggi mengesahkan kohort umur belia mengalami anomi emosi (strain) yang parah akibat kegagalan mencapai matlamat hidup seperti pemilikan rumah pertama and pekerjaan premium. Agnew membuktikan strain yang tidak diredakan dasar kabinet akan melahirkan reaksi kemarahan kolektif, memicu jurang ideologi yang menolak nilai tradisional veteran."
-            },
-            "Social Disorganization Theory": {
-                "Pengasas": "Clifford Shaw & Henry McKay (1942)", "Dimensi": "D6 Urban-Rural Tension",
-                "Analisis": "Keputusan data membuktikan pembangunan geografi tidak setara atau urbanisasi drastik melemahkan ikatan kawalan sosial setempat. Kawasan yang mengalami jurang prasarana tinggi kehilangan keupayaan kawalan kejiranan, mempercepatkan kadar anomali sosial, serta melahirkan sentimen pengabaian kawasan oleh pentadbiran pusat."
+                "Analisis": "Kemarahan dipicu akibat tekanan psikologi apabila melihat agihan ekuiti korporat dinikmati kelas kapitalis tertentu secara tidak adil, membina jurang harapan yang memicu protes sosial."
             }
         }
 
@@ -370,7 +333,7 @@ class IKMMDasarEngine:
                     </div>"""
         html_master += """<div class="page-break"></div>"""
 
-        # SECTOR 5: GEOGRAPHICAL SPATIAL LOOP UNRESTRICTED FOR HTML REPORT
+        # BLOCK 5: ALL GEOGRAPHICAL LOCATION CHAINS UNRESTRICTED
         html_master += """
                 <div class="section-title">6.0 Laporan Hierarki Spasial Rantaian Lokasi Terjejas & Sebab Utama (Stressor)</div>
                 <p>Berikut diperincikan rantaian geografi berstruktur penuh (Zon &rarr; Negeri &rarr; Daerah &rarr; Lokaliti) yang dikesan mengalami pola ketegangan berserta punca item konkrit:</p>"""
@@ -392,7 +355,7 @@ class IKMMDasarEngine:
                 </div>"""
         html_master += """<div class="page-break"></div>"""
 
-        # SECTOR 6: ALL OSINT MEDIA RECORDS
+        # BLOCK 6: UNRESTRICTED ALL SCRAPING OSINT DATA LOGS FROM SHEET 8
         html_master += """
                 <div class="section-title">7.0 Log Tangkapan Data Scraping Siber Digital (OSINT Logs Lengkap)</div>
                 <p>Berikut dipaparkan keseluruhan data perbincangan siber asli secara telus daripada lembaran <i>media_issue_summary</i>:</p>
@@ -479,21 +442,55 @@ def main():
     apply_executive_premium_theme()
     engine = st.session_state.engine
     
-    st.markdown("""
-        <div style='background-color: #FFFFFF; padding: 24px; border-radius: 12px; border: 1px solid #E2E8F0; border-left: 6px solid #1E3A8A; margin-bottom: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);'>
-            <h1 style='margin:0; font-size: 26px; font-weight: 800; color: #0F172A;'>🏛️ Sistem Pemantauan Indeks Ketegangan Masyarakat Malaysia (IKMM) 2026</h1>
-            <p style='margin: 4px 0 0 0; color: #475569; font-size: 13px; font-weight: 500;'>Engin Analitis Kecerdasan Strategik Kebangsaan — JPNIN</p>
-        </div>
-    """, unsafe_allow_html=True)
+    # --- 🔒 PEMBETULAN UTAMA SIDEBAR GEOGRAPHIC CONTROL PANELS ---
+    active_filters = {}
+    if engine.data_loaded:
+        with st.sidebar:
+            st.markdown("### 🗺️ Pengendali Penapis Geografi Dinamik")
+            
+            # Tier 1: Pilih Zon Makro
+            zon_options = engine.get_filter_options('Zone')
+            sel_zone = st.multiselect("🧭 1. Pilih Wilayah / Zon", zon_options)
+            
+            # Tier 2: Pilih Negeri (Cascading)
+            if sel_zone:
+                state_subset = engine.respondent_data[engine.respondent_data['Zone'].isin(sel_zone)]
+                state_options = sorted(state_subset['State'].dropna().unique().tolist())
+            else:
+                state_options = engine.get_filter_options('State')
+            sel_state = st.multiselect("🏛️ 2. Pilih Negeri", state_options)
+            
+            # Tier 3: Pilih Daerah Pentadbiran Mikro (Cascading)
+            if sel_state:
+                district_subset = engine.respondent_data[engine.respondent_data['State'].isin(sel_state)]
+                district_options = sorted(district_subset['District'].dropna().unique().tolist())
+            elif sel_zone:
+                district_subset = engine.respondent_data[engine.respondent_data['Zone'].isin(sel_zone)]
+                district_options = sorted(district_subset['District'].dropna().unique().tolist())
+            else:
+                district_options = engine.get_filter_options('District')
+            sel_district = st.multiselect("🏙️ 3. Pilih Daerah / Parlimen", district_options)
+            
+            st.markdown("---")
+            st.markdown("### 📊 Tapisan Sosioekonomi Kumpulan")
+            sel_urban = st.multiselect("🏢 Klasifikasi Lokaliti", engine.get_filter_options('Urban_Rural'))
+            sel_income = st.multiselect("💰 Kumpulan Pendapatan", engine.get_filter_options('Income_Group'))
+            
+            # Suntik ke dalam Kamus Penapis Aktif Kebangsaan
+            if sel_zone: active_filters['Zone'] = sel_zone
+            if sel_state: active_filters['State'] = sel_state
+            if sel_district: active_filters['District'] = sel_district
+            if sel_urban: active_filters['Urban_Rural'] = sel_urban
+            if sel_income: active_filters['Income_Group'] = sel_income
+
+    # Jalankan pengiraan data ditapis mengikut pilihan sidebar pengguna
+    filtered_df = engine.apply_filters(active_filters)
+    sub_total = len(filtered_df)
     
-    tabs = st.tabs([
-        "01 Portal Gateway", "02 Ringkasan Eksekutif", "03 Penilaian Geografi", 
-        "04 Pengiraan 9 Indeks", "05 Amaran Item Stressor", "06 Sentimen NLP Kualitatif", 
-        "07 Teori Dasar", "08 Pain Points", "09 Tension Points", 
-        "10 Amaran Hotspot", "11 Strategi Intervensi", "12 Media Scraping", 
-        "13 Dapatan FGD", "14 Dossier Report", "15 Cell Data Explorer"
-    ])
-    
+    # Pengiraan matriks geospasial khusus bagi fungsi main() untuk Tab 08, 09, & 10
+    items_list_main = engine.get_registered_items()
+    geo_means_main = filtered_df.groupby(['Zone', 'State', 'District', 'Urban_Rural'])[items_list_main].mean().mean(axis=1).sort_values(ascending=False) if sub_total > 0 else pd.Series()
+
     # --- TAB 1: PORTAL GATEWAY ---
     with tabs[0]:
         st.subheader("📂 Pengurusan Fail & Analisis Deskriptif Profil Demografi")
@@ -505,90 +502,64 @@ def main():
         
         st.markdown("---")
         if engine.data_loaded:
-            st.markdown("### 🔍 Parameter Tapisan Profil Data Dinamik")
-            col_f1, col_f2, col_f3 = st.columns(3)
-            with col_f1: sel_state = st.multiselect("Tapis mengikut Negeri", engine.get_filter_options('State'))
-            with col_f2: sel_urban = st.multiselect("Tapis Kategori Lokaliti (Urban/Rural)", engine.get_filter_options('Urban_Rural'))
-            with col_f3: sel_income = st.multiselect("Tapis Kumpulan Pendapatan", engine.get_filter_options('Income_Group'))
-                
-            active_filters = {}
-            if sel_state: active_filters['State'] = sel_state
-            if sel_urban: active_filters['Urban_Rural'] = sel_urban
-            if sel_income: active_filters['Income_Group'] = sel_income
-            
-            filtered_df = engine.apply_filters(active_filters)
-            sub_total = len(filtered_df)
-            
-            st.markdown(f"#### 📊 Hasil Penemuan Profil: {sub_total:,} Responden Aktif Mapped")
-            
+            st.markdown(f"#### 📊 Hasil Penemuan Profil Semasa: {sub_total:,} Responden Aktif Mapped")
             if sub_total > 0:
                 st.markdown("##### Sektor A: Analisis Pembahagian Geografi & Sempadan")
                 g_c1, g_c2, g_c3 = st.columns(3)
                 with g_c1:
-                    z_cnt = filtered_df['Zone'].value_counts() if 'Zone' in filtered_df.columns else pd.Series()
+                    z_cnt = filtered_df['Zone'].value_counts()
                     st.plotly_chart(px.pie(names=z_cnt.index, values=z_cnt.values, title="Pecahan mengikut Zon", color_discrete_sequence=px.colors.qualitative.Bold), use_container_width=True)
                 with g_c2:
-                    s_cnt = filtered_df['State'].value_counts() if 'State' in filtered_df.columns else pd.Series()
+                    s_cnt = filtered_df['State'].value_counts()
                     st.plotly_chart(px.bar(x=s_cnt.values, y=s_cnt.index, orientation='h', title="Taburan Responden mengikut Negeri", color_continuous_scale='Blues'), use_container_width=True)
                 with g_c3:
-                    u_cnt = filtered_df['Urban_Rural'].value_counts() if 'Urban_Rural' in filtered_df.columns else pd.Series()
+                    u_cnt = filtered_df['Urban_Rural'].value_counts()
                     st.plotly_chart(px.pie(names=u_cnt.index, values=u_cnt.values, title="Pecahan Bandar vs Luar Bandar", hole=0.4), use_container_width=True)
                 
                 st.markdown("##### Sektor B: Analisis Profil Asas Individu")
                 g_c4, g_c5, g_c6 = st.columns(3)
                 with g_c4:
-                    gen_cnt = filtered_df['Generation'].value_counts() if 'Generation' in filtered_df.columns else pd.Series()
+                    gen_cnt = filtered_df['Generation'].value_counts()
                     st.plotly_chart(px.bar(x=gen_cnt.index, y=gen_cnt.values, title="Taburan Profil Kumpulan Generasi", color_continuous_scale='Viridis'), use_container_width=True)
                 with g_c5:
-                    gender_cnt = filtered_df['Gender'].value_counts() if 'Gender' in filtered_df.columns else pd.Series()
+                    gender_cnt = filtered_df['Gender'].value_counts()
                     st.plotly_chart(px.pie(names=gender_cnt.index, values=gender_cnt.values, title="Nisbah Pecahan Jantina"), use_container_width=True)
                 with g_c6:
                     if 'Age' in filtered_df.columns:
                         st.plotly_chart(px.histogram(filtered_df, x='Age', nbins=20, title="Taburan Profil Umur Responden", color_discrete_sequence=['#1E3A8A']), use_container_width=True)
 
                 st.markdown("##### 📝 Ulasan Eksklusif Profil Demografi Sektoral")
-                st.markdown("""
+                st.markdown(f"""
                 <div class='highlight-analysis-box'>
-                    <b>ANALISIS DESKRIPTIF STRATEGIK KUMPULAN SASAR AWAM:</b><br>
-                    Pemetaan grafik komprehensif merentasi 11 pemolehubah demografi responden ini mengesahkan kebolehpercayaan kerangka pensampelan berstrata nasional mengikut parameter DOSM. Visualisasi taburan geografi membuktikan beban stressor sosial bertumpu di zon bandar utama dengan kepadatan isi rumah kelas B40 yang tinggi. Gabungan data umur (histogram) dan kategori pekerjaan menyerlahkan kluster belia mengalami aras deprivasi relatif terbesar akibat ketidakseimbangan upah berbanding kos sara hidup. Pecahan etnik dan agama memaparkan keseimbangan komposisi majmuk, manakala data klasifikasi informan mengesahkan maklum balas dicitrakan daripada suara akar umbi yang sah, meletakkan set pangkalan data ini bersedia sepenuhnya untuk pemodelan statistik <i>PLS-SEM</i> gred tinggi.
+                    <b>ANALISIS TAPISAN GEOGRAFI SEMASA:</b><br>
+                    Pemetaan grafik aktif memaparkan taburan data bagi kluster geografi yang dipilih melalui sidebar control. Unjuran sample merekodkan {sub_total:,} informan aktif. Struktur demografi ini memberikan rujukan kontekstual yang sah bagi membolehkan pembuat keputusan memantau stressor setempat secara bersasar mengikut parlimen and daerah komuniti.
                 </div>
                 """, unsafe_allow_html=True)
         else:
             st.warning("⚠️ Sila muat naik fail Excel data responden anda untuk mengaktifkan paparan visual grafik.")
 
-    if not engine.data_loaded: return
-
-    # --- PEMBETULAN UTAMA: Pengisytiharan pemboleh ubah geo_means_main di dalam main() bagi dikongsi selamat oleh Tab 08, 09, & 10 ---
-    items_list_main = engine.get_registered_items()
-    geo_means_main = engine.respondent_data.groupby(['Zone', 'State', 'District', 'Urban_Rural'])[items_list_main].mean().mean(axis=1).sort_values(ascending=False)
-
     # --- TAB 2: RINGKASAN EKSEKUTIF ---
     with tabs[1]:
         st.subheader("📈 Pusat Kawalan KPI Ketegangan Nasional")
-        ikm_score, tier_status = engine.calculate_composite_index()
+        ikm_score, tier_status = engine.calculate_composite_index(filtered_df)
         c1, c2, c3 = st.columns(3)
-        with c1: render_kpi_card("Indeks Ketegangan Masyarakat (IKM %)", f"{ikm_score:.2f}%", "Aman / Stabil (0%) ↔ Kritikal / Tegang (100%)", tier=tier_status)
+        with c1: render_kpi_card("Indeks Ketegangan (IKM %)", f"{ikm_score:.2f}%", "Aman (0%) ↔ Tegang (100%)", tier=tier_status)
         with c2: 
-            status_labels = {"low": "STABIL / TERKAWAL", "tension": "TENSION POINT (AMARAN AWAL)", "pain": "PAIN POINT (KRITIKAL SEKTOR)", "hotspot": "HOTSPOT (BAHAYA EKSTREM)"}
-            render_kpi_card("Tahap Risiko Keselamatan Sosial", status_labels.get(tier_status), "Klasifikasi Isu Berasaskan Jadual Ambang 5.6", tier=tier_status)
-        with c3: render_kpi_card("Jumlah Repositori Sampel Pool", f"{len(engine.respondent_data):,}", "Bancian Berstrata Kebangsaan Tervalidasi", tier="low")
+            status_labels = {"low": "STABIL / TERKAWAL", "tension": "TENSION POINT", "pain": "PAIN POINT", "hotspot": "HOTSPOT CRITICAL"}
+            render_kpi_card("Tahap Risiko Keselamatan", status_labels.get(tier_status), "Klasifikasi Isu Tapisan Semasa", tier=tier_status)
+        with c3: render_kpi_card("Jumlah Sampel Ditapis", f"{sub_total:,}", "Responden Aktif Dalam Skor", tier="low")
         st.markdown("---")
-        dim_data = engine.get_dimension_composite_scores()
+        dim_data = engine.get_dimension_composite_scores(filtered_df)
         if dim_data:
             dim_df = pd.DataFrame(list(dim_data.items()), columns=['Dimensi Skrining IKM', 'Indeks Ketegangan (%)']).sort_values('Indeks Ketegangan (%)', ascending=False)
-            fig_bar = px.bar(dim_df, x='Indeks Ketegangan (%)', y='Dimensi Skrining IKM', orientation='h', color='Indeks Ketegangan (%)', color_continuous_scale='Reds', text_auto='.1f')
-            fig_bar.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
-            st.plotly_chart(fig_bar, use_container_width=True)
+            st.plotly_chart(px.bar(dim_df, x='Indeks Ketegangan (%)', y='Dimensi Skrining IKM', orientation='h', color='Indeks Ketegangan (%)', color_continuous_scale='Reds', text_auto='.1f'), use_container_width=True)
 
     # --- TAB 3: PENILAIAN GEOGRAFI ---
     with tabs[2]:
         state_df = engine.get_state_geospatial_matrix()
         if not state_df.empty:
             col_ch, col_tb = st.columns([3, 2])
-            with col_ch:
-                fig_state = px.bar(state_df, x='Indeks Ketegangan (IKM %)', y='Negeri / Wilayah', orientation='h', color='Indeks Ketegangan (IKM %)', color_continuous_scale='YlOrRd', text_auto='.1f')
-                fig_state.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
-                st.plotly_chart(fig_state, use_container_width=True)
+            with col_ch: st.plotly_chart(px.bar(state_df, x='Indeks Ketegangan (IKM %)', y='Negeri / Wilayah', orientation='h', color='Indeks Ketegangan (IKM %)', color_continuous_scale='YlOrRd', text_auto='.1f'), use_container_width=True)
             with col_tb: st.dataframe(state_df, use_container_width=True, hide_index=True)
 
     # --- TAB 4: PENGIRAAN 9 INDEKS DIMENSI ---
@@ -597,15 +568,15 @@ def main():
         grid_c1, grid_c2, grid_c3 = st.columns(3)
         loop_counter = 0
         for dim_name in engine.dim_item_ranges.keys():
-            d_score = engine.calculate_single_dimension_score(dim_name)
+            d_score = engine.calculate_single_dimension_score(dim_name, filtered_df)
             target_col = grid_c1 if loop_counter % 3 == 0 else (grid_c2 if loop_counter % 3 == 1 else grid_c3)
-            with target_col: render_kpi_card(f"{dim_name}", f"{d_score:.2f}%", f"Berasaskan 12 Item Indikator", tier=engine.get_tier(d_score))
+            with target_col: render_kpi_card(f"{dim_name}", f"{d_score:.2f}%", f"Berasaskan Item Indikator Ditapis", tier=engine.get_tier(d_score))
             loop_counter += 1
 
     # --- TAB 5: AMARAN ITEM STRESSOR ---
     with tabs[4]:
-        st.subheader("🚨 Pengesanan Awal: 5 Indikator Utama Paling Tegang (Stressor Nasional)")
-        item_scores = engine.calculate_item_scores()
+        st.subheader("🚨 Pengesanan Awal: 5 Indikator Utama Paling Tegang (Stressor Wilayah)")
+        item_scores = engine.calculate_item_scores(filtered_df)
         if item_scores:
             sorted_items = sorted(item_scores.items(), key=lambda x: x[1]['mean'], reverse=True)[:5]
             for rank, (code, v_metrics) in enumerate(sorted_items):
@@ -614,14 +585,7 @@ def main():
                 item_pct = ((v_metrics['mean'] - 1) / 4) * 100
                 st.markdown(f"#### 🛑 Kedudukan #{rank+1}: {code} — [Indeks Ketegangan: {item_pct:.1f}%]")
                 st.markdown(f"**Dimensi Terikat:** {d_name} | **Pernyataan Soalan Isu:** *{stmt}*")
-                if "Economic" in d_name:
-                    desc_text = f"Indikator {code} menuntut perhatian kecemasan kabinet kerana ia merekodkan aras ketegangan tertinggi bagi sub-sektor ekonomi isi rumah. Kenyataan maklum balas daripada warganegara mengesahkan berlakunya himpitan psikologi yang kronik akibat ketidakseimbangan kos sara hidup harian berbanding unjuran upah realiti. Kegagalan pasaran buruh untuk melaraskan tangga gaji premium menyebabkan majoriti responden berpendapatan rendah (B40) berasa terpinggir secara struktural. Kemarahan ini diklasifikasikan sebagai ancaman keselamatan primer kerana ia menurunkan keupayaan isi rumah menampung keperluan asas, memicu kadar keberhutangan yang tinggi, serta melumpuhkan daya beli setempat. Pihak kementerian tidak boleh sekadar meluncurkan tindakan intervensi bersifat ad-hoc, sebaliknya memerlukan campur tangan makro bagi merombak pasaran upah minimum."
-                elif "Digital" in d_name:
-                    desc_text = f"Lonjakan ketegangan pada indikator siber {code} mendedahkan kerentanan kritikal dalam landskap komunikasi maya negara. Kenyataan ini membuktikan sebahagian besar pengguna media sosial di peringkat akar umbi terdedah kepada manipulasi algoritma komersial yang sengaja menularkan sentimen provokasi kaum demi 'engagement'. Kebimbangan awam ini mencerminkan kegagalan regulasi digital sedia ada untuk menapis khabar angin dan berita palsu. Anomi siber ini sangat berbahaya kerana ia membina ruang gema (echo chambers) yang mengeksploitasi emosi sensitif, menyebabkan sebarang isu kecil di luar talian mudah dieksploitasi menjadi krisis keselamatan sivil terbuka."
-                else:
-                    desc_text = f"Data psikometrik bagi indikator {code} mengesahkan wujudnya garis retakan sosiopolitik yang rapuh dalam komuniti setempat. Maklum balas tinggi daripada responden melambangkan kekecewaan kolektif yang berpunca daripada kelemahan perlindungan kebajikan awam atau jurang pengagihan prasarana pembangunan di lapangan. Penumpuan skor pada zon hotspot amaran ini menandakan berlakunya kelesuan struktur modal sosial, di mana masyarakat merasa suara rintihan mereka tidak sampai ke peringkat pembuat dasar utama kerajaan."
-                st.markdown(f"<div class='danger-analysis-box'><b>HURAIAN ANALISIS IMPAK INDIKATOR KERAJAAN:</b><br>{desc_text}</div>", unsafe_allow_html=True)
-                st.markdown("---")
+                st.markdown("<div class='danger-analysis-box'>Indikator ini merekodkan aras purata keamatan tertinggi bagi kluster parameter sasar wilayah ditapis, menandakan titik kerapuhan struktur modal sosial setempat.</div>", unsafe_allow_html=True)
 
     # --- TAB 6: SENTIMEN NLP KUALITATIF ---
     with tabs[5]:
@@ -630,54 +594,15 @@ def main():
             c_filter_q, _ = st.columns([1, 2])
             with c_filter_q: st_sel_q = st.selectbox("Pilih Analisis Wilayah Negeri", sorted(engine.qualitative_response['State'].dropna().unique().tolist()))
             st.markdown(f"#### 🎯 Dapatan Ekstraksi Algoritma NLP bagi Wilayah: **{st_sel_q}**")
-            st.markdown("##### 📦 Kluster Isu A: Tekanan Kos Sara Hidup & Perumahan (Ketumpatan Isu: 42.4%)")
             st.markdown("> *Contoh Petikan Teks Rakyat (Verbatim):* \"Gaji tak naik-naik tapi harga barang dapur dan sewa rumah di bandar makin melampau. Kami golongan M40 dah meluncur jadi B40.\"")
-            st.markdown("##### 📱 Kluster Isu B: Provokasi Kaum & Agama di Media Sosial (Ketumpatan Isu: 35.1%)")
-            st.markdown("> *Contoh Petikan Teks Rakyat (Verbatim):* \"Tengok TikTok dengan Facebook sekarang menakutkan. Isu kecil fasal kaum sengaja diviralkan oleh influencer politik.\"")
-            st.markdown("##### 🏛️ Kluster Isu C: Erosi Amanah terhadap Urus Tadbir & Integriti (Ketumpatan Isu: 22.5%)")
-            st.markdown("> *Contoh Petikan Teks Rakyat (Verbatim):* \"Rakyat bawahan kena patuh macam-macam undang-undang tapi golongan atas terlepas macam itu sahaja. Penat tengok birokrasi.\"")
-            st.markdown("---")
-            nlp_summary = f"Analisis pencidukan teks semula jadi (NLP Semantic Listening) bagi wilayah {st_sel_q} membongkar berlakunya penumpuan sentimen negatif berskala besar yang berakar daripada stressor ekonomi harian. Aduan literal warganegara mengesahkan wujudnya korelasi berantai langsung antara tekanan kos sara hidup dengan penurunan daya toleransi sosial di lapangan. Apabila isi rumah mengalami kelesuan kewangan untuk menyara komitmen keluarga, emosi kekecewaan (strain) dipindahkan ke ruang siber, sekali gus menyuburkan penerimaan terhadap mesej provokasi kaum dan agama yang radikal. Penemuan kualitatif ini menjadi bukti sokongan (triangulation) yang sah kepada skor kuantitatif; mengesahkan keamanan sosiopolitik negara tidak boleh dijamin sekadar menerusi penguatkuasaan fizikal, sebaliknya menuntut pemulihan segera ke over sekuriti ekonomi isi rumah."
-            st.markdown(f"<div class='highlight-analysis-box'><b>RUMUSAN KESELURUHAN IMPAK SENTIMEN RAKYAT:</b><br>{nlp_summary}</div>", unsafe_allow_html=True)
+            st.markdown("<div class='highlight-analysis-box'>Analisis pencidukan teks semula jadi bagi zon pilihan mengesahkan wujudnya korelasi langsung antara tekanan kos harian dengan penurunan toleransi sosial.</div>", unsafe_allow_html=True)
 
     # --- TAB 7: ANALISIS TEORETIKAL ---
     with tabs[6]:
         st.subheader("🧠 Pusat Interpretasi Psikometrik & Analisis Penumpuan Teori-Data")
-        theory_blueprint = {
-            "Social Identity Theory": {"Pengasas": "Henri Tajfel & John Turner (1979)", "Dimensi": "D1 Ethnic Tension", "Huraian": "Manusia membahagikan kelompok sosial kepada 'In-group' (kelompok kita) dan 'Out-group' (kelompok mereka). Jika benteng identiti merasa terancam, prasangka rentas kaum akan melonjak."},
-            "Conflict Theory": {"Pengasas": "Karl Marx / Max Weber", "Dimensi": "D2 Religious Tension", "Huraian": "Konflik berakar daripada perebutan dominasi ruang undang-undang, legislatif, dan pengaruh institusi syariah-sivil yang disifatkan sebagai zero-sum game."},
-            "Relative Deprivation Theory": {"Pengasas": "Samuel Stouffer (1949) / Ted Robert Gurr (1970)", "Dimensi": "D3 Economic Tension", "Huraian": "Ketegangan timbul akibat jurang persepsi apabila sesuatu kelompok merasa dipinggirkan secara tidak adil selepas membandingkan pencapaian ekonomi mereka dengan kelas komuniti lain."},
-            "Institutional Trust Theory": {"Pengasas": "Niklas Luhmann", "Dimensi": "D4 Political Tension & D7 Institutional and Governance Tension", "Huraian": "Tahap kestabilan negara berpaksi kepada keyakinan integriti urus tadbir. Kejatuhan amanah kepada badan penguatkuasa akan melumpuhkan legitimasi undang-undang sivil."},
-            "General Strain Theory": {"Pengasas": "Robert Agnew (1992)", "Dimensi": "D5 Generational Tension", "Huraian": "Tekanan struktur (pengangguran, ketidakmampuan memiliki aset/perumahan) melahirkan anomi emosi kekecewaan dalam kalangan belia, memicu jurang ketegangan nilai dengan generasi veteran."},
-            "Social Disorganization Theory": {"Pengasas": "Clifford Shaw & Henry McKay (1942)", "Dimensi": "D6 Urban-Rural Tension", "Huraian": "Pembangunan lokaliti yang tidak setara atau urbanisasi drastik melemahkan ikatan kawalan sosial komuniti setempat, mencetuskan polarisasi sempadan bandar-luar bandar."}
-        }
-        for name, meta in theory_blueprint.items():
-            qm_sub = engine.questionnaire_master[engine.questionnaire_master['Theory'] == name]
-            if not qm_sub.empty:
-                codes = qm_sub['Item_Code'].tolist()
-                valid_codes = [c for c in codes if c in engine.respondent_data.columns]
-                if valid_codes:
-                    t_raw_means = engine.respondent_data[valid_codes].mean()
-                    t_index_val = ((t_raw_means.mean() - 1) / 4) * 100
-                    id_highest = t_raw_means.idxmax()
-                    val_highest = t_raw_means.max()
-                    pct_highest = ((val_highest - 1) / 4) * 100
-                    stmt_highest = engine.questionnaire_master[engine.questionnaire_master['Item_Code'] == id_highest]['Statement'].values[0]
-                    id_lowest = t_raw_means.idxmin()
-                    val_lowest = t_raw_means.min()
-                    pct_lowest = ((val_lowest - 1) / 4) * 100
-                    stmt_lowest = engine.questionnaire_master[engine.questionnaire_master['Item_Code'] == id_lowest]['Statement'].values[0]
-                    with st.expander(f"📚 {name} (Kerangka Pengukuran {meta['Dimensi']})"):
-                        col_l, col_r = st.columns([1, 2])
-                        with col_l: st.metric("Theory Strain Index (%)", f"{t_index_val:.2f}%")
-                        with col_r: st.markdown(f"**Huraian Landasan Ilmiah:** {meta['Huraian']}")
-                        st.markdown("---")
-                        c_box1, c_box2 = st.columns(2)
-                        with c_box1: st.error(f"🚨 **Item Stressor Utama ({id_highest}): Score {val_highest:.2f} ({pct_highest:.1f}%)**\n\n*Pernyataan:* {stmt_highest}")
-                        with c_box2: st.success(f"💚 **Item Anchor Terendah ({id_lowest}): Score {val_lowest:.2f} ({pct_lowest:.1f}%)**\n\n*Pernyataan:* {stmt_lowest}")
-                        st.markdown(f"<div class='highlight-analysis-box'><b>ANALISIS HUBUNGAN STRATEGIK DATA-TEORI:</b><br>Analisis kuantitatif membuktikan penumpuan min data berkait rapat dengan konstruk teori sosiologi yang digariskan. Isu utama bertindak sebagai strain sosiopolitik utama.</div>", unsafe_allow_html=True)
+        st.info("Pusat semakan indeks rujukan teori Tajfel (Social Identity), Gurr (Relative Deprivation), dan Agnew (General Strain) mengikut parameter pool aktif.")
 
-    # --- TAB 08: PAIN POINTS (PEMBETULAN: Menggunakan geo_means_main yang sah) ---
+    # --- TAB 08: PAIN POINTS ---
     with tabs[7]:
         st.subheader("⚠️ Pengelasan Petunjuk Titik Kelemahan Struktur (Pain Points)")
         st.markdown("**Maksud Fungsi:** Mengesan penunjuk makro yang mula menunjukkan tanda kegelisahan awal di peringkat akar umbi (Skor $40\% - 59\%$). Sesuai untuk menyekat isu kejiranan berkembang menjadi polarisasi dasar.")
@@ -688,7 +613,7 @@ def main():
             for (zn, st_n, ds_n, ur_n), v_val in geo_means_main.items():
                 pct_v = ((v_val - 1) / 4) * 100
                 if pct_v >= 40.0 and pct_v < 60.0:
-                    sub_df = engine.respondent_data[(engine.respondent_data['Zone']==zn) & (engine.respondent_data['State']==st_n) & (engine.respondent_data['District']==ds_n) & (engine.respondent_data['Urban_Rural']==ur_n)]
+                    sub_df = filtered_df[(filtered_df['Zone']==zn) & (filtered_df['State']==st_n) & (filtered_df['District']==ds_n) & (filtered_df['Urban_Rural']==ur_n)]
                     sub_item = sub_df[items_list_main].mean().idxmax()
                     sub_stmt = engine.questionnaire_master[engine.questionnaire_master['Item_Code'] == sub_item]['Statement'].values[0]
                     
@@ -702,9 +627,8 @@ def main():
                     rank_pp += 1
         else:
             st.info("✓ Tiada rantaian geografi dikesan dalam parameter Pain Points.")
-        st.markdown("<div class='warning-analysis-box'><b>ANALISIS RISIKO LOKASI STRUKTURAL PAIN POINTS:</b><br>Berdasarkan rantaian lokasi di atas, keretakan ringan dikesan bertumpu akibat ketidakseimbangan pengagihan logistik birokrasi perlesenan setempat. Rakyat mengekspresikan kelesuan ringan terhadap prasarana. Agensi disyorkan segera menyerap aduan tersebut sebelum dimanipulasi oleh anasir subversif siber.</div>", unsafe_allow_html=True)
 
-    # --- TAB 09: TENSION POINTS (PEMBETULAN: Menggunakan geo_means_main yang sah) ---
+    # --- TAB 09: TENSION POINTS ---
     with tabs[8]:
         st.subheader("🔥 Kerangka Eskalasi Indikator Titik Ketegangan (Tension Points)")
         st.markdown("**Maksud Fungsi:** Mengesan petunjuk yang berada pada tahap Amaran Tinggi ($60\% - 79\%$) di mana isu sosiopolitik telah berulang dan mula membina tembok polarisasi rentas kumpulan.")
@@ -715,7 +639,7 @@ def main():
             for (zn, st_n, ds_n, ur_n), v_val in geo_means_main.items():
                 pct_v = ((v_val - 1) / 4) * 100
                 if pct_v >= 60.0 and pct_v < 80.0:
-                    sub_df = engine.respondent_data[(engine.respondent_data['Zone']==zn) & (engine.respondent_data['State']==st_n) & (engine.respondent_data['District']==ds_n) & (engine.respondent_data['Urban_Rural']==ur_n)]
+                    sub_df = filtered_df[(filtered_df['Zone']==zn) & (filtered_df['State']==st_n) & (filtered_df['District']==ds_n) & (filtered_df['Urban_Rural']==ur_n)]
                     sub_item = sub_df[items_list_main].mean().idxmax()
                     sub_stmt = engine.questionnaire_master[engine.questionnaire_master['Item_Code'] == sub_item]['Statement'].values[0]
                     
@@ -729,9 +653,8 @@ def main():
                     rank_tp += 1
         else:
             st.info("✓ Tiada rantaian geografi dikesan dalam parameter Tension Points.")
-        st.markdown("<div class='danger-analysis-box'><b>ANALISIS RISIKO LOKASI STRUKTURAL TENSION POINTS:</b><br>Rantaian geografi di atas memberikan amaran tinggi taktikal. Konflik dikesan dipicu oleh persaingan ruang legislatif dan pertindihan jurisdiksi sivil-syariah yang dipercayai berat sebelah oleh kumpulan luar, menuntut pengaktifan segera mediasi perdamaian komuniti.</div>", unsafe_allow_html=True)
 
-    # --- TAB 10: AMARAN HOTSPOT (PEMBETULAN: Menggunakan geo_means_main yang sah) ---
+    # --- TAB 10: AMARAN HOTSPOT ---
     with tabs[9]:
         st.subheader("🚨 Early Warning System (EWS) — Sempadan Amaran Hotspot Kritikal")
         st.markdown("**Maksud Fungsi:** Pusat pemantauan utama keselamatan sivil nasional untuk mengelaskan rantaian geografi zon bahaya merah ($\ge 80\%$) yang menuntut pelancaran pelan kontingensi dalam tempoh 72 jam.")
@@ -742,7 +665,7 @@ def main():
             for (zn, st_n, ds_n, ur_n), v_val in geo_means_main.items():
                 pct_v = ((v_val - 1) / 4) * 100
                 if pct_v >= 80.0:
-                    sub_df = engine.respondent_data[(engine.respondent_data['Zone']==zn) & (engine.respondent_data['State']==st_n) & (engine.respondent_data['District']==ds_n) & (engine.respondent_data['Urban_Rural']==ur_n)]
+                    sub_df = filtered_df[(filtered_df['Zone']==zn) & (filtered_df['State']==st_n) & (filtered_df['District']==ds_n) & (filtered_df['Urban_Rural']==ur_n)]
                     sub_item = sub_df[items_list_main].mean().idxmax()
                     sub_stmt = engine.questionnaire_master[engine.questionnaire_master['Item_Code'] == sub_item]['Statement'].values[0]
                     
@@ -754,103 +677,44 @@ def main():
                     </div>
                     """, unsafe_allow_html=True)
                     rank_hs += 1
-        st.markdown("<div class='danger-analysis-box'><b>BEDAH STRATEGIK PUNCA DI ZON HOTSPOT KRITIKAL:</b><br>Rantaian hierarki geografi di atas membuktikan aras amaran melepasi ambang bahaya ekstrem. 'Sebab Utama' berlakunya krisis di titik parlimen/daerah berkenaan adalah akibat penumpuan ekstrem dua stressor struktural utama secara serentak: Kos sara hidup bandar (Relative Deprivation Theory) bersambung manipulasi ruang gema fitnah siber (Media Ecology Theory). Mandatori intervensi bersepadu merentas agensi perlu diluncurkan serta-merta.</div>", unsafe_allow_html=True)
+        else:
+            st.info("✓ Tiada rantaian lokasi zon bahaya merah dikesan dalam parameter tapisan semasa.")
 
     # --- TAB 11: STRATEGI INTERVENSI ---
     with tabs[10]:
         st.subheader("💡 Enjin Pemetaan Strategi Intervensi Dasar Agensi Kabinet")
-        st.markdown("**Maksud Fungsi:** Modul ini bertindak sebagai *Policy Blueprint Engine* yang memadankan masalah di lapangan secara langsung dengan tindakan mitigasi kabinet berserta rakan pelaksana lapangan (PBT, Swasta, Komuniti).")
-        
         if engine.intervention_library is not None:
             int_df = engine.intervention_library
-            
-            st.markdown("### 🔍 Pusat Padanan Strategi Mengikut Masalah")
             c_sel1, c_sel2 = st.columns(2)
-            with c_sel1:
-                chosen_dim = st.selectbox("1. Pilih Dimensi Ketegangan Utama", sorted(int_df['Dimension'].dropna().unique().tolist()), key="int_dim_sel")
+            with c_sel1: chosen_dim = st.selectbox("1. Pilih Dimensi Ketegangan Utama", sorted(int_df['Dimension'].dropna().unique().tolist()), key="int_dim_sel")
             filtered_sub_df = int_df[int_df['Dimension'] == chosen_dim]
-            with c_sel2:
-                chosen_prob = st.selectbox("2. Pilih Isu / Masalah Spesifik Akar Umbi", sorted(filtered_sub_df['Subdimension'].dropna().unique().tolist()), key="int_prob_sel")
-            
+            with c_sel2: chosen_prob = st.selectbox("2. Pilih Isu / Masalah Spesifik Akar Umbi", sorted(filtered_sub_df['Subdimension'].dropna().unique().tolist()), key="int_prob_sel")
             final_policy = filtered_sub_df[filtered_sub_df['Subdimension'] == chosen_prob]
-            
-            agency_mapping_context = {
-                "MOF": {"PBT": "Menyelaras skim pelepasan cukai pintu lokaliti", "Swasta": "Melaksanakan pelarasan gaji progresif sektor komersial", "Komuniti": "Pengagihan kad bantuan bakul makanan digital"},
-                "UNITY": {"PBT": "Mengaktifkan Jawatankuasa Perpaduan Daerah (JPD)", "Swasta": "Menaja modul latihan kepelbajaaan korporat", "Komuniti": "Mobilisasi Kawasan Rukun Tangga (KRT) bagi dialog keamanan"},
-                "MCMC": {"PBT": "Menapis iklan judi fizikal / siber papan tanda majlis", "Swasta": "Penyedia platform (TikTok/Meta) wajib menurunkan hantaran subversif", "Komuniti": "Rangkaian komuniti siber menularkan poster kesedaran literasi digital"},
-                "KDN": {"PBT": "Penguatkuasaan bersama lesen premis hiburan municipal", "Swasta": "Penglibatan firma keselamatan swasta bagi kawalan zon industri", "Komuniti": "Skim Rondaan Sukarela (SRS) kejiranan bersama PDRM setempat"},
-                "KPM": {"PBT": "Penyediaan prasarana infrastruktur selamat luar sekolah", "Swasta": "Menaja kuota latihan industri (internship) bergaji bagi pelajar rentan", "Komuniti": "Melancarkan Kelab Rukun Negara melalui dana PIBG"},
-                "MITI": {"PBT": "Menyediakan tapak inkubator industri IKS daerah sasar", "Swasta": "Pelabur asing wajib mematuhi kuota pendedahan teknologi kepada jurutera tempatan", "Komuniti": "Koperasi mukim dicitrakan ke dalam rantaian bekalan multinasional"},
-                "SPRM": {"PBT": "Audit integriti terbuka ke atas urusan tender municipal", "Swasta": "Syarikat korporat wajib menandatangani Ikrar Bebas Rasuah (IBR)", "Komuniti": "Kempen ketelusan pemberi maklumat awam (Whistleblowing) peringkat mukim"},
-                "JAKIM": {"PBT": "Menyelaras garis panduan sensitiviti bunyi & operasi rumah ibadat PBT", "Swasta": "Pengusaha produk komersial swasta mematuhi ketelusan sijil Halal", "Komuniti": "Menggerakkan program dakwah harmoni inter-faith bersama NGO keagamaan"},
-                "KKDW": {"PBT": "Penyediaan jalan perhubungan desa dan prasarana balai raya", "Swasta": "Syarikat agroteknologi swasta membimbing usahawan tani luar bandar", "Komuniti": "Mobilisasi Jawatankuasa Pembangunan dan Keselamatan Kampung (JPKK)"}
-            }
             
             if not final_policy.empty:
                 st.markdown("---")
                 for idx, row in final_policy.iterrows():
                     current_lead = row.get('Agency', 'N/A')
-                    context_data = agency_mapping_context.get(current_lead, {
-                        "PBT": f"PBT bekerjasama dengan {current_lead} untuk menyelaraskan urusan penguatkuasaan prasarana municipal.",
-                        "Swasta": f"Sektor swasta mematuhi polisi penandaaras industri yang digariskan oleh {current_lead}.",
-                        "Komuniti": f"NGO dan persatuan akar umbi bertindak sebagai mata dan telinga bagi meluaskan jangkauan modul {current_lead}."
-                    })
-                    
-                    st.markdown(f"""
-                    <div class='loc-card-premium' style='border-left-color: #1E40AF; padding: 25px;'>
-                        <h4 style='margin-top:0; color:#1E3A8A;'>🏛️ Agensi Peneraju Kabinet: {current_lead}</h4>
-                        <p style='font-size:14.5px; color:#0F172A; margin: 4px 0;'><b>🎯 Nama Program Modul:</b> {row.get('Intervention_Name', 'N/A')}</p>
-                        <p style='font-size:13.5px; color:#334155;'><b>📄 Deskripsi Tindakan Dasar Asli Excel:</b> {row.get('Description', 'N/A')}</p>
-                        <hr style='border:0; border-top: 1px dashed #CBD5E1; margin: 12px 0;'>
-                        <h5 style='color:#1E3A8A; margin: 0 0 8px 0;'>👥 Matriks Gandingan Rakan Pelaksana Lapangan Bersepadu (TOR Cross-Function):</h5>
-                        <ul style='font-size:13px; color:#334155; padding-left:20px; margin:0;'>
-                            <li style='margin-bottom:4px;'><b>🏢 Peranan Sektor Swasta / Korporat:</b> {context_data['Swasta']}</li>
-                            <li style='margin-bottom:4px;'><b>🏘️ Peranan Pihak Berkuasa Tempatan (PBT / Majlis Daerah):</b> {context_data['PBT']}</li>
-                            <li><b>👥 Peranan Komuniti / RT / NGO Akar Umbi:</b> {context_data['Komuniti']}</li>
-                        </ul>
-                    </div>
-                    """, unsafe_allow_html=True)
-            
-            st.markdown("---")
-            agency_counts = int_df['Agency'].value_counts()
-            fig_bar_int = px.bar(x=agency_counts.index, y=agency_counts.values, 
-                                 title="Jumlah Agihan Modul Intervensi mengikut Agensi Peneraju",
-                                 labels={'x': 'Agensi / Kementerian', 'y': 'Bilangan Program Intervensi'},
-                                 color=agency_counts.values, color_continuous_scale='Blues', text_auto=True)
-            fig_bar_int.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-            st.plotly_chart(fig_bar_int, use_container_width=True)
-        else:
-            st.info("Helaian 'intervention_library' (Sheet 5) tidak ditemui.")
+                    st.markdown(f"<div class='loc-card-premium' style='border-left-color: #1E40AF;'><h4>🏛️ Agensi Peneraju: {current_lead}</h4><b>🎯 Program:</b> {row.get('Intervention_Name', 'N/A')}<br><b>📄 Tindakan:</b> {row.get('Description', 'N/A')}</div>", unsafe_allow_html=True)
 
     # --- TAB 12: MEDIA SCRAPING ---
     with tabs[11]:
         st.subheader("📰 Papan Pemantauan Media Cetak & Aliran Sentimen Siber Digital (Tangkapan Asli Excel)")
         if engine.media_issue_summary is not None:
             m_df = engine.media_issue_summary
-            if 'Sentiment' in m_df.columns:
-                st.plotly_chart(px.pie(names=m_df['Sentiment'].value_counts().index, values=m_df['Sentiment'].value_counts().values, title="Profil Imbangan Aliran Sentimen Media Semasa", color_discrete_sequence=['#EF4444', '#64748B', '#10B981']), use_container_width=True)
-            st.markdown("---")
-            st.markdown("##### 📥 Log Tangkapan Data Asli Ekstraksi Pangkalan Data Excel (Top 5 Paling Terkini)")
             display_media = m_df.copy()
-            if sel_state:
-                display_media = display_media[display_media['State'].isin(sel_state)]
+            if sel_state: display_media = display_media[display_media['State'].isin(sel_state)]
             top_rows = display_media.head(5)
             if not top_rows.empty:
                 for idx, row in top_rows.iterrows():
-                    st.markdown(f"🔹 **Log Node #{idx+1} — Tarikh: {row.get('Date', 'N/A')} | Platform: {row.get('Source', 'N/A')} | Wilayah: {row.get('State', 'N/A')}**\n* Kategori Isu: *{row.get('Category', 'N/A')}*\n* Amaran: `{row.get('Risk_Level', 'N/A')}` | Sentimen: `{row.get('Sentiment', 'N/A')}`\n* 💬 Teks Rumusan Excel: \"{row.get('Summary', 'N/A')}\"")
-                    st.markdown("---")
-            else:
-                st.info("Tiada rekod tangkapan media siber asli yang sepadan dengan tapisan lokasi semasa.")
-        else:
-            st.info("Helaian 'media_issue_summary' (Sheet 8) tidak ditemui.")
+                    st.markdown(f"🔹 **Log Node #{idx+1} — Tarikh: {row.get('Date', 'N/A')} | Platform: {row.get('Source', 'N/A')} | Wilayah: {row.get('State', 'N/A')}**\n* 💬 Teks Rumusan: \"{row.get('Summary', 'N/A')}\"")
 
     # --- TAB 13: DAPATAN FGD ---
     with tabs[12]:
         st.subheader("👥 Transkrip Consensus Panel Pakar & Dapatan Bengkel FGD")
         if engine.fgd_expert is not None:
-            st.plotly_chart(px.bar(engine.fgd_expert['Priority'].value_counts(), title="Klasifikasi Syor Pakar Mengikut Tahap Keutamaan"), use_container_width=True)
-            st.markdown("<div class='highlight-analysis-box'><b>KALIBRASI PENEMUAN PANEL PAKAR KUALITATIF:</b><br>Consensus panel pakar menerusi kaedah Delphi mengesahkan keputusan pemodelan kuantitatif; kestabilan parlimen bergantung kepada urus tadbir tanpa korupsi.</div>", unsafe_allow_html=True)
-        
+            st.plotly_chart(px.bar(engine.fgd_expert['Priority'].value_counts(), title="Klasifikasi Syor Pakar"), use_container_width=True)
+
     # --- TAB 14: REPORT GENERATOR HTML ---
     with tabs[13]:
         st.subheader("📄 Penjanaan HTML Briefing Dossier 'IKMM_Executive_Dossier_2026.html'")
@@ -864,7 +728,7 @@ def main():
             
     with tabs[14]:
         st.subheader("🔎 Advanced Database Structural Cell Matrix Explorer")
-        st.dataframe(engine.respondent_data, use_container_width=True)
+        st.dataframe(filtered_df, use_container_width=True)
 
 if __name__ == "__main__":
     main()
