@@ -17,37 +17,175 @@ st.set_page_config(
 
 ADMIN_PASSWORD = "admin123"
 
-# --- 1. REKA BENTUK VISUAL: LIGHT EXECUTIVE WINDOWS THEME (HIGH CONTRAST) ---
+# --- 1. REKA BENTUK VISUAL: ULTRA-PREMIUM CORPORATE GRADIENT THEME (HIGH CONTRAST & LUXE) ---
 def apply_executive_premium_theme():
     st.markdown("""
         <style>
-            .stApp { background-color: #F8FAFC !important; color: #0F172A !important; }
-            [data-testid="stSidebar"] { background-color: #0F172A !important; border-right: 2px solid #E2E8F0 !important; }
-            [data-testid="stSidebar"] * { color: #F8FAFC !important; }
-            h1, h2, h3, h4, p, span, label { color: #0F172A !important; font-family: 'Segoe UI', Inter, sans-serif !important; }
-            .stTabs [data-baseweb="tab-list"] { gap: 6px; background-color: #E2E8F0; padding: 6px; border-radius: 10px; border: 1px solid #CBD5E1; }
-            .stTabs [data-baseweb="tab"] { height: 38px; padding: 0px 16px !important; background-color: transparent !important; border-radius: 6px !important; color: #475569 !important; font-weight: 600 !important; transition: all 0.2s ease; }
-            .stTabs [aria-selected="true"] { background-color: #FFFFFF !important; color: #1E3A8A !important; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08) !important; border: 1px solid #CBD5E1 !important; }
-            .kpi-card-premium { background: #FFFFFF; border: 1px solid #E2E8F0; border-left: 6px solid #1E40AF; border-radius: 12px; padding: 22px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-            .highlight-analysis-box { background-color: #EFF6FF; border-left: 5px solid #1D4ED8; padding: 22px; border-radius: 0 10px 10px 0; margin: 15px 0; color: #1E3A8A !important; line-height: 1.7; font-size: 14px; }
-            .danger-analysis-box { background-color: #FEF2F2; border-left: 5px solid #DC2626; padding: 22px; border-radius: 0 10px 10px 0; margin: 15px 0; color: #991B1B !important; line-height: 1.7; font-size: 14px; }
-            .warning-analysis-box { background-color: #FFFBEB; border-left: 5px solid #D97706; padding: 22px; border-radius: 0 10px 10px 0; margin: 15px 0; color: #92400E !important; line-height: 1.7; font-size: 14px; }
-            .success-analysis-box { background-color: #F0FDF4; border-left: 5px solid #16A34A; padding: 22px; border-radius: 0 10px 10px 0; margin: 15px 0; color: #166534 !important; line-height: 1.7; font-size: 14px; }
-            .loc-card-premium { border: 1px solid #CBD5E1; border-radius: 8px; padding: 18px; margin-bottom: 15px; background-color: #FFFFFF; border-left: 5px solid #8B5CF6; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-            .stDataFrame { border: 1px solid #E2E8F0 !important; border-radius: 8px !important; background-color: #FFFFFF !important; }
+            /* Mengimport font premium modern */
+            @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+            
+            /* Aplikasi Font Global & Latar Belakang */
+            .stApp { 
+                background: radial-gradient(circle at 50% 0%, #F8FAFC 0%, #F1F5F9 100%) !important; 
+                color: #0F172A !important; 
+                font-family: 'Plus Jakarta Sans', -apple-system, sans-serif !important; 
+            }
+            
+            /* Sidebar Kontras Tinggi - Dark Slate Navy dengan Kemasan Gradient Sisi */
+            [data-testid="stSidebar"] { 
+                background: linear-gradient(180deg, #0B1329 0%, #1E293B 100%) !important; 
+                border-right: 1px solid rgba(255, 255, 255, 0.08) !important; 
+                box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15) !important;
+            }
+            [data-testid="stSidebar"] * { color: #F8FAFC !important; font-family: 'Plus Jakarta Sans', sans-serif !important; }
+            [data-testid="stSidebar"] .stMultiSelect span { color: #0F172A !important; } /* Memastikan teks tag multiselect di sidebar mudah dibaca */
+            
+            /* Reka Bentuk Kepala Tulisan (Headers) */
+            h1, h2, h3, h4, h5, h6 { 
+                font-family: 'Plus Jakarta Sans', sans-serif !important; 
+                font-weight: 700 !important; 
+                letter-spacing: -0.5px !important;
+                background: linear-gradient(135deg, #0F172A 30%, #2563EB 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+            
+            /* Reka Bentuk Tab Premium - Glassmorphism Style */
+            .stTabs [data-baseweb="tab-list"] { 
+                gap: 8px; 
+                background: rgba(226, 232, 240, 0.7) !important; 
+                padding: 8px; 
+                border-radius: 14px; 
+                border: 1px solid rgba(203, 213, 225, 0.6);
+                backdrop-filter: blur(8px);
+            }
+            .stTabs [data-baseweb="tab"] { 
+                height: 42px; 
+                padding: 0px 20px !important; 
+                background-color: transparent !important; 
+                border-radius: 10px !important; 
+                color: #475569 !important; 
+                font-weight: 600 !important; 
+                font-size: 13.5px !important;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+                border: 1px solid transparent !important;
+            }
+            .stTabs [aria-selected="true"] { 
+                background: #FFFFFF !important; 
+                color: #1D4ED8 !important; 
+                box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12) !important; 
+                border: 1px solid rgba(37, 99, 235, 0.2) !important; 
+                font-weight: 700 !important;
+            }
+            
+            /* Kad KPI Premium dengan Kesan Bayang Lembut & Sisi Cerah */
+            .kpi-card-premium { 
+                background: #FFFFFF; 
+                border: 1px solid rgba(226, 232, 240, 0.8); 
+                border-radius: 16px; 
+                padding: 24px; 
+                text-align: center; 
+                box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.04), 0 4px 6px -4px rgba(15, 23, 42, 0.02); 
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+            }
+            .kpi-card-premium:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.06), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+            }
+            
+            /* Kotak Analisis Maklumat Berwarna Eksekutif (Gradient Borders) */
+            .highlight-analysis-box { 
+                background: linear-gradient(90deg, #EFF6FF 0%, #FFFFFF 100%); 
+                border-left: 5px solid #2563EB; 
+                padding: 22px; border-radius: 0 14px 14px 0; margin: 20px 0; 
+                color: #1E40AF !important; line-height: 1.7; font-size: 14.5px;
+                box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.03);
+            }
+            .danger-analysis-box { 
+                background: linear-gradient(90deg, #FEF2F2 0%, #FFFFFF 100%); 
+                border-left: 5px solid #DC2626; 
+                padding: 22px; border-radius: 0 14px 14px 0; margin: 20px 0; 
+                color: #991B1B !important; line-height: 1.7; font-size: 14.5px;
+                box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.03);
+            }
+            .warning-analysis-box { 
+                background: linear-gradient(90deg, #FFFBEB 0%, #FFFFFF 100%); 
+                border-left: 5px solid #D97706; 
+                padding: 22px; border-radius: 0 14px 14px 0; margin: 20px 0; 
+                color: #92400E !important; line-height: 1.7; font-size: 14.5px;
+                box-shadow: 0 4px 6px -1px rgba(217, 119, 6, 0.03);
+            }
+            .success-analysis-box { 
+                background: linear-gradient(90deg, #F0FDF4 0%, #FFFFFF 100%); 
+                border-left: 5px solid #16A34A; 
+                padding: 22px; border-radius: 0 14px 14px 0; margin: 20px 0; 
+                color: #166534 !important; line-height: 1.7; font-size: 14.5px;
+                box-shadow: 0 4px 6px -1px rgba(22, 163, 74, 0.03);
+            }
+            
+            /* Kad Spasial Geografi Premium */
+            .loc-card-premium { 
+                border: 1px solid #E2E8F0; 
+                border-radius: 12px; 
+                padding: 20px; 
+                margin-bottom: 16px; 
+                background: #FFFFFF; 
+                box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+                transition: all 0.2s ease;
+            }
+            .loc-card-premium:hover {
+                border-color: #CBD5E1;
+                box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04);
+            }
+            
+            /* Pembungkus Dataframe Streamlit */
+            .stDataFrame { 
+                border: 1px solid #E2E8F0 !important; 
+                border-radius: 12px !important; 
+                background-color: #FFFFFF !important; 
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02) !important;
+            }
+            
+            /* Mengemas kini Reka Bentuk Butang (Buttons) Supaya Kelihatan Mahal */
+            .stButton>button {
+                background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%) !important;
+                color: #FFFFFF !important;
+                border: none !important;
+                padding: 10px 24px !important;
+                border-radius: 10px !important;
+                font-weight: 600 !important;
+                box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15) !important;
+                transition: all 0.3s ease !important;
+            }
+            .stButton>button:hover {
+                transform: translateY(-1px) !important;
+                box-shadow: 0 6px 20px rgba(15, 23, 42, 0.25) !important;
+                background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
+            }
         </style>
     """, unsafe_allow_html=True)
 
 def render_kpi_card(label, value, unit, tier="low"):
-    color_map = {"low": "#10B981", "tension": "#F59E0B", "pain": "#DB2777", "hotspot": "#EF4444"}
-    border_color = color_map.get(tier, "#1E40AF")
+    # Skema warna premium berasaskan rona korporat tinggi & kecerunan (Gradients)
+    color_map = {
+        "low": {"border": "#10B981", "bg": "linear-gradient(135deg, #E6F4EA 0%, #FFFFFF 100%)"},
+        "tension": {"border": "#F59E0B", "bg": "linear-gradient(135deg, #FEF3C7 0%, #FFFFFF 100%)"},
+        "pain": {"border": "#DB2777", "bg": "linear-gradient(135deg, #FCE7F3 0%, #FFFFFF 100%)"},
+        "hotspot": {"border": "#EF4444", "bg": "linear-gradient(135deg, #FEE2E2 0%, #FFFFFF 100%)"}
+    }
+    
+    tier_design = color_map.get(tier, {"border": "#1E40AF", "bg": "linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%)"})
+    border_color = tier_design["border"]
+    bg_gradient = tier_design["bg"]
+    
     st.markdown(f"""
-    <div class="kpi-card-premium" style="border-left-color: {border_color};">
-        <p class="kpi-label" style="color: #475569 !important; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; margin: 0;">{label}</p>
-        <div class="kpi-value" style="font-size: 36px; font-weight: 800; margin: 6px 0; color: {border_color} !important;">{value}</div>
-        <p style='color: #64748B !important; font-size: 11px; font-weight: 500; margin: 0;'>{unit}</p>
+    <div class="kpi-card-premium" style="border-left: 6px solid {border_color}; background: {bg_gradient};">
+        <p style="color: #64748B !important; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 4px 0;">{label}</p>
+        <div style="font-size: 34px; font-weight: 800; margin: 4px 0; color: #0F172A !important; letter-spacing: -1px;">{value}</div>
+        <p style="color: #475569 !important; font-size: 12px; font-weight: 500; margin: 4px 0 0 0; opacity: 0.85;">{unit}</p>
     </div>
     """, unsafe_allow_html=True)
+
 
 # --- 2. ENGIN ANALITIK STRATEGIK DASAR KERAJAAN (IKMM 2026) ---
 class IKMMDasarEngine:
@@ -514,7 +652,7 @@ def main():
 
     # --- PENJANAAN STRUKTUR HALAMAN TAB ---
     tabs = st.tabs([
-        "📁 Profil Demografi", "📈 Ringkasan Eksekutif", "🗺️ Penilaian Geografi", 
+        "📁 Profil Demografi", "📈 Ringkasan Executive", "🗺️ Penilaian Geografi", 
         "📊 Indeks Dimensi", "🚨 Item Stressor", "💬 NLP Kualitatif", 
         "🧠 Analisis Teoretikal", "⚠️ Pain Points", "🔥 Tension Points", 
         "🛑 Amaran Hotspot", "💡 Strategi Intervensi", "📰 Media Scraping", 
@@ -658,7 +796,7 @@ def main():
                     sub_stmt = engine.questionnaire_master[engine.questionnaire_master['Item_Code'] == sub_item]['Statement'].values[0]
                     
                     st.markdown(f"""
-                    <div class='loc-card-premium' style='border-left-color: #DB2777;'>
+                    <div class='loc-card-premium' style='border-left-color: #DB2777; background: linear-gradient(90deg, #FCE7F3 0%, #FFFFFF 100%);'>
                         <b>📍 RANTAIAN LOKASI #{rank_pp}: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>
                         * **Skor Ketegangan Setempat:** {pct_v:.2f}%<br>
                         * 🔍 **Punca Utama (Stressor):** Item {sub_item} &rarr; <i>"{sub_stmt}"</i>
@@ -682,7 +820,7 @@ def main():
                     sub_stmt = engine.questionnaire_master[engine.questionnaire_master['Item_Code'] == sub_item]['Statement'].values[0]
                     
                     st.markdown(f"""
-                    <div class='loc-card-premium' style='border-left-color: #F59E0B;'>
+                    <div class='loc-card-premium' style='border-left-color: #F59E0B; background: linear-gradient(90deg, #FEF3C7 0%, #FFFFFF 100%);'>
                         <b>📍 RANTAIAN LOKASI #{rank_tp}: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>
                         * **Skor Ketegangan Setempat:** {pct_v:.2f}%<br>
                         * 🔍 **Punca Utama (Stressor):** Item {sub_item} &rarr; <i>"{sub_stmt}"</i>
@@ -706,7 +844,7 @@ def main():
                     sub_stmt = engine.questionnaire_master[engine.questionnaire_master['Item_Code'] == sub_item]['Statement'].values[0]
                     
                     st.markdown(f"""
-                    <div class='loc-card-premium' style='border-left-color: #EF4444; background-color: #FEF2F2;'>
+                    <div class='loc-card-premium' style='border-left-color: #EF4444; background: linear-gradient(90deg, #FEE2E2 0%, #FFFFFF 100%);'>
                         <b style='color: #DC2626;'>💥 CRITICAL ZON #{rank_hs}: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>
                         * **Skor Komposit EWS Bahaya:** {pct_v:.2f}%<br>
                         * 🛑 **PUNCA SEBENAR KRITIKAL (Stressor):** Item {sub_item} &rarr; <i style='color: #991B1B;'>"{sub_stmt}"</i>
@@ -732,7 +870,7 @@ def main():
                 st.markdown("---")
                 for idx, row in final_policy.iterrows():
                     current_lead = row.get('Agency', 'N/A')
-                    st.markdown(f"<div class='loc-card-premium' style='border-left-color: #1E40AF;'><h4>🏛️ Agensi Peneraju: {current_lead}</h4><b>🎯 Program:</b> {row.get('Intervention_Name', 'N/A')}<br><b>📄 Tindakan:</b> {row.get('Description', 'N/A')}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='loc-card-premium' style='border-left: 6px solid #1E40AF; background: linear-gradient(90deg, #EFF6FF 0%, #FFFFFF 100%);'><h4>🏛️ Agensi Peneraju: {current_lead}</h4><b>🎯 Program:</b> {row.get('Intervention_Name', 'N/A')}<br><b>📄 Tindakan:</b> {row.get('Description', 'N/A')}</div>", unsafe_allow_html=True)
         else:
             st.info("Modul mitigasi kabinet belum diimport.")
 
