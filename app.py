@@ -153,9 +153,13 @@ class IKMMDasarEngine:
             'D9 Digital Tension': [f'IKM_{i:03d}' for i in range(97, 109)]
         }
 
-    def connect_and_load_workbook(self):
+    def connect_and_load_workbook(self, file_source=None):
         try:
-            xls = pd.ExcelFile(self.filename)
+            if file_source is None:
+                xls = pd.ExcelFile(self.filename)
+            else:
+                xls = pd.ExcelFile(file_source)
+                
             self.respondent_data = pd.read_excel(xls, sheet_name='respondent_data')
             self.questionnaire_master = pd.read_excel(xls, sheet_name='questionnaire_master')
             
@@ -289,13 +293,13 @@ def init_dashboard_session():
         st.session_state.auth_state = False
 
 def login_portal():
-    apply_executive_premium_theme() # PEMBETULAN: Menggunakan nama fungsi yang betul
+    apply_executive_premium_theme()
     c1, c2, c3 = st.columns([1, 1.3, 1])
     with c2:
         st.markdown("<div style='text-align: center; padding-top: 130px;'><h2>🏛️ Urus Setia Polisi IKMM 2026</h2><p>Sistem Intelligence Penilaian Risiko Amaran Awal Konflik Kebangsaan</p></div>", unsafe_allow_html=True)
         with st.form("gate_form"):
             token = st.text_input("Sila Masukkan Token Keselamatan Pelepasan Dasar", type="password")
-            if st.form_submit_button("Sahkan Legitimasi Kredensial", use_container_width=True):
+            if st.form_submit_button("Sahkan Kredensial Sistem", use_container_width=True):
                 if hashlib.sha256(token.encode()).hexdigest() == hashlib.sha256(ADMIN_PASSWORD.encode()).hexdigest():
                     st.session_state.auth_state = True
                     st.rerun()
@@ -310,7 +314,7 @@ def main():
         login_portal()
         return
         
-    apply_executive_premium_theme() # PEMBETULAN: Menggunakan nama fungsi yang betul
+    apply_executive_premium_theme()
     engine = st.session_state.engine
     
     # Header Utama Aplikasi
@@ -330,19 +334,38 @@ def main():
         "13 Dapatan FGD", "14 Dossier Report", "15 Cell Data Explorer"
     ])
     
-    # --- TAB 1: PORTAL GATEWAY ---
+    # --- TAB 1: PORTAL GATEWAY (SUNTIKAN KOD FILE UPLOADER YANG BETUL) ---
     with tabs[0]:
         st.subheader("📂 Pengurusan Pangkalan Data & Struktur Lembaran")
+        
+        # SINI CARA UPLOAD DATA MELALUI INTERFACE WEB
+        uploaded_file = st.file_uploader("Sila Pilih / Lepaskan Fail Pangkalan Data Excel Master IKMM (.xlsx)", type=['xlsx'])
+        if uploaded_file:
+            if st.button("Proses & Hubungkan Fail Excel Baharu", use_container_width=True):
+                if engine.connect_and_load_workbook(uploaded_file):
+                    st.success("🎯 Fail Excel Berjaya Dimuat Naik dan Disinkronisasikan ke dalam Memori Sistem!")
+                    st.rerun()
+                else:
+                    st.error("❌ Ralat Metodologi: Struktur helaian data Excel anda tidak sepadan dengan kriteria fail master.")
+        
+        st.markdown("---")
         if engine.data_loaded:
-            st.success(f"🎯 Automatik Terhubung: Fail '{engine.filename}' Berjaya Dikesan & Dimuat Naik.")
+            st.success(f"🎯 Status Aliran: Aktif Bersambung.")
             c1, c2, c3, c4 = st.columns(4)
             with c1: st.metric("Responden Primer", f"{len(engine.respondent_data):,} Baris")
             with c2: st.metric("Variabel Indikator", "108 Item Soalan")
             with c3: st.metric("Skala Penilaian", "Likert 1 - 5")
             with c4: st.metric("Integriti Matriks", "100% Sinkronis")
+            
+            st.markdown("---")
+            st.markdown("### 📋 Set Data Struktur Responden Kebangsaan (Pratinjau Master Data)")
+            st.dataframe(engine.respondent_data.head(100), use_container_width=True)
         else:
-            st.error(f"❌ Ralat Sistem: Fail pangkalan data '{engine.filename}' tiada dalam direktori utama. Sila letakkan fail excel tersebut.")
-            return
+            st.warning("⚠️ Status Aliran: Menunggu Fail Dimuat Naik. Sila seret fail Excel data responden anda ke petak di atas.")
+
+    # Jika data belum dimasukkan, kunci fungsi analitik tab lain bagi mengelakkan crash aplikasi
+    if not engine.data_loaded:
+        return
 
     # --- TAB 2: RINGKASAN EKSEKUTIF ---
     with tabs[1]:
@@ -445,118 +468,3 @@ def main():
                 "Latar Belakang & Huraian": "Konflik sosial berakar daripada persaingan berterusan kelompok manusia untuk merebut penguasaan sumber, legislatif, dan ruang perlembagaan yang terhad. Memandu geseran pentadbiran undang-undang sivil dan Syariah (D2).",
                 "Dimensi Sasaran": "D2 Religious Tension"
             },
-            "Relative Deprivation Theory": {
-                "Pengasas": "Samuel Stouffer (1949), dikembangkan oleh Ted Robert Gurr (1970)",
-                "Latar Belakang & Huraian": "Kemarahan struktur tercetus bukan sekadar akibat kemiskinan mutlak, tetapi muncul daripada jurang psikologi ketidakadilan apabila melihat kelompok sosioekonomi lain meraih kekayaan jauh lebih dominan.",
-                "Dimensi Sasaran": "D3 Economic Tension"
-            },
-            "Institutional Trust Theory": {
-                "Pengasas": "Niklas Luhmann / Bernard Barber",
-                "Latar Belakang & Huraian": "Integriti institusi penguatkuasaan, kehakiman, dan ketelusan parlimen adalah tiang sokongan ketenteraman awam. Apabila persepsi salah guna kuasa meningkat (D7), legitimasi politik (D4) akan lumpuh.",
-                "Dimensi Sasaran": "D4 Political Tension & D7 Institutional and Governance Tension"
-            },
-            "General Strain Theory": {
-                "Pengasas": "Robert Agnew (1992)",
-                "Latar Belakang & Huraian": "Kekecewaan atau tekanan sistemik persekitaran (seperti pengangguran, ketidakmampuan memiliki aset/perumahan) mewujudkan anomi emosi yang memandu jurang ketegangan antara generasi muda dan veteran (D5).",
-                "Dimensi Sasaran": "D5 Generational Tension"
-            },
-            "Social Disorganization Theory": {
-                "Pengasas": "Clifford Shaw & Henry McKay (1942)",
-                "Latar Belakang & Huraian": "Kawasan geografi yang mengalami urbanisasi terlalu agresif atau pembangunan infrastruktur tidak setara akan mengalami kelemahan kawalan sosial komuniti setempat, mencetuskan polarisasi sempadan bandar dan luar bandar (D6).",
-                "Dimensi Sasaran": "D6 Urban-Rural Tension"
-            },
-            "Social Cohesion Theory": {
-                "Pengasas": "Émile Durkheim, dikembangkan oleh OECD",
-                "Latar Belakang & Huraian": "Mengukur kekuatan jaringan sosial, kepercayaan sesama jiran, dan kesediaan masyarakat untuk saling membantu ketika krisis. Bertindak sebagai indikator pelindung yang meredakan ketegangan.",
-                "Dimensi Sasaran": "D8 Social Resilience"
-            },
-            "Media Ecology Theory": {
-                "Pengasas": "Marshall McLuhan (1964) & Neil Postman",
-                "Latar Belakang & Huraian": "Medium teknologi membentuk persepsi manusia. Algoritma media digital siber sengaja mencipta ruang gema (echo chambers) dan menularkan berita palsu demi keuntungan komersial, mempercepatkan konflik siber.",
-                "Dimensi Sasaran": "D9 Digital Tension"
-            }
-        }
-        
-        for name, meta in theory_dictionary.items():
-            with st.expander(f"📚 {name} (Kerangka Pengukuran {meta['Dimensi Sasaran']})"):
-                st.markdown(f"**Pelopor / Tokoh Pengasas:** *{meta['Pengasas']}*")
-                st.markdown(f"**Aplikasi Sains Sosial Dasar:** {meta['Latar Belakang & Huraian']}")
-                
-                if engine.questionnaire_master is not None:
-                    qm_subset = engine.questionnaire_master[engine.questionnaire_master['Theory'] == name]
-                    if not qm_subset.empty:
-                        item_codes = qm_subset['Item_Code'].tolist()
-                        valid_codes = [c for c in item_codes if c in engine.respondent_data.columns]
-                        if valid_codes:
-                            t_mean = engine.respondent_data[valid_codes].mean().mean()
-                            t_index = ((t_mean - 1) / 4) * 100
-                            st.metric("Theory Strain Index (%)", f"{t_index:.2f}%")
-
-    # --- TAB 8: PAIN POINTS ---
-    with tabs[7]:
-        st.subheader("⚠️ Pengelasan Petunjuk Titik Kelemahan (Pain Points)")
-        if engine.pain_point_mapping is not None:
-            st.dataframe(engine.pain_point_mapping, use_container_width=True, hide_index=True)
-        else:
-            st.info("Helaian 'pain_point_mapping' tidak ditemui.")
-
-    # --- TAB 9: TENSION POINTS ---
-    with tabs[8]:
-        st.subheader("🔥 Kerangka Eskalasi Indikator Titik Ketegangan (Tension Points)")
-        if engine.tension_point_mapping is not None:
-            st.dataframe(engine.tension_point_mapping, use_container_width=True, hide_index=True)
-        else:
-            st.info("Helaian 'tension_point_mapping' tidak ditemui.")
-
-    # --- TAB 10: AMARAN HOTSPOT ---
-    with tabs[9]:
-        st.subheader("🚨 Early Warning System (EWS) — Sempadan Amaran Hotspot Kritikal")
-        if engine.dashboard_config is not None:
-            st.dataframe(engine.dashboard_config, use_container_width=True, hide_index=True)
-        else:
-            st.info("Helaian 'dashboard_config' tidak ditemui.")
-
-    # --- TAB 11: STRATEGI INTERVENSI ---
-    with tabs[10]:
-        st.subheader("💡 Perpusat Strategi Dasar & Syor Intervensi Agensi Kabinet")
-        if engine.intervention_library is not None:
-            st.dataframe(engine.intervention_library, use_container_width=True, hide_index=True)
-        else:
-            st.info("Helaian 'intervention_library' tidak ditemui.")
-
-    # --- TAB 12: MEDIA SCRAPING ---
-    with tabs[11]:
-        st.subheader("📰 Papan Pemantauan Media Cetak & Aliran Sentimen Siber Digital")
-        if engine.media_issue_summary is not None:
-            st.dataframe(engine.media_issue_summary, use_container_width=True, hide_index=True)
-        else:
-            st.info("Helaian 'media_issue_summary' tidak ditemui.")
-
-    # --- TAB 13: DAPATAN FGD ---
-    with tabs[12]:
-        st.subheader("👥 Transkrip Konsensus Panel Pakar & Dapatan Bengkel FGD")
-        if engine.fgd_expert is not None:
-            st.dataframe(engine.fgd_expert, use_container_width=True, hide_index=True)
-        else:
-            st.info("Helaian 'fgd_expert' tidak ditemui.")
-
-    # --- TAB 14: REPORT GENERATOR ---
-    with tabs[13]:
-        st.subheader("📄 Penjanaan HTML Briefing Dossier Rasmi JPM")
-        rep_title = st.text_input("Tajuk Laporan Eksekutif", "Laporan Ringkasan Keselamatan Sosial Negara & Indeks IKMM 2026")
-        rep_officer = st.text_input("Nama Pegawai Pelapor Muktamad", "Urus Setia Kanan JPNIN")
-        rep_branch = st.text_input("Cawangan Bahagian", "Kluster Pemetaan Risiko Perpaduan")
-        
-        if st.button("Kompilasikan Dokumen Dossier Rasmi", use_container_width=True):
-            html_code = engine.generate_html_dossier_report(rep_title, rep_officer, rep_branch)
-            st.success("✅ Dokumen Dossier Berjaya Dikompilasikan Tanpa Ralat!")
-            st.download_button("⬇️ Muat Turun Fail Laporan HTML Dossier", html_code, "IKMM_Executive_Brief_Dossier.html", "text/html", use_container_width=True)
-
-    # --- TAB 15: CELL DATA EXPLORER ---
-    with tabs[14]:
-        st.subheader("🔎 Advanced Database Structural Cell Matrix Explorer")
-        # PEMBETULAN BUG: Tidak menggunakan variabel luaran display_df yang belum didefinisikan
-        st.dataframe(engine.respondent_data, use_container_width=True)
-
-if __name__ == "__main__":
-    main()
