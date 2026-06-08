@@ -210,6 +210,14 @@ class IKMMDasarEngine:
         dim_mean_raw = df[target_items].mean().mean()
         return ((dim_mean_raw - 1) / 4) * 100
 
+    # PEMBETULAN UTAMA: Menambah fungsi get_dimension_composite_scores yang hilang
+    def get_dimension_composite_scores(self, df=None):
+        if df is None: df = self.respondent_data
+        results = {}
+        for dim in self.dim_item_ranges.keys():
+            results[dim] = self.calculate_single_dimension_score(dim, df)
+        return results
+
     def calculate_item_scores(self, df=None):
         if df is None: df = self.respondent_data
         all_items = [f'IKM_{i:03d}' for i in range(1, 109) if f'IKM_{i:03d}' in df.columns]
@@ -254,10 +262,10 @@ class IKMMDasarEngine:
             raw_mean = group[items].mean().mean()
             tension_index = ((raw_mean - 1) / 4) * 100
             
-            if tension_index >= 80.0: classification = "¼ Hotspot / Kritikal"
-            elif tension_index >= 60.0: classification = "¾ Pain Point"
-            elif tension_index >= 40.0: classification = "½ Tension Point"
-            else: classification = "¼ Rendah / Stabil"
+            if tension_index >= 80.0: classification = "🔴 Hotspot / Kritikal"
+            elif tension_index >= 60.0: classification = "💗 Pain Point"
+            elif tension_index >= 40.0: classification = "💛 Tension Point"
+            else: classification = "💚 Rendah / Stabil"
                 
             records.append({
                 'Negeri / Wilayah': state, 
@@ -461,7 +469,7 @@ def main():
             
             target_col = grid_c1 if loop_counter % 3 == 0 else (grid_c2 if loop_counter % 3 == 1 else grid_c3)
             with target_col:
-                render_kpi_card(f"{dim_name} Index", f"{d_score:.2f}%", f"Berasaskan 12 Item Indikator", tier=d_tier)
+                render_kpi_card(f"{dim_name}", f"{d_score:.2f}%", f"Berasaskan 12 Item Indikator", tier=d_tier)
             loop_counter += 1
 
     # --- TAB 5: STATISTIK INDICATOR ITEM ---
