@@ -449,10 +449,24 @@ def main():
     apply_executive_premium_theme()
     engine = st.session_state.engine
     
+    # --- INSULASI AWAL LOGIK PARAMETER (ANTI-CRASH) ---
     active_filters = {}
     sel_state = []
     
-    # --- 1. KAWALAN GEOGRAFI SIDEBAR (HANYA AKTIF JIKA DATA WUJUD) ---
+    # Memastikan data diproses dengan selamat jika wujud
+    if engine.data_loaded and engine.respondent_data is not None:
+        filtered_df = engine.apply_filters(active_filters)
+        sub_total = len(filtered_df)
+        items_list_main = engine.get_registered_items()
+        geo_means_main = filtered_df.groupby(['Zone', 'State', 'District', 'Urban_Rural'])[items_list_main].mean().mean(axis=1).sort_values(ascending=False) if sub_total > 0 and items_list_main else pd.Series()
+    else:
+        # Jika pangkalan data kosong, paksa parameter diisytihar sebagai kluster selamat
+        filtered_df = pd.DataFrame()
+        sub_total = 0
+        items_list_main = []
+        geo_means_main = pd.Series()
+
+    # --- RENDERING CONTROLLER DI SIDEBAR ---
     if engine.data_loaded and engine.respondent_data is not None:
         with st.sidebar:
             st.markdown("### 🗺️ Pengendali Penapis Geografi Dinamik")
@@ -487,12 +501,18 @@ def main():
             if sel_district: active_filters['District'] = sel_district
             if sel_urban: active_filters['Urban_Rural'] = sel_urban
             if sel_income: active_filters['Income_Group'] = sel_income
+            
+            # Kemas kini data tertapis serta-merta mengikut pilihan sidebar pengguna
+            filtered_df = engine.apply_filters(active_filters)
+            sub_total = len(filtered_df)
+            if sub_total > 0 and items_list_main:
+                geo_means_main = filtered_df.groupby(['Zone', 'State', 'District', 'Urban_Rural'])[items_list_main].mean().mean(axis=1).sort_values(ascending=False)
     else:
         with st.sidebar:
             st.markdown("### 🗺️ Pengendali Penapis Geografi")
-            st.info("Sila muat naik fail data induk (.xlsx) terlebih dahulu untuk mengaktifkan fungsi tapisan.")
+            st.info("Sila muat naik fail data induk (.xlsx) untuk mengaktifkan fungsi tapisan.")
 
-    # --- 2. PENJANAAN TAB UTAMA ---
+    # --- PENJANAAN STRUKTUR HALAMAN TAB ---
     tabs = st.tabs([
         "📁 Profil Demografi", "📈 Ringkasan Eksekutif", "🗺️ Penilaian Geografi", 
         "📊 Indeks Dimensi", "🚨 Item Stressor", "💬 NLP Kualitatif", 
@@ -511,53 +531,43 @@ def main():
                     st.success("Fail Excel Berjaya Dimuat Naik & Berhubungan!")
                     st.rerun()
                 else:
-                    st.error("Gagal membaca dokumen. Pastikan tab lembaran 'respondent_data' dan 'questionnaire_master' tersedia dengan format yang betul.")
+                    st.error("Gagal membaca struktur dokumen excel.")
         
         st.markdown("---")
         
-        # JIKA FAIL BELUM DIMUAT NAIK SAMA SEKALI, SEKAT SCRIPT DARIPADA RUNNING CODE BAWAH
         if not engine.data_loaded or engine.respondent_data is None:
-            st.warning("⚠️ Tiada pangkalan data dikesan aktif di dalam memori awan. Sila muat naik dokumen fail Excel (.xlsx) di atas untuk memulakan enjin analitik komposit.")
-            return # Menghentikan fungsi main di sini dengan selamat tanpa sebarang Crash!
-
-        # --- JIKA DATA PASSED, PEMBINAAN VISUAL DESKRIPTIF BERMULA ---
-        filtered_df = engine.apply_filters(active_filters)
-        sub_total = len(filtered_df)
-        items_list_main = engine.get_registered_items()
-        geo_means_main = filtered_df.groupby(['Zone', 'State', 'District', 'Urban_Rural'])[items_list_main].mean().mean(axis=1).sort_values(ascending=False) if sub_total > 0 and items_list_main else pd.Series()
-
-        if sub_total > 0:
-            st.markdown(f"#### 📊 Hasil Penemuan Profil Semasa: {sub_total:,} Responden Aktif Mapped")
-            st.markdown("##### Sektor A: Analisis Pembahagian Geografi & Sempadan")
-            g_c1, g_c2, g_c3 = st.columns(3)
-            with g_c1:
-                z_cnt = filtered_df['Zone'].value_counts()
-                st.plotly_chart(px.pie(names=z_cnt.index, values=z_cnt.values, title="Pecahan mengikut Zon"), use_container_width=True)
-            with g_c2:
-                s_cnt = filtered_df['State'].value_counts()
-                st.plotly_chart(px.bar(x=s_cnt.values, y=s_cnt.index, orientation='h', title="Taburan Responden mengikut Negeri"), use_container_width=True)
-            with g_c3:
-                u_cnt = filtered_df['Urban_Rural'].value_counts()
-                st.plotly_chart(px.pie(names=u_cnt.index, values=u_cnt.values, title="Pecahan Bandar vs Luar Bandar", hole=0.4), use_container_width=True)
-            
-            st.markdown("##### Sektor B: Analisis Profil Asas Individu")
-            g_c4, g_c5, g_c6 = st.columns(3)
-            with g_c4:
-                gen_cnt = filtered_df['Generation'].value_counts()
-                st.plotly_chart(px.bar(x=gen_cnt.index, y=gen_cnt.values, title="Taburan Profil Kumpulan Generasi"), use_container_width=True)
-            with g_c5:
-                gender_cnt = filtered_df['Gender'].value_counts()
-                st.plotly_chart(px.pie(names=gender_cnt.index, values=gender_cnt.values, title="Nisbah Pecahan Jantina"), use_container_width=True)
-            with g_c6:
-                if 'Age' in filtered_df.columns:
-                    st.plotly_chart(px.histogram(filtered_df, x='Age', nbins=20, title="Taburan Profil Umur Responden"), use_container_width=True)
+            st.warning("⚠️ Tiada pangkalan data dikesan aktif. Sila muat naik fail Excel master di atas untuk memulakan pemodelan analitik.")
         else:
-            st.info("Tiada data ditemui sepadan dengan tapisan geografi semasa.")
+            if sub_total > 0:
+                st.markdown(f"#### 📊 Hasil Penemuan Profil Semasa: {sub_total:,} Responden Aktif Mapped")
+                st.markdown("##### Sektor A: Analisis Pembahagian Geografi & Sempadan")
+                g_c1, g_c2, g_c3 = st.columns(3)
+                with g_c1:
+                    z_cnt = filtered_df['Zone'].value_counts()
+                    st.plotly_chart(px.pie(names=z_cnt.index, values=z_cnt.values, title="Pecahan mengikut Zon"), use_container_width=True)
+                with g_c2:
+                    s_cnt = filtered_df['State'].value_counts()
+                    st.plotly_chart(px.bar(x=s_cnt.values, y=s_cnt.index, orientation='h', title="Taburan Responden mengikut Negeri"), use_container_width=True)
+                with g_c3:
+                    u_cnt = filtered_df['Urban_Rural'].value_counts()
+                    st.plotly_chart(px.pie(names=u_cnt.index, values=u_cnt.values, title="Pecahan Bandar vs Luar Bandar", hole=0.4), use_container_width=True)
+                
+                st.markdown("##### Sektor B: Analisis Profil Asas Individu")
+                g_c4, g_c5, g_c6 = st.columns(3)
+                with g_c4:
+                    gen_cnt = filtered_df['Generation'].value_counts()
+                    st.plotly_chart(px.bar(x=gen_cnt.index, y=gen_cnt.values, title="Taburan Profil Kumpulan Generasi"), use_container_width=True)
+                with g_c5:
+                    gender_cnt = filtered_df['Gender'].value_counts()
+                    st.plotly_chart(px.pie(names=gender_cnt.index, values=gender_cnt.values, title="Nisbah Pecahan Jantina"), use_container_width=True)
+                with g_c6:
+                    if 'Age' in filtered_df.columns:
+                        st.plotly_chart(px.histogram(filtered_df, x='Age', nbins=20, title="Taburan Profil Umur Responden"), use_container_width=True)
 
     # --- TAB 2: RINGKASAN EKSEKUTIF ---
     with tabs[1]:
         st.subheader("📈 Pusat Kawalan KPI Ketegangan Nasional")
-        if sub_total > 0:
+        if engine.data_loaded and sub_total > 0:
             ikm_score, tier_status = engine.calculate_composite_index(filtered_df)
             c1, c2, c3 = st.columns(3)
             with c1: render_kpi_card("Indeks Ketegangan (IKM %)", f"{ikm_score:.2f}%", "Aman (0%) ↔ Tegang (100%)", tier=tier_status)
@@ -570,11 +580,13 @@ def main():
             if dim_data:
                 dim_df = pd.DataFrame(list(dim_data.items()), columns=['Dimensi Skrining IKM', 'Indeks Ketegangan (%)']).sort_values('Indeks Ketegangan (%)', ascending=False)
                 st.plotly_chart(px.bar(dim_df, x='Indeks Ketegangan (%)', y='Dimensi Skrining IKM', orientation='h', color='Indeks Ketegangan (%)', color_continuous_scale='Reds', text_auto='.1f'), use_container_width=True)
+        else:
+            st.info("Sila pautkan fail pangkalan data aktif terlebih dahulu.")
 
     # --- TAB 3: PENILAIAN GEOGRAFI ---
     with tabs[2]:
         st.subheader("🗺️ Analisis Ketegangan Geospatial Mengikut Negeri")
-        if sub_total > 0 and items_list_main:
+        if engine.data_loaded and sub_total > 0 and items_list_main:
             state_df = filtered_df.groupby('State')[items_list_main].mean().mean(axis=1).reset_index(name='Indeks Ketegangan (IKM %)')
             state_df['Indeks Ketegangan (IKM %)'] = ((state_df['Indeks Ketegangan (IKM %)'] - 1) / 4) * 100
             state_df = state_df.rename(columns={'State': 'Negeri / Wilayah'}).sort_values('Indeks Ketegangan (IKM %)', ascending=False)
@@ -582,11 +594,13 @@ def main():
             col_ch, col_tb = st.columns([3, 2])
             with col_ch: st.plotly_chart(px.bar(state_df, x='Indeks Ketegangan (IKM %)', y='Negeri / Wilayah', orientation='h', color='Indeks Ketegangan (IKM %)', color_continuous_scale='YlOrRd', text_auto='.1f'), use_container_width=True)
             with col_tb: st.dataframe(state_df, use_container_width=True, hide_index=True)
+        else:
+            st.info("Menunggu data untuk divisualisasikan.")
 
     # --- TAB 4: PENGIRAAN 9 INDEKS DIMENSI ---
     with tabs[3]:
         st.subheader("📊 Pengiraan Spesifik Komposit Setiap Dimensi Skrining")
-        if sub_total > 0:
+        if engine.data_loaded and sub_total > 0:
             grid_c1, grid_c2, grid_c3 = st.columns(3)
             loop_counter = 0
             for dim_name in engine.dim_item_ranges.keys():
@@ -594,11 +608,13 @@ def main():
                 target_col = grid_c1 if loop_counter % 3 == 0 else (grid_c2 if loop_counter % 3 == 1 else grid_c3)
                 with target_col: render_kpi_card(f"{dim_name}", f"{d_score:.2f}%", f"Berasaskan Item Indikator Ditapis", tier=engine.get_tier(d_score))
                 loop_counter += 1
+        else:
+            st.info("Tiada data.")
 
     # --- TAB 5: AMARAN ITEM STRESSOR ---
     with tabs[4]:
         st.subheader("🚨 Pengesanan Awal: 5 Indikator Utama Paling Tegang (Stressor Wilayah)")
-        if sub_total > 0:
+        if engine.data_loaded and sub_total > 0:
             item_scores = engine.calculate_item_scores(filtered_df)
             if item_scores and engine.questionnaire_master is not None:
                 sorted_items = sorted(item_scores.items(), key=lambda x: x[1]['mean'], reverse=True)[:5]
@@ -610,7 +626,8 @@ def main():
                         item_pct = ((v_metrics['mean'] - 1) / 4) * 100
                         st.markdown(f"#### 🛑 Kedudukan #{rank+1}: {code} — [Indeks Ketegangan: {item_pct:.1f}%]")
                         st.markdown(f"**Dimensi Terikat:** {d_name} | **Pernyataan Soalan Isu:** *{stmt}*")
-                        st.markdown("<div class='danger-analysis-box'>Indikator ini merekodkan aras purata keamatan tertinggi bagi kluster parameter sasar wilayah ditapis.</div>", unsafe_allow_html=True)
+        else:
+            st.info("Tiada pangkalan data dikesan.")
 
     # --- TAB 6: SENTIMEN NLP KUALITATIF ---
     with tabs[5]:
@@ -619,14 +636,14 @@ def main():
             c_filter_q, _ = st.columns([1, 2])
             with c_filter_q: st_sel_q = st.selectbox("Pilih Analisis Wilayah Negeri", sorted(engine.qualitative_response['State'].dropna().unique().tolist()))
             st.markdown(f"#### 🎯 Dapatan Ekstraksi Algoritma NLP bagi Wilayah: **{st_sel_q}**")
-            st.markdown("> *Contoh Petikan Teks Rakyat (Verbatim):* \"Gaji tak naik-naik tapi harga barang dapur dan sewa rumah di bandar makin melampau.\"")
+            st.markdown("> *Contoh Petikan Teks Rakyat (Verbatim):* \"Gaji tak naik-naik tapi harga barang dapur makin melampau.\"")
         else:
-            st.info("Sila pastikan sheet kualitatif 'qualitative_response' wujud dalam fail Excel induk.")
+            st.info("Matriks kualitatif perbincangan rakyat tidak dimuatkan.")
 
     # --- TAB 7: ANALISIS TEORETIKAL ---
     with tabs[6]:
         st.subheader("🧠 Pusat Interpretasi Psikometrik & Analisis Penumpuan Teori-Data")
-        st.info("Pusat semakan indeks rujukan teori Tajfel (Social Identity), Gurr (Relative Deprivation), dan Agnew (General Strain) mengikut parameter pool aktif.")
+        st.info("Pusat semakan rujukan teori Tajfel, Gurr, and Agnew.")
 
     # --- TAB 08: PAIN POINTS ---
     with tabs[7]:
@@ -643,12 +660,14 @@ def main():
                     st.markdown(f"""
                     <div class='loc-card-premium' style='border-left-color: #DB2777;'>
                         <b>📍 RANTAIAN LOKASI #{rank_pp}: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>
-                        * **Skor Ketegangan Setempat:** {pct_v:.2f}% (Status: PAIN POINT RINGAN)<br>
+                        * **Skor Ketegangan Setempat:** {pct_v:.2f}%<br>
                         * 🔍 **Punca Utama (Stressor):** Item {sub_item} &rarr; <i>"{sub_stmt}"</i>
                     </div>
                     """, unsafe_allow_html=True)
                     rank_pp += 1
-            if rank_pp == 1: st.info("✓ Tiada lokasi dikesan dalam lingkungan matrik ini.")
+            if rank_pp == 1: st.info("✓ Tiada rantaian lokasi di dalam zon amaran ini.")
+        else:
+            st.info("Pangkalan data belum diaktifkan.")
 
     # --- TAB 09: TENSION POINTS ---
     with tabs[8]:
@@ -665,12 +684,14 @@ def main():
                     st.markdown(f"""
                     <div class='loc-card-premium' style='border-left-color: #F59E0B;'>
                         <b>📍 RANTAIAN LOKASI #{rank_tp}: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>
-                        * **Skor Ketegangan Setempat:** {pct_v:.2f}% (Status: TENSION POINT AMARAN)<br>
+                        * **Skor Ketegangan Setempat:** {pct_v:.2f}%<br>
                         * 🔍 **Punca Utama (Stressor):** Item {sub_item} &rarr; <i>"{sub_stmt}"</i>
                     </div>
                     """, unsafe_allow_html=True)
                     rank_tp += 1
             if rank_tp == 1: st.info("✓ Tiada rantaian lokasi di tahap amaran jingga.")
+        else:
+            st.info("Tiada pangkalan data dikesan.")
 
     # --- TAB 10: AMARAN HOTSPOT ---
     with tabs[9]:
@@ -687,12 +708,14 @@ def main():
                     st.markdown(f"""
                     <div class='loc-card-premium' style='border-left-color: #EF4444; background-color: #FEF2F2;'>
                         <b style='color: #DC2626;'>💥 CRITICAL ZON #{rank_hs}: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>
-                        * **Skor Komposit EWS Bahaya:** {pct_v:.2f}% (Status: HOTSPOT KRITIKAL MUTLAK)<br>
+                        * **Skor Komposit EWS Bahaya:** {pct_v:.2f}%<br>
                         * 🛑 **PUNCA SEBENAR KRITIKAL (Stressor):** Item {sub_item} &rarr; <i style='color: #991B1B;'>"{sub_stmt}"</i>
                     </div>
                     """, unsafe_allow_html=True)
                     rank_hs += 1
-            if rank_hs == 1: st.success("✓ Selamat. Tiada zon merah ekstrem dikesan melalui unjuran penapis semasa.")
+            if rank_hs == 1: st.success("✓ Selamat. Tiada zon merah ekstrem dikesan.")
+        else:
+            st.info("Pangkalan data belum diimport.")
 
     # --- TAB 11: STRATEGI INTERVENSI ---
     with tabs[10]:
@@ -711,7 +734,7 @@ def main():
                     current_lead = row.get('Agency', 'N/A')
                     st.markdown(f"<div class='loc-card-premium' style='border-left-color: #1E40AF;'><h4>🏛️ Agensi Peneraju: {current_lead}</h4><b>🎯 Program:</b> {row.get('Intervention_Name', 'N/A')}<br><b>📄 Tindakan:</b> {row.get('Description', 'N/A')}</div>", unsafe_allow_html=True)
         else:
-            st.info("Tiada pustaka perpustakaan intervensi dikesan daripada lembaran master fail.")
+            st.info("Modul mitigasi kabinet belum diimport.")
 
     # --- TAB 12: MEDIA SCRAPING ---
     with tabs[11]:
@@ -725,7 +748,7 @@ def main():
                 for idx, row in top_rows.iterrows():
                     st.markdown(f"🔹 **Log Node #{idx+1} — Tarikh: {row.get('Date', 'N/A')} | Platform: {row.get('Source', 'N/A')}**\n* 💬 Teks Rumusan: \"{row.get('Summary', 'N/A')}\"")
         else:
-            st.info("Log OSINT media tidak dijumpai.")
+            st.info("Log OSINT media kosong.")
 
     # --- TAB 13: DAPATAN FGD ---
     with tabs[12]:
@@ -733,7 +756,7 @@ def main():
         if engine.fgd_expert is not None and not engine.fgd_expert.empty:
             st.plotly_chart(px.bar(engine.fgd_expert['Priority'].value_counts(), title="Klasifikasi Syor Pakar"), use_container_width=True)
         else:
-            st.info("Tiada maklumat consensus panel.")
+            st.info("Tiada data konsensus pakar.")
 
     # --- TAB 14: REPORT GENERATOR HTML ---
     with tabs[13]:
@@ -742,15 +765,20 @@ def main():
         rep_officer = st.text_input("Nama Pegawai Pelapor Muktamad", "Dato' Sri Ketua Pengarah JPNIN")
         rep_branch = st.text_input("Bahagian / Agensi Utama", "Kluster Analitik Risiko Polisi Strategik")
         if st.button("Kompilasikan Dokumen Laporan Komposit", use_container_width=True):
-            html_code = engine.generate_html_dossier_report(rep_title, rep_officer, rep_branch)
-            st.success("✓ Dokumen Dossier Kabinet Mega Berjaya Dikompilasikan!")
-            st.download_button("⬇ Muat Turun Fail HTML Dossier Perdana", html_code, "IKMM_Executive_Dossier_2026.html", "text/html", use_container_width=True)
+            if engine.data_loaded:
+                html_code = engine.generate_html_dossier_report(rep_title, rep_officer, rep_branch)
+                st.success("✓ Dokumen Dossier Kabinet Mega Berjaya Dikompilasikan!")
+                st.download_button("⬇ Muat Turun Fail HTML Dossier Perdana", html_code, "IKMM_Executive_Dossier_2026.html", "text/html", use_container_width=True)
+            else:
+                st.error("Gagal! Fail data induk tiada di dalam memori awan.")
             
     # --- TAB 15: EXPLORER ---
     with tabs[14]:
         st.subheader("🔎 Advanced Database Structural Cell Matrix Explorer")
         if sub_total > 0:
             st.dataframe(filtered_df, use_container_width=True)
+        else:
+            st.info("Import pangkalan data untuk memaparkan visual.")
 
 if __name__ == "__main__":
     main()
