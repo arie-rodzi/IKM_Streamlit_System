@@ -17,172 +17,185 @@ st.set_page_config(
 
 ADMIN_PASSWORD = "admin123"
 
-# --- 1. REKA BENTUK VISUAL: ULTRA-PREMIUM CORPORATE GRADIENT THEME (HIGH CONTRAST & LUXE) ---
+# --- 1. REKA BENTUK VISUAL: ULTRA-LUXE EXECUTIVE GRADIENT WITH ZERO-PADDING ---
 def apply_executive_premium_theme():
     st.markdown("""
         <style>
-            /* Mengimport font premium modern */
             @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
             
-            /* Aplikasi Font Global & Latar Belakang */
+            /* 1. Menghilangkan ruang kosong di atas applikasi (Fix Blank Space Above) */
+            .block-container {
+                padding-top: 1.5rem !important;
+                padding-bottom: 2rem !important;
+                max-width: 95% !important;
+            }
+            [data-testid="stHeader"] {
+                display: none !important;
+            }
+            
+            /* Aplikasi Font Global & Latar Belakang Premium */
             .stApp { 
-                background: radial-gradient(circle at 50% 0%, #F8FAFC 0%, #F1F5F9 100%) !important; 
+                background: radial-gradient(circle at 50% 0%, #F8FAFC 0%, #EFF6FF 100%) !important; 
                 color: #0F172A !important; 
                 font-family: 'Plus Jakarta Sans', -apple-system, sans-serif !important; 
             }
             
-            /* Sidebar Kontras Tinggi - Dark Slate Navy dengan Kemasan Gradient Sisi */
+            /* Pengepala Dashboard Utama (Wow Factor Header Block) */
+            .system-banner-premium {
+                background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 50%, #2563EB 100%);
+                padding: 30px 40px;
+                border-radius: 18px;
+                box-shadow: 0 10px 30px rgba(37, 99, 235, 0.15);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                margin-bottom: 30px;
+                color: #FFFFFF !important;
+                position: relative;
+                overflow: hidden;
+            }
+            .system-banner-premium::after {
+                content: '';
+                position: absolute;
+                top: -50%; right: -20%;
+                width: 300px; height: 300px;
+                background: rgba(255,255,255,0.03);
+                border-radius: 50%;
+            }
+            .system-tag {
+                background: linear-gradient(90deg, #EF4444 0%, #B91C1C 100%);
+                color: white !important;
+                padding: 4px 12px;
+                font-size: 11px;
+                font-weight: 800;
+                border-radius: 30px;
+                letter-spacing: 1.5px;
+                display: inline-block;
+                margin-bottom: 10px;
+                box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+            }
+            
+            /* Sidebar Kontras Tinggi - Deep Sapphire Slate */
             [data-testid="stSidebar"] { 
-                background: linear-gradient(180deg, #0B1329 0%, #1E293B 100%) !important; 
-                border-right: 1px solid rgba(255, 255, 255, 0.08) !important; 
-                box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15) !important;
+                background: linear-gradient(180deg, #0A0F1D 0%, #111827 100%) !important; 
+                border-right: 1px solid rgba(255, 255, 255, 0.05) !important; 
+                box-shadow: 5px 0 25px rgba(0, 0, 0, 0.2) !important;
             }
             [data-testid="stSidebar"] * { color: #F8FAFC !important; font-family: 'Plus Jakarta Sans', sans-serif !important; }
-            [data-testid="stSidebar"] .stMultiSelect span { color: #0F172A !important; } /* Memastikan teks tag multiselect di sidebar mudah dibaca */
+            [data-testid="stSidebar"] .stMultiSelect span { color: #0F172A !important; }
             
-            /* Reka Bentuk Kepala Tulisan (Headers) */
-            h1, h2, h3, h4, h5, h6 { 
+            /* Reka Bentuk Kepala Tulisan Konten */
+            h2, h3, h4, h5 { 
                 font-family: 'Plus Jakarta Sans', sans-serif !important; 
                 font-weight: 700 !important; 
+                color: #0F172A !important;
                 letter-spacing: -0.5px !important;
-                background: linear-gradient(135deg, #0F172A 30%, #2563EB 100%);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
             }
             
-            /* Reka Bentuk Tab Premium - Glassmorphism Style */
+            /* Reka Bentuk Tab Premium - Glassmorphic Pod Style */
             .stTabs [data-baseweb="tab-list"] { 
                 gap: 8px; 
-                background: rgba(226, 232, 240, 0.7) !important; 
+                background: rgba(15, 23, 42, 0.04) !important; 
                 padding: 8px; 
                 border-radius: 14px; 
-                border: 1px solid rgba(203, 213, 225, 0.6);
-                backdrop-filter: blur(8px);
+                border: 1px solid rgba(15, 23, 42, 0.05);
+                backdrop-filter: blur(10px);
             }
             .stTabs [data-baseweb="tab"] { 
-                height: 42px; 
-                padding: 0px 20px !important; 
+                height: 44px; 
+                padding: 0px 22px !important; 
                 background-color: transparent !important; 
                 border-radius: 10px !important; 
                 color: #475569 !important; 
                 font-weight: 600 !important; 
                 font-size: 13.5px !important;
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+                transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
                 border: 1px solid transparent !important;
             }
             .stTabs [aria-selected="true"] { 
                 background: #FFFFFF !important; 
                 color: #1D4ED8 !important; 
-                box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12) !important; 
+                box-shadow: 0 4px 14px rgba(37, 99, 235, 0.15) !important; 
                 border: 1px solid rgba(37, 99, 235, 0.2) !important; 
                 font-weight: 700 !important;
             }
             
-            /* Kad KPI Premium dengan Kesan Bayang Lembut & Sisi Cerah */
+            /* Kad KPI Premium & Hover Smooth Effect */
             .kpi-card-premium { 
                 background: #FFFFFF; 
                 border: 1px solid rgba(226, 232, 240, 0.8); 
                 border-radius: 16px; 
-                padding: 24px; 
+                padding: 26px; 
                 text-align: center; 
-                box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.04), 0 4px 6px -4px rgba(15, 23, 42, 0.02); 
-                transition: transform 0.2s ease, box-shadow 0.2s ease;
+                box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.04), 0 8px 10px -6px rgba(15, 23, 42, 0.02); 
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
             .kpi-card-premium:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.06), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+                transform: translateY(-4px);
+                box-shadow: 0 20px 35px -5px rgba(15, 23, 42, 0.08), 0 12px 16px -6px rgba(15, 23, 42, 0.04);
             }
             
-            /* Kotak Analisis Maklumat Berwarna Eksekutif (Gradient Borders) */
+            /* Kotak Analisis Maklumat Berwarna Eksekutif (Gradient Belakang) */
             .highlight-analysis-box { 
                 background: linear-gradient(90deg, #EFF6FF 0%, #FFFFFF 100%); 
-                border-left: 5px solid #2563EB; 
-                padding: 22px; border-radius: 0 14px 14px 0; margin: 20px 0; 
+                border-left: 6px solid #2563EB; 
+                padding: 24px; border-radius: 0 16px 16px 0; margin: 20px 0; 
                 color: #1E40AF !important; line-height: 1.7; font-size: 14.5px;
-                box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.03);
+                box-shadow: 0 4px 12px rgba(37, 99, 235, 0.04);
             }
             .danger-analysis-box { 
                 background: linear-gradient(90deg, #FEF2F2 0%, #FFFFFF 100%); 
-                border-left: 5px solid #DC2626; 
-                padding: 22px; border-radius: 0 14px 14px 0; margin: 20px 0; 
+                border-left: 6px solid #DC2626; 
+                padding: 24px; border-radius: 0 16px 16px 0; margin: 20px 0; 
                 color: #991B1B !important; line-height: 1.7; font-size: 14.5px;
-                box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.03);
-            }
-            .warning-analysis-box { 
-                background: linear-gradient(90deg, #FFFBEB 0%, #FFFFFF 100%); 
-                border-left: 5px solid #D97706; 
-                padding: 22px; border-radius: 0 14px 14px 0; margin: 20px 0; 
-                color: #92400E !important; line-height: 1.7; font-size: 14.5px;
-                box-shadow: 0 4px 6px -1px rgba(217, 119, 6, 0.03);
-            }
-            .success-analysis-box { 
-                background: linear-gradient(90deg, #F0FDF4 0%, #FFFFFF 100%); 
-                border-left: 5px solid #16A34A; 
-                padding: 22px; border-radius: 0 14px 14px 0; margin: 20px 0; 
-                color: #166534 !important; line-height: 1.7; font-size: 14.5px;
-                box-shadow: 0 4px 6px -1px rgba(22, 163, 74, 0.03);
+                box-shadow: 0 4px 12px rgba(220, 38, 38, 0.04);
             }
             
             /* Kad Spasial Geografi Premium */
             .loc-card-premium { 
                 border: 1px solid #E2E8F0; 
-                border-radius: 12px; 
-                padding: 20px; 
-                margin-bottom: 16px; 
+                border-radius: 14px; 
+                padding: 22px; 
+                margin-bottom: 18px; 
                 background: #FFFFFF; 
-                box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
-                transition: all 0.2s ease;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.01);
+                transition: all 0.25s ease;
             }
             .loc-card-premium:hover {
-                border-color: #CBD5E1;
-                box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04);
+                transform: translateX(4px);
+                box-shadow: 0 12px 20px -5px rgba(0,0,0,0.05);
             }
             
-            /* Pembungkus Dataframe Streamlit */
-            .stDataFrame { 
-                border: 1px solid #E2E8F0 !important; 
-                border-radius: 12px !important; 
-                background-color: #FFFFFF !important; 
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02) !important;
-            }
-            
-            /* Mengemas kini Reka Bentuk Butang (Buttons) Supaya Kelihatan Mahal */
+            /* Butang Tindakan Kecerunan Korporat (Buttons) */
             .stButton>button {
                 background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%) !important;
                 color: #FFFFFF !important;
                 border: none !important;
-                padding: 10px 24px !important;
-                border-radius: 10px !important;
-                font-weight: 600 !important;
-                box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15) !important;
+                padding: 12px 28px !important;
+                border-radius: 12px !important;
+                font-weight: 700 !important;
+                box-shadow: 0 4px 15px rgba(15, 23, 42, 0.15) !important;
                 transition: all 0.3s ease !important;
             }
             .stButton>button:hover {
-                transform: translateY(-1px) !important;
-                box-shadow: 0 6px 20px rgba(15, 23, 42, 0.25) !important;
+                transform: translateY(-2px) !important;
+                box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3) !important;
                 background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
             }
         </style>
     """, unsafe_allow_html=True)
 
 def render_kpi_card(label, value, unit, tier="low"):
-    # Skema warna premium berasaskan rona korporat tinggi & kecerunan (Gradients)
     color_map = {
-        "low": {"border": "#10B981", "bg": "linear-gradient(135deg, #E6F4EA 0%, #FFFFFF 100%)"},
-        "tension": {"border": "#F59E0B", "bg": "linear-gradient(135deg, #FEF3C7 0%, #FFFFFF 100%)"},
-        "pain": {"border": "#DB2777", "bg": "linear-gradient(135deg, #FCE7F3 0%, #FFFFFF 100%)"},
-        "hotspot": {"border": "#EF4444", "bg": "linear-gradient(135deg, #FEE2E2 0%, #FFFFFF 100%)"}
+        "low": {"border": "#10B981", "bg": "linear-gradient(135deg, #ECFDF5 0%, #FFFFFF 100%)"},
+        "tension": {"border": "#F59E0B", "bg": "linear-gradient(135deg, #FFFBEB 0%, #FFFFFF 100%)"},
+        "pain": {"border": "#DB2777", "bg": "linear-gradient(135deg, #FDF2F8 0%, #FFFFFF 100%)"},
+        "hotspot": {"border": "#EF4444", "bg": "linear-gradient(135deg, #FEF2F2 0%, #FFFFFF 100%)"}
     }
-    
     tier_design = color_map.get(tier, {"border": "#1E40AF", "bg": "linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%)"})
-    border_color = tier_design["border"]
-    bg_gradient = tier_design["bg"]
-    
     st.markdown(f"""
-    <div class="kpi-card-premium" style="border-left: 6px solid {border_color}; background: {bg_gradient};">
-        <p style="color: #64748B !important; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 4px 0;">{label}</p>
+    <div class="kpi-card-premium" style="border-left: 6px solid {tier_design['border']}; background: {tier_design['bg']};">
+        <p style="color: #64748B !important; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; margin: 0 0 6px 0;">{label}</p>
         <div style="font-size: 34px; font-weight: 800; margin: 4px 0; color: #0F172A !important; letter-spacing: -1px;">{value}</div>
-        <p style="color: #475569 !important; font-size: 12px; font-weight: 500; margin: 4px 0 0 0; opacity: 0.85;">{unit}</p>
+        <p style="color: #475569 !important; font-size: 11.5px; font-weight: 500; margin: 6px 0 0 0; opacity: 0.8;">{unit}</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -567,7 +580,7 @@ def login_portal():
     apply_executive_premium_theme()
     c1, c2, c3 = st.columns([1, 1.3, 1])
     with c2:
-        st.markdown("<div style='text-align: center; padding-top: 130px;'><h2>🏛️ Urus Setia Polisi IKMM 2026</h2><p>Sistem Intelligence Amaran Awal Konflik Kebangsaan (JPM)</p></div>", unsafe_allow_html=True)
+        st.markdown("<div style='text-align: center; padding-top: 100px;'><h2>🏛️ Urus Setia Polisi IKMM 2026</h2><p>Sistem Intelligence Amaran Awal Konflik Kebangsaan (JPM)</p></div>", unsafe_allow_html=True)
         with st.form("gate_form"):
             token = st.text_input("Sila Masukkan Token Pelepasan Keselamatan", type="password")
             if st.form_submit_button("Sahkan Kredensial Akses", use_container_width=True):
@@ -587,6 +600,19 @@ def main():
     apply_executive_premium_theme()
     engine = st.session_state.engine
     
+    # --- RENDER TOP HERO BANNER (Wow Factor & Brand Identity) ---
+    st.markdown("""
+        <div class="system-banner-premium">
+            <div class="system-tag">🔐 KAWALAN RAHSIA RASMI</div>
+            <h1 style='margin: 0; padding-bottom: 6px; font-size: 28px; color: #FFFFFF !important; -webkit-text-fill-color: #FFFFFF !important; font-weight: 800;'>
+                🏛️ SISTEM ANALITIK KOMPOSIT IKMM 2026
+            </h1>
+            <p style='margin: 0; font-size: 14px; color: #E2E8F0 !important; font-weight: 500; opacity: 0.95;'>
+                Sistem Intelligence & Amaran Awal Konflik Kebangsaan | Jabatan Perdana Menteri (JPM)
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
+    
     # --- INSULASI AWAL LOGIK PARAMETER (ANTI-CRASH) ---
     active_filters = {}
     sel_state = []
@@ -598,7 +624,6 @@ def main():
         items_list_main = engine.get_registered_items()
         geo_means_main = filtered_df.groupby(['Zone', 'State', 'District', 'Urban_Rural'])[items_list_main].mean().mean(axis=1).sort_values(ascending=False) if sub_total > 0 and items_list_main else pd.Series()
     else:
-        # Jika pangkalan data kosong, paksa parameter diisytihar sebagai kluster selamat
         filtered_df = pd.DataFrame()
         sub_total = 0
         items_list_main = []
@@ -640,7 +665,6 @@ def main():
             if sel_urban: active_filters['Urban_Rural'] = sel_urban
             if sel_income: active_filters['Income_Group'] = sel_income
             
-            # Kemas kini data tertapis serta-merta mengikut pilihan sidebar pengguna
             filtered_df = engine.apply_filters(active_filters)
             sub_total = len(filtered_df)
             if sub_total > 0 and items_list_main:
@@ -796,7 +820,7 @@ def main():
                     sub_stmt = engine.questionnaire_master[engine.questionnaire_master['Item_Code'] == sub_item]['Statement'].values[0]
                     
                     st.markdown(f"""
-                    <div class='loc-card-premium' style='border-left-color: #DB2777; background: linear-gradient(90deg, #FCE7F3 0%, #FFFFFF 100%);'>
+                    <div class='loc-card-premium' style='border-left-color: #DB2777; background: linear-gradient(90deg, #FDF2F8 0%, #FFFFFF 100%);'>
                         <b>📍 RANTAIAN LOKASI #{rank_pp}: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>
                         * **Skor Ketegangan Setempat:** {pct_v:.2f}%<br>
                         * 🔍 **Punca Utama (Stressor):** Item {sub_item} &rarr; <i>"{sub_stmt}"</i>
@@ -820,7 +844,7 @@ def main():
                     sub_stmt = engine.questionnaire_master[engine.questionnaire_master['Item_Code'] == sub_item]['Statement'].values[0]
                     
                     st.markdown(f"""
-                    <div class='loc-card-premium' style='border-left-color: #F59E0B; background: linear-gradient(90deg, #FEF3C7 0%, #FFFFFF 100%);'>
+                    <div class='loc-card-premium' style='border-left-color: #F59E0B; background: linear-gradient(90deg, #FFFBEB 0%, #FFFFFF 100%);'>
                         <b>📍 RANTAIAN LOKASI #{rank_tp}: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>
                         * **Skor Ketegangan Setempat:** {pct_v:.2f}%<br>
                         * 🔍 **Punca Utama (Stressor):** Item {sub_item} &rarr; <i>"{sub_stmt}"</i>
@@ -844,7 +868,7 @@ def main():
                     sub_stmt = engine.questionnaire_master[engine.questionnaire_master['Item_Code'] == sub_item]['Statement'].values[0]
                     
                     st.markdown(f"""
-                    <div class='loc-card-premium' style='border-left-color: #EF4444; background: linear-gradient(90deg, #FEE2E2 0%, #FFFFFF 100%);'>
+                    <div class='loc-card-premium' style='border-left-color: #EF4444; background: linear-gradient(90deg, #FEF2F2 0%, #FFFFFF 100%);'>
                         <b style='color: #DC2626;'>💥 CRITICAL ZON #{rank_hs}: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>
                         * **Skor Komposit EWS Bahaya:** {pct_v:.2f}%<br>
                         * 🛑 **PUNCA SEBENAR KRITIKAL (Stressor):** Item {sub_item} &rarr; <i style='color: #991B1B;'>"{sub_stmt}"</i>
