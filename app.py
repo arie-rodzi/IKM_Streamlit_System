@@ -172,7 +172,6 @@ class IKMMDasarEngine:
                 data = data[data[col].isin(values)]
         return data
 
-    # --- JANAAN MANUSKRIP HTML AGUNG YANG DINAMIK (MEMBACA FAIL DATA EXCEL ANDA 100% TANPA SEKATAN BARIS) ---
     def generate_html_dossier_report(self, title, officer, branch):
         score, tier = self.calculate_composite_index()
         total_resp = len(self.respondent_data)
@@ -402,7 +401,7 @@ class IKMMDasarEngine:
                 </script>
 
                 <div class="meta-footer">
-                    <p>Manuskrip Laporan Eksekutif Perdana Diperaku oleh: <b>{officer}</b> | Bahagian: <b>{branch}</b></p>
+                    <p>Manuskrip Laporan Executive Perdana Diperaku oleh: <b>{officer}</b> | Bahagian: <b>{branch}</b></p>
                     <p><b>RAHSIA RASMI KERAJAAN — URUS SETIA POLISI KESELAMATAN SOSIAL KABINET MALAYSIA 2026</b></p>
                 </div>
             </div>
@@ -491,6 +490,25 @@ def main():
     items_list_main = engine.get_registered_items()
     geo_means_main = filtered_df.groupby(['Zone', 'State', 'District', 'Urban_Rural'])[items_list_main].mean().mean(axis=1).sort_values(ascending=False) if sub_total > 0 else pd.Series()
 
+    # --- 🛠️ INTERPOLASI STRUKTUR: PENJANAAN KOMPONEN TABS STRM ---
+    tabs = st.tabs([
+        "📁 Profil Demografi",        # Tab 0
+        "📈 Ringkasan Eksekutif",     # Tab 1
+        "🗺️ Penilaian Geografi",       # Tab 2
+        "📊 Indeks Dimensi",          # Tab 3
+        "🚨 Item Stressor",          # Tab 4
+        "💬 NLP Kualitatif",          # Tab 5
+        "🧠 Analisis Teoretikal",      # Tab 6
+        "⚠️ Pain Points",            # Tab 7
+        "🔥 Tension Points",         # Tab 8
+        "🛑 Amaran Hotspot",          # Tab 9
+        "💡 Strategi Intervensi",     # Tab 10
+        "📰 Media Scraping",         # Tab 11
+        "👥 Dapatan FGD",            # Tab 12
+        "📄 Report Generator",       # Tab 13
+        "🔎 Cell Matrix Explorer"     # Tab 14
+    ])
+
     # --- TAB 1: PORTAL GATEWAY ---
     with tabs[0]:
         st.subheader("📂 Pengurusan Fail & Analisis Deskriptif Profil Demografi")
@@ -556,11 +574,20 @@ def main():
 
     # --- TAB 3: PENILAIAN GEOGRAFI ---
     with tabs[2]:
-        state_df = engine.get_state_geospatial_matrix()
-        if not state_df.empty:
+        st.subheader("🗺️ Analisis Ketegangan Geospatial Mengikut Negeri")
+        if engine.data_loaded and sub_total > 0:
+            # Menggantikan fungsi get_state_geospatial_matrix() yang hilang dengan agregasi langsung
+            state_df = filtered_df.groupby('State')[items_list_main].mean().mean(axis=1).reset_index(name='Indeks Ketegangan (IKM %)')
+            state_df['Indeks Ketegangan (IKM %)'] = ((state_df['Indeks Ketegangan (IKM %)'] - 1) / 4) * 100
+            state_df = state_df.rename(columns={'State': 'Negeri / Wilayah'}).sort_values('Indeks Ketegangan (IKM %)', ascending=False)
+            
             col_ch, col_tb = st.columns([3, 2])
-            with col_ch: st.plotly_chart(px.bar(state_df, x='Indeks Ketegangan (IKM %)', y='Negeri / Wilayah', orientation='h', color='Indeks Ketegangan (IKM %)', color_continuous_scale='YlOrRd', text_auto='.1f'), use_container_width=True)
-            with col_tb: st.dataframe(state_df, use_container_width=True, hide_index=True)
+            with col_ch: 
+                st.plotly_chart(px.bar(state_df, x='Indeks Ketegangan (IKM %)', y='Negeri / Wilayah', orientation='h', color='Indeks Ketegangan (IKM %)', color_continuous_scale='YlOrRd', text_auto='.1f'), use_container_width=True)
+            with col_tb: 
+                st.dataframe(state_df, use_container_width=True, hide_index=True)
+        else:
+            st.info("Pangkalan data belum dimuat naik atau tiada data memenuhi tapisan.")
 
     # --- TAB 4: PENGIRAAN 9 INDEKS DIMENSI ---
     with tabs[3]:
@@ -605,7 +632,7 @@ def main():
     # --- TAB 08: PAIN POINTS ---
     with tabs[7]:
         st.subheader("⚠️ Pengelasan Petunjuk Titik Kelemahan Struktur (Pain Points)")
-        st.markdown("**Maksud Fungsi:** Mengesan penunjuk makro yang mula menunjukkan tanda kegelisahan awal di peringkat akar umbi (Skor $40\% - 59\%$). Sesuai untuk menyekat isu kejiranan berkembang menjadi polarisasi dasar.")
+        st.markdown("**Maksud Fungsi:** Mengesan penunjuk makro yang mula menunjukkan tanda kegelisahan awal di peringkat akar umbi (Skor 40% - 59%). Sesuai untuk menyekat isu kejiranan berkembang menjadi polarisasi dasar.")
         
         st.markdown("##### 📍 Pengesanan Rantaian Lokasi Berstruktur Penuh (Zon &rarr; Negeri &rarr; Daerah &rarr; Lokaliti)")
         if not geo_means_main.empty:
@@ -631,7 +658,7 @@ def main():
     # --- TAB 09: TENSION POINTS ---
     with tabs[8]:
         st.subheader("🔥 Kerangka Eskalasi Indikator Titik Ketegangan (Tension Points)")
-        st.markdown("**Maksud Fungsi:** Mengesan petunjuk yang berada pada tahap Amaran Tinggi ($60\% - 79\%$) di mana isu sosiopolitik telah berulang dan mula membina tembok polarisasi rentas kumpulan.")
+        st.markdown("**Maksud Fungsi:** Mengesan petunjuk yang berada pada tahap Amaran Tinggi (60% - 79%) di mana isu sosiopolitik telah berulang dan mula membina tembok polarisasi rentas kumpulan.")
         
         st.markdown("##### 📍 Pengesanan Rantaian Lokasi Berstruktur Penuh (Zon &rarr; Negeri &rarr; Daerah &rarr; Lokaliti)")
         if not geo_means_main.empty:
