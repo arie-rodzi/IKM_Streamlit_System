@@ -17,7 +17,7 @@ st.set_page_config(
 
 ADMIN_PASSWORD = "admin123"
 
-# --- REKA BENTUK VISUAL: LIGHT EXECUTIVE WINDOWS THEME (HIGH CONTRAST) ---
+# --- 1. REKA BENTUK VISUAL: LIGHT EXECUTIVE WINDOWS THEME (HIGH CONTRAST) ---
 def apply_executive_premium_theme():
     st.markdown("""
         <style>
@@ -49,7 +49,7 @@ def render_kpi_card(label, value, unit, tier="low"):
     </div>
     """, unsafe_allow_html=True)
 
-# --- ENGIN ANALITIK STRATEGIK DASAR KERAJAAN (IKMM 2026) ---
+# --- 2. ENGIN ANALITIK STRATEGIK DASAR KERAJAAN (IKMM 2026) ---
 class IKMMDasarEngine:
     def __init__(self):
         self.respondent_data = None
@@ -195,7 +195,7 @@ class IKMMDasarEngine:
             
         return pd.DataFrame(records).sort_values('Indeks Ketegangan (IKM %)', ascending=False)
 
-    # --- ENGIN JANAAN MANUSKRIP HTML AGUNG MULTI-BLOCK (UNLIMITED SCROLLING MANUSCRIPT - 25+ HALAMAN) ---
+    # --- JANAAN MANUSKRIP HTML AGUNG YANG DINAMIK (MEMBACA FAIL DATA EXCEL ANDA 100% TANPA SEKATAN BARIS) ---
     def generate_html_dossier_report(self, title, officer, branch):
         score, tier = self.calculate_composite_index()
         total_resp = len(self.respondent_data)
@@ -205,7 +205,7 @@ class IKMMDasarEngine:
         dim_labels = list(self.dim_item_ranges.keys())
         dim_values = [self.calculate_single_dimension_score(d) for d in dim_labels]
         
-        # BLOCK 1: HEADER & SYTLE DEFINITION
+        # BLOCK 1: HEADER & STYLE DEFINITION
         html_master = f"""
         <!DOCTYPE html>
         <html lang="ms">
@@ -227,7 +227,7 @@ class IKMMDasarEngine:
                 .table-premium th {{ background: #0F172A; color: #FFFFFF; padding: 14px; text-align: left; font-weight: 600; }}
                 .table-premium td {{ padding: 12px; border-bottom: 1px solid #E2E8F0; color: #334155; }}
                 .table-premium tr:nth-child(even) {{ background-color: #F8FAFC; }}
-                .loc-card-html {{ border: 1px solid #CBD5E1; border-radius: 8px; padding: 20px; margin-bottom: 15px; background-color: #FFFBEB; border-left: 5px solid #F59E0B; font-size: 14px; }}
+                .loc-card-html {{ border: 1px solid #CBD5E1; border-radius: 8px; padding: 20px; margin-bottom: 15px; background: #FFFFFF; border-left: 5px solid #F59E0B; font-size: 14px; }}
                 .loc-card-html.danger {{ background-color: #FEF2F2; border-left-color: #EF4444; }}
                 .loc-card-html.success {{ background-color: #F0FDF4; border-left-color: #16A34A; }}
                 .highlight-box {{ background-color: #EFF6FF; border-left: 4px solid #3B82F6; padding: 25px; border-radius: 0 8px 8px 0; margin: 20px 0; font-size: 14px; line-height: 1.8; color: #1E3A8A; }}
@@ -281,7 +281,7 @@ class IKMMDasarEngine:
         # BLOCK 2: UNRESTRICTED ALL DEMOGRAPHIC TABLES
         html_master += """
                 <div class="section-title">3.0 Jadual Komprehensif Taburan Profil 11 Pemboleh Ubah Demografi</div>
-                <p>Berikut diperinci agihan peratusan dan frekuensi lengkap responden tanpa sebarang pemotongan baris:</p>
+                <p>Berikut diperreci agihan peratusan dan frekuensi lengkap responden tanpa sebarang pemotongan baris:</p>
                 <table class="table-premium">
                     <thead><tr><th>Pemboleh Ubah Demografi</th><th>Klasifikasi Parameter Kumpulan Sasar</th><th>Frekuensi (Bil.)</th><th>Peratusan (%)</th></tr></thead>
                     <tbody>"""
@@ -311,7 +311,7 @@ class IKMMDasarEngine:
                 <div class="page-break"></div>
         """
 
-        # BLOCK 4: PSYCHOMETRIC THEORY ANALYSIS LENGKAP LENGKAP (150+ PER TEORETIK)
+        # BLOCK 4: PSYCHOMETRIC THEORY ANALYSIS LENGKAP
         html_master += """
                 <div class="section-title">5.0 Pemodelan Teori & Huraian Keputusan Konkreta Item Pangkalan Data</div>
                 <p>Analisis penumpuan teori-data (Theory-Data Convergence Analysis) menghubungkan angka kuantitatif secara langsung dengan kerangka teori dasar:</p>"""
@@ -367,16 +367,18 @@ class IKMMDasarEngine:
                     </div>"""
         html_master += """<div class="page-break"></div>"""
 
-        # BLOCK 5: ALL GEOGRAPHICAL LOCATION CHAINS UNRESTRICTED (HAD BARIS DIASINGKAN MUKTAMAD)
+        # PEMBETULAN UTAMA: Mengisytiharkan pemboleh ubah geo_means terlebih dahulu sebelum gelung (Loop)
+        geo_means = self.respondent_data.groupby(['Zone', 'State', 'District', 'Urban_Rural'])[items].mean().mean(axis=1).sort_values(ascending=False)
+
+        # BLOCK 5: ALL GEOGRAPHICAL LOCATION CHAINS UNRESTRICTED
         html_master += """
                 <div class="section-title">6.0 Laporan Hierarki Spasial Rantaian Lokasi Terjejas & Sebab Utama (Stressor)</div>
                 <p>Berikut diperincikan rantaian geografi berstruktur penuh (Zon &rarr; Negeri &rarr; Daerah &rarr; Lokaliti) yang dikesan mengalami pola ketegangan berserta punca item konkrit:</p>"""
         
-        # Saring semua data geokod rantaian di seluruh negara tanpa sebarang sekatan .head()
-        for (zn, st_n, ds_n, ur_n), v_score in geo_means.items():
+        for rank, ((zn, st_n, ds_n, ur_n), v_score) in enumerate(geo_means.items()):
             pct_v = ((v_score - 1) / 4) * 100
             
-            # Tampilkan kawasan parlimen/daerah yang mencatatkan ketegangan di atas paras asas sahaja
+            # Papar semua lokasi terjejas di atas paras ketegangan asas tanpa had limit halaman (.head() dibuang)
             if pct_v >= 50.0:
                 sub_df = self.respondent_data[(self.respondent_data['Zone']==zn) & (self.respondent_data['State']==st_n) & (self.respondent_data['District']==ds_n) & (self.respondent_data['Urban_Rural']==ur_n)]
                 sub_item = sub_df[items].mean().idxmax()
@@ -393,13 +395,13 @@ class IKMMDasarEngine:
 
         # BLOCK 6: UNRESTRICTED ALL SCRAPING OSINT DATA LOGS FROM SHEET 8
         html_master += """
-                <div class="section-title">7.0 Log Tangkapan Data Scraping Siber Digital (OSINT Logs Lengkap Tanpa Sekal)</div>
-                <p>Berikut dipaparkan keseluruhan data perbincangan siber asli secara telus tanpa ada yang dipotong daripada lembaran <i>media_issue_summary</i>:</p>
+                <div class="section-title">7.0 Log Tangkapan Data Scraping Siber Digital (OSINT Logs Lengkap)</div>
+                <p>Berikut dipaparkan keseluruhan data perbincangan siber asli secara telus daripada lembaran <i>media_issue_summary</i>:</p>
                 <table class="table-premium">
                     <thead><tr><th>Tarikh</th><th>Platform</th><th>Wilayah Negeri</th><th>Kategori Isu</th><th>Aras Risiko</th><th>Ringkasan Fail Master</th></tr></thead>
                     <tbody>"""
         if self.media_issue_summary is not None:
-            for _, row in self.media_issue_summary.iterrows(): # PEMBETULAN MUTLAK: Pembatasan .head() dibuang, meloop semua baris asli excel
+            for _, row in self.media_issue_summary.iterrows(): # Tiada sekat .head(15), meloop semua baris dari fail Excel
                 html_master += f"""
                 <tr>
                     <td>{row.get('Date','N/A')}</td>
@@ -409,8 +411,7 @@ class IKMMDasarEngine:
                     <td><b>{row.get('Risk_Level','N/A')}</b></td>
                     <td>{row.get('Summary','N/A')}</td>
                 </tr>"""
-                
-        # SUNTIKAN JAVASCRIPT CLOSING DRAWING
+        
         html_master += f"""
                     </tbody>
                 </table>
@@ -439,7 +440,7 @@ class IKMMDasarEngine:
                 </script>
 
                 <div class="meta-footer">
-                    <p>Manuskrip Laporan Eksekutif Agung Diperaku oleh: <b>{officer}</b> | Bahagian: <b>{branch}</b></p>
+                    <p>Manuskrip Laporan Eksekutif Perdana Diperaku oleh: <b>{officer}</b> | Bahagian: <b>{branch}</b></p>
                     <p><b>RAHSIA RASMI KERAJAAN — URUS SETIA POLISI KESELAMATAN SOSIAL KABINET MALAYSIA 2026</b></p>
                 </div>
             </div>
@@ -449,7 +450,7 @@ class IKMMDasarEngine:
         return html_master
 
 def init_dashboard_session():
-    if 'engine' not in st.session_state or not hasattr(st.session_state.engine, 'get_demographic_columns'):
+    if 'engine' not in st.session_state or not hasattr(st.session_state.engine, 'generate_html_dossier_report'):
         st.session_state.engine = IKMMDasarEngine()
         st.session_state.engine.connect_and_load_workbook()
     if 'auth_state' not in st.session_state:
@@ -644,7 +645,7 @@ def main():
             "Conflict Theory": {"Pengasas": "Karl Marx / Max Weber", "Dimensi": "D2 Religious Tension", "Huraian": "Konflik berakar daripada perebutan dominasi ruang undang-undang, legislatif, dan pengaruh institusi syariah-sivil yang disifatkan sebagai zero-sum game."},
             "Relative Deprivation Theory": {"Pengasas": "Samuel Stouffer (1949) / Ted Robert Gurr (1970)", "Dimensi": "D3 Economic Tension", "Huraian": "Ketegangan timbul akibat jurang persepsi apabila sesuatu kelompok merasa dipinggirkan secara tidak adil selepas membandingkan pencapaian ekonomi mereka dengan kelas komuniti lain."},
             "Institutional Trust Theory": {"Pengasas": "Niklas Luhmann", "Dimensi": "D4 Political Tension & D7 Institutional and Governance Tension", "Huraian": "Tahap kestabilan negara berpaksi kepada keyakinan integriti urus tadbir. Kejatuhan amanah kepada badan penguatkuasa akan melumpuhkan legitimasi undang-undang sivil."},
-            "General Strain Theory": {"Pengasas": "Robert Henry Agnew (1992)", "Dimensi": "D5 Generational Tension", "Huraian": "Tekanan struktur (pengangguran, ketidakmampuan memiliki aset/perumahan) melahirkan anomi emosi kekecewaan dalam kalangan belia, memicu jurang ketegangan nilai dengan generasi veteran."},
+            "General Strain Theory": {"Pengasas": "Robert Agnew (1992)", "Dimensi": "D5 Generational Tension", "Huraian": "Tekanan struktur (pengangguran, ketidakmampuan memiliki aset/perumahan) melahirkan anomi emosi kekecewaan dalam kalangan belia, memicu jurang ketegangan nilai dengan generasi veteran."},
             "Social Disorganization Theory": {"Pengasas": "Clifford Shaw & Henry McKay (1942)", "Dimensi": "D6 Urban-Rural Tension", "Huraian": "Pembangunan lokaliti yang tidak setara atau urbanisasi drastik melemahkan ikatan kawalan sosial komuniti setempat, mencetuskan polarisasi sempadan bandar-luar bandar."}
         }
         for name, meta in theory_blueprint.items():
