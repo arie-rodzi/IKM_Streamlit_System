@@ -210,7 +210,6 @@ class IKMMDasarEngine:
         dim_mean_raw = df[target_items].mean().mean()
         return ((dim_mean_raw - 1) / 4) * 100
 
-    # PEMBETULAN UTAMA: Menambah fungsi get_dimension_composite_scores yang hilang
     def get_dimension_composite_scores(self, df=None):
         if df is None: df = self.respondent_data
         results = {}
@@ -339,7 +338,8 @@ class IKMMDasarEngine:
 
 
 def init_dashboard_session():
-    if 'engine' not in st.session_state:
+    # SUNTIKAN FORCED SESSIONS OVERWRITE (Membuang cache objek enjin lama daripada memori Streamlit)
+    if 'engine' not in st.session_state or not hasattr(st.session_state.engine, 'get_dimension_composite_scores'):
         st.session_state.engine = IKMMDasarEngine()
         st.session_state.engine.connect_and_load_workbook()
     if 'auth_state' not in st.session_state:
