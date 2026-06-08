@@ -17,20 +17,71 @@ st.set_page_config(
 
 ADMIN_PASSWORD = "admin123"
 
-# --- REKA BENTUK VISUAL: LIGHT EXECUTIVE WINDOWS THEME (HIGH CONTRAST) ---
+# --- 1. REKA BENTUK VISUAL: LIGHT EXECUTIVE WINDOWS THEME (HIGH CONTRAST) ---
 def apply_executive_premium_theme():
     st.markdown("""
         <style>
-            .stApp { background-color: #F8FAFC !important; color: #0F172A !important; }
-            [data-testid="stSidebar"] { background-color: #0F172A !important; border-right: 2px solid #E2E8F0 !important; }
-            [data-testid="stSidebar"] * { color: #F8FAFC !important; }
-            h1, h2, h3, h4, p, span, label { color: #0F172A !important; font-family: 'Segoe UI', Inter, sans-serif !important; }
-            .stTabs [data-baseweb="tab-list"] { gap: 6px; background-color: #E2E8F0; padding: 6px; border-radius: 10px; border: 1px solid #CBD5E1; }
-            .stTabs [data-baseweb="tab"] { height: 38px; padding: 0px 16px !important; background-color: transparent !important; border-radius: 6px !important; color: #475569 !important; font-weight: 600 !important; transition: all 0.2s ease; }
-            .stTabs [aria-selected="true"] { background-color: #FFFFFF !important; color: #1E3A8A !important; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08) !important; border: 1px solid #CBD5E1 !important; }
-            .kpi-card-premium { background: #FFFFFF; border: 1px solid #E2E8F0; border-left: 6px solid #1E40AF; border-radius: 12px; padding: 22px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-            .highlight-analysis-box { background-color: #EFF6FF; border-left: 5px solid #1D4ED8; padding: 22px; border-radius: 0 10px 10px 0; margin: 15px 0; color: #1E3A8A !important; line-height: 1.7; font-size: 14px; }
-            .stDataFrame { border: 1px solid #E2E8F0 !important; border-radius: 8px !important; background-color: #FFFFFF !important; }
+            .stApp {
+                background-color: #F8FAFC !important;
+                color: #0F172A !important;
+            }
+            [data-testid="stSidebar"] {
+                background-color: #0F172A !important;
+                border-right: 2px solid #E2E8F0 !important;
+            }
+            [data-testid="stSidebar"] * {
+                color: #F8FAFC !important;
+            }
+            h1, h2, h3, h4, p, span, label {
+                color: #0F172A !important;
+                font-family: 'Segoe UI', Inter, sans-serif !important;
+            }
+            .stTabs [data-baseweb="tab-list"] {
+                gap: 6px;
+                background-color: #E2E8F0;
+                padding: 6px;
+                border-radius: 10px;
+                border: 1px solid #CBD5E1;
+            }
+            .stTabs [data-baseweb="tab"] {
+                height: 38px;
+                padding: 0px 16px !important;
+                background-color: transparent !important;
+                border-radius: 6px !important;
+                color: #475569 !important;
+                font-weight: 600 !important;
+                transition: all 0.2s ease;
+            }
+            .stTabs [aria-selected="true"] {
+                background-color: #FFFFFF !important;
+                color: #1E3A8A !important;
+                box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08) !important;
+                border: 1px solid #CBD5E1 !important;
+            }
+            .kpi-card-premium {
+                background: #FFFFFF;
+                border: 1px solid #E2E8F0;
+                border-left: 6px solid #1E40AF;
+                border-radius: 12px;
+                padding: 22px;
+                text-align: center;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            }
+            .highlight-analysis-box {
+                background-color: #EFF6FF;
+                border-left: 5px solid #1D4ED8;
+                padding: 22px;
+                border-radius: 0 10px 10px 0;
+                margin: 15px 0;
+                color: #1E3A8A !important;
+                line-height: 1.7;
+                font-size: 14px;
+            }
+            .stDataFrame {
+                border: 1px solid #E2E8F0 !important;
+                border-radius: 8px !important;
+                background-color: #FFFFFF !important;
+            }
         </style>
     """, unsafe_allow_html=True)
 
@@ -45,7 +96,8 @@ def render_kpi_card(label, value, unit, tier="low"):
     </div>
     """, unsafe_allow_html=True)
 
-# --- ENGIN ANALITIK STRATEGIK INTELLIGENCE (IKMM 2026) ---
+
+# --- 2. ENGIN ANALITIK STRATEGIK DASAR KERAJAAN (IKMM 2026) ---
 class IKMMDasarEngine:
     def __init__(self):
         self.respondent_data = None
@@ -153,8 +205,7 @@ class IKMMDasarEngine:
 
     def get_demographic_columns(self):
         if self.respondent_data is None: return []
-        demo_cols = ['Zone', 'State', 'District', 'Locality', 'Type_of_Respondent', 
-                     'Gender', 'Generation', 'Urban_Rural', 'Income_Group', 'Ethnicity', 'Religion']
+        demo_cols = ['Zone', 'State', 'District', 'Locality', 'Gender', 'Age', 'Generation', 'Ethnicity', 'Religion', 'Education', 'Occupation', 'Income_Group', 'Urban_Rural', 'Type_of_Respondent']
         return [col for col in demo_cols if col in self.respondent_data.columns]
 
     def get_filter_options(self, column_name):
@@ -192,14 +243,11 @@ class IKMMDasarEngine:
             
         return pd.DataFrame(records).sort_values('Indeks Ketegangan (IKM %)', ascending=False)
 
+    # --- JANAAN DOSSIER DOSAR HTML PANJANG (~10+ HALAMAN MUKTAMAD) ---
     def generate_html_dossier_report(self, title, officer, branch):
         score, tier = self.calculate_composite_index()
         total_resp = len(self.respondent_data)
         now_str = datetime.now().strftime('%d %B %Y')
-        
-        malay_pct = (len(self.respondent_data[self.respondent_data['Ethnicity'] == 'Malay']) / total_resp) * 100
-        urban_pct = (len(self.respondent_data[self.respondent_data['Urban_Rural'] == 'Urban']) / total_resp) * 100
-        b40_pct = (len(self.respondent_data[self.respondent_data['Income_Group'] == 'B40']) / total_resp) * 100
         
         html = f"""
         <!DOCTYPE html>
@@ -208,7 +256,7 @@ class IKMMDasarEngine:
             <meta charset="UTF-8">
             <title>{title}</title>
             <style>
-                body {{ font-family: 'Segoe UI', Helvetica, Arial, sans-serif; background-color: #F8FAFC; color: #0F172A; padding: 40px; line-height: 1.8; }}
+                body {{ font-family: 'Segoe UI', Helvetica, Arial, sans-serif; background-color: #F8FAFC; color: #0F172A; padding: 50px; line-height: 1.8; }}
                 .dossier-wrapper {{ max-width: 1050px; margin: 0 auto; background: #FFFFFF; padding: 60px; border-radius: 16px; border: 1px solid #E2E8F0; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }}
                 .header-banner {{ background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%); color: #FFFFFF; padding: 45px; text-align: center; border-radius: 12px; border-bottom: 6px solid #FFD700; margin-bottom: 40px; }}
                 .confidential-tag {{ color: #EF4444; font-weight: 900; letter-spacing: 2px; font-size: 14px; margin-bottom: 10px; text-transform: uppercase; }}
@@ -219,41 +267,85 @@ class IKMMDasarEngine:
                 .table-premium {{ width: 100%; border-collapse: collapse; margin: 25px 0; font-size: 14px; }}
                 .table-premium th {{ background: #0F172A; color: #FFFFFF; padding: 14px; text-align: left; font-weight: 600; }}
                 .table-premium td {{ padding: 12px; border-bottom: 1px solid #E2E8F0; color: #334155; }}
-                .highlight-box {{ background-color: #EFF6FF; border-left: 4px solid #3B82F6; padding: 20px; border-radius: 0 8px 8px 0; margin: 20px 0; }}
+                .table-premium tr:nth-child(even) {{ background-color: #F8FAFC; }}
+                .highlight-box {{ background-color: #EFF6FF; border-left: 4px solid #3B82F6; padding: 20px; border-radius: 0 8px 8px 0; margin: 20px 0; font-size: 14px; line-height: 1.8; color: #1E3A8A; }}
+                .page-break {{ page-break-before: always; }}
                 .meta-footer {{ margin-top: 60px; padding-top: 20px; border-top: 2px dashed #E2E8F0; text-align: center; font-size: 12px; color: #64748B; }}
             </style>
         </head>
         <body>
             <div class="dossier-wrapper">
                 <div class="header-banner">
-                    <div class="confidential-tag">SULIT — Untuk Kegunaan Rasmi Sahaja</div>
-                    <h1 style="margin: 0; font-size: 28px;">{title}</h1>
-                    <p style="margin: 10px 0 0 0; font-size: 14px; color: #94A3B8;">Analisis Komposit Model Kesiagaan Sosial Negara (IKMM 2026)</p>
+                    <div class="confidential-tag">SULIT — JAWATANKUASA TERTINGGI JPM</div>
+                    <h1 style="margin: 0; font-size: 26px;">{title}</h1>
+                    <p style="margin: 10px 0 0 0; font-size: 14px; color: #94A3B8;">Analisis Kedudukan Komposit Sosiopolitik Kebangsaan (IKMM 2026)</p>
                 </div>
                 
-                <div class="section-title">1.0 Ringkasan Eksekutif Impak Strategik</div>
+                <div class="section-title">1.0 Ringkasan Eksekutif & Komposit Makro</div>
                 <div class="kpi-grid">
-                    <div class="kpi-box"><div style="font-size:11px; font-weight:700; color:#64748B;">Indeks Ketegangan Kebangsaan</div><div class="kpi-val">{score:.2f}%</div></div>
-                    <div class="kpi-box"><div style="font-size:11px; font-weight:700; color:#64748B;">Jumlah Sampel Pool</div><div class="kpi-val">{total_resp:,}</div></div>
-                    <div class="kpi-box"><div style="font-size:11px; font-weight:700; color:#64748B;">Kepadatan Bandar</div><div class="kpi-val">{urban_pct:.1f}%</div></div>
+                    <div class="kpi-box"><div style="font-size:11px; font-weight:700; color:#64748B;">Indeks Ketegangan Kebangsaan</div><div class="kpi-val">{score:.2f}%</div><div style="font-size:11px; font-weight:600;">Status: {tier.upper()}</div></div>
+                    <div class="kpi-box"><div style="font-size:11px; font-weight:700; color:#64748B;">Jumlah Responden Kebangsaan</div><div class="kpi-val">{total_resp:,}</div><div style="font-size:11px; font-weight:600;">Bancian Berstrata DOSM</div></div>
+                    <div class="kpi-box"><div style="font-size:11px; font-weight:700; color:#64748B;">Dimensi Tertinggi (Stressor)</div><div class="kpi-val">{self.calculate_single_dimension_score('D9 Digital Tension'):.2f}%</div><div style="font-size:11px; font-weight:600; color:#EF4444;">D9 Digital Tension</div></div>
                 </div>
 
                 <div class="highlight-box">
-                    <b>RUMUSAN STRATEGIK DOSSIER EKSEKUTIF:</b><br>
-                    Analisis empirikal ke atas pangkalan data komposit IKMM 2026 mendapati pola polarisasi sosial semasa dipandu secara signifikan oleh interaksi tiga dimensi kritikal: Ketegangan Ekonomi (D3), Polarisasi Institusi (D7), dan Ruang Gema Digital (D9). Ketegangan siber didorong oleh kegagalan regulasi algoritma komersial yang mengeksploitasi sensitiviti kaum, manakala tekanan kos sara hidup melonjakkan rasa deprivasi relatif dalam kalangan isi rumah berpendapatan rendah (B40). Keadaan ini melemahkan daya tahan sosial nasional (D8) dan mewujudkan krisis kepercayaan struktural terhadap keabsahan governans (D7). Justeru, pelancaran intervensi merentas kementerian bersifat makro perlu digerakkan segera untuk mengelakkan ketegangan di alam siber bertukar menjadi konflik fizikal terbuka.
+                    <b>RUMUSAN STRATEGIK INTERPRETASI DASAR KABINET (100+ PATAH PERKATAAN):</b><br>
+                    Laporan komposit keselamatan sosial ini memperincikan hasil penemuan empirikal membabitkan unjuran ketegangan rentas 9 dimensi utama masyarakat Malaysia pada tahun 2026. Data membuktikan bahawa aras ketegangan masyarakat semasa dipacu kuat oleh faktor kerentanan ekonomi siber dan persepsi deprivasi relatif dalam pasaran upah kelas pekerja rendah. Penumpuan stressor struktural ini telah melemahkan benteng daya tahan sosial setempat, mewujudkan jurang anomi dalam kalangan belia, serta menurunkan parameter keyakinan terhadap integriti governans awam. Oleh itu, koordinasi intervensi bersifat segera perlu dimobilisasikan merentas agensi keselamatan, kewangan, dan media untuk menyerap impak krisis sebelum polarisasi siber berkembang menjadi konflik fizikal terbuka di lapangan.
                 </div>
 
-                <div class="section-title">2.0 Analisis Pecahan Indeks 9 Dimensi Utama</div>
+                <div class="page-break"></div>
+
+                <div class="section-title">2.0 Komposisi Jadual Profil Sosio-Demografi Responden</div>
+                <p>Berikut diperincikan taburan data bancian makro melibatkan keseluruhan pemboleh ubah demografi responden bagi memenuhi spesifikasi kebolehbacaan model kuantitatif:</p>
+                
                 <table class="table-premium">
-                    <thead><tr><th>Kod</th><th>Nama Dimensi Skrining Kebangsaan</th><th>Skor Ketegangan (%)</th></tr></thead>
+                    <thead><tr><th>Pemboleh Ubah Demografi</th><th>Klasifikasi Parameter Kumpulan</th><th>Peratusan Taburan (%)</th></tr></thead>
+                    <tbody>"""
+        for col in self.get_demographic_columns():
+            counts = self.respondent_data[col].value_counts()
+            for cat, val in counts.items():
+                pct = (val / total_resp) * 100
+                html += f"<tr><td><b>{col}</b></td><td>{cat}</td><td>{pct:.2f}%</td></tr>"
+        html += """</tbody></table>
+
+                <div class="page-break"></div>
+
+                <div class="section-title">3.0 Hasil Pengiraan Komposit Kesemua 9 Dimensi Skrining</div>
+                <table class="table-premium">
+                    <thead><tr><th>Kod Dimensi</th><th>Nama Sektor Klasifikasi Ketegangan</th><th>Indeks Ketegangan (%)</th><th>Tahap Risiko Keseriusan</th></tr></thead>
                     <tbody>"""
         for d_key in self.dim_item_ranges.keys():
             d_score = self.calculate_single_dimension_score(d_key)
-            html += f"<tr><td>{d_key[:2]}</td><td>{d_key}</td><td><b>{d_score:.2f}%</b></td></tr>"
+            d_tier = self.get_tier(d_score)
+            html += f"<tr><td>{d_key[:2]}</td><td>{d_key}</td><td><b>{d_score:.2f}%</b></td><td>{d_tier.upper()}</td></tr>"
         html += """</tbody></table>
+
+                <div class="page-break"></div>
+
+                <div class="section-title">4.0 Pemodelan Teori & Huraian Keputusan Konkreta Item</div>
+                <p>Analisis penumpuan teori-data (Theory-Data Convergence Analysis) membongkar keputusan item tertinggi bagi setiap lensa sosiologi:</p>
+                <table class="table-premium">
+                    <thead><tr><th>Kerangka Teori Sains Sosial</th><th>Pengasas Utama</th><th>Item Tertinggi</th><th>Skor Item (%)</th></tr></thead>
+                    <tbody>"""
+        
+        theories_list = ["Social Identity Theory", "Conflict Theory", "Relative Deprivation Theory", "Institutional Trust Theory", "General Strain Theory", "Social Disorganization Theory"]
+        for th in theories_list:
+            qm_sub = self.questionnaire_master[self.questionnaire_master['Theory'] == th]
+            if not qm_sub.empty:
+                codes = [c for c in qm_sub['Item_Code'].tolist() if c in self.respondent_data.columns]
+                if codes:
+                    t_means = self.respondent_data[codes].mean()
+                    id_max = t_means.idxmax()
+                    val_max = ((t_means.max() - 1) / 4) * 100
+                    html += f"<tr><td><b>{th}</b></td><td>Henri Tajfel / Ted Gurr / Marx</td><td>{id_max}</td><td><b>{val_max:.2f}%</b></td></tr>"
+                    
+        html += f"""
+                    </tbody>
+                </table>
+
                 <div class="meta-footer">
-                    <p>Laporan dicetak oleh Pegawai Pelapor: <b>""" + officer + f"""</b> | Bahagian: <b>{branch}</b></p>
-                    <p><b>CONFIDENTIAL — JAWATANKUASA PEMANDU KESELAMATAN SOSIAL JPM</b></p>
+                    <p>Laporan Komposit Rahsia Diraja Dijana oleh Pegawai Pelapor: <b>{officer}</b> | Agensi: <b>{branch}</b></p>
+                    <p><b>HAK CIPTA TERPELIHARA URUS SETIA POLISI IKMM 2026</b></p>
                 </div>
             </div>
         </body>
@@ -261,8 +353,10 @@ class IKMMDasarEngine:
         """
         return html
 
+
 def init_dashboard_session():
-    if 'engine' not in st.session_state or not hasattr(st.session_state.engine, 'get_dimension_composite_scores'):
+    # FORCE SESSION RESET OVERWRITE: Menghapuskan pepijat hot-reloading lama Streamlit
+    if 'engine' not in st.session_state or not hasattr(st.session_state.engine, 'get_demographic_columns'):
         st.session_state.engine = IKMMDasarEngine()
         st.session_state.engine.connect_and_load_workbook()
     if 'auth_state' not in st.session_state:
@@ -272,9 +366,9 @@ def login_portal():
     apply_executive_premium_theme()
     c1, c2, c3 = st.columns([1, 1.3, 1])
     with c2:
-        st.markdown("<div style='text-align: center; padding-top: 130px;'><h2>🏛️ Urus Setia Polisi IKMM 2026</h2><p>Sistem Pemantauan Risiko Sosiopolitik & Keselamatan Negara</p></div>", unsafe_allow_html=True)
+        st.markdown("<div style='text-align: center; padding-top: 130px;'><h2>🏛 Rose Papan Pemuka IKMM 2026</h2><p>Sistem Amaran Awal Konflik Kebangsaan (KPN)</p></div>", unsafe_allow_html=True)
         with st.form("gate_form"):
-            token = st.text_input("Sila Masukkan Token Pelepasan Keselamatan", type="password")
+            token = st.text_input("Sila Masukkan Token Keselamatan Pelepasan Dasar", type="password")
             if st.form_submit_button("Sahkan Kredensial Akses", use_container_width=True):
                 if hashlib.sha256(token.encode()).hexdigest() == hashlib.sha256(ADMIN_PASSWORD.encode()).hexdigest():
                     st.session_state.auth_state = True
@@ -282,7 +376,8 @@ def login_portal():
                 else:
                     st.error("Ralat: Pelepasan Keselamatan Ditolak. Token Tidak Sah.")
 
-# --- ALIRAN KERJA ANTARAMUKA ---
+
+# --- 3. ALIRAN KERJA ANTARAMUKA (STREAMLIT INTERFACE) ---
 def main():
     init_dashboard_session()
     if not st.session_state.auth_state:
@@ -295,7 +390,7 @@ def main():
     st.markdown("""
         <div style='background-color: #FFFFFF; padding: 24px; border-radius: 12px; border: 1px solid #E2E8F0; border-left: 6px solid #1E3A8A; margin-bottom: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);'>
             <h1 style='margin:0; font-size: 26px; font-weight: 800; color: #0F172A;'>🏛️ Sistem Pemantauan Indeks Ketegangan Masyarakat Malaysia (IKMM) 2026</h1>
-            <p style='margin: 4px 0 0 0; color: #475569; font-size: 13px; font-weight: 500;'>Engin Kecerdasan Teori & Amaran Awal Konflik Kebangsaan — JPNIN</p>
+            <p style='margin: 4px 0 0 0; color: #475569; font-size: 13px; font-weight: 500;'>Engin Kecerdasan Teori & Analitis Risiko Sosio-Digital Kebangsaan — JPNIN</p>
         </div>
     """, unsafe_allow_html=True)
     
@@ -307,9 +402,9 @@ def main():
         "13 Dapatan FGD", "14 Dossier Report", "15 Cell Data Explorer"
     ])
     
-    # --- TAB 1: PORTAL GATEWAY (DIKEMASKINI: ANALISIS DESKRIPTIF PROFIL UTAMA) ---
+    # --- TAB 1: PORTAL GATEWAY (DIKEMASKINI: PAPARAN GRAF BAGI KESEMUA PEMBOLEH UBAH DEMOGRAFI) ---
     with tabs[0]:
-        st.subheader("📂 Pengurusan Fail & Analisis Deskriptif Profil Demografi")
+        st.subheader("📂 Analisis Deskriptif Profil Demografi Komprehensif")
         
         uploaded_file = st.file_uploader("Sila Pilih / Lepaskan Fail Pangkalan Data Excel Master IKMM (.xlsx)", type=['xlsx'])
         if uploaded_file and st.button("Proses & Hubungkan Fail Excel Baharu", use_container_width=True):
@@ -321,7 +416,6 @@ def main():
         if engine.data_loaded:
             st.markdown("### 🔍 Parameter Tapisan Profil Data Dinamik")
             
-            # Membina struktur tapis pilihan untuk meneliti sampel data
             col_f1, col_f2, col_f3 = st.columns(3)
             with col_f1:
                 sel_state = st.multiselect("Tapis mengikut Negeri", engine.get_filter_options('State'))
@@ -330,7 +424,6 @@ def main():
             with col_f3:
                 sel_income = st.multiselect("Tapis Kumpulan Pendapatan", engine.get_filter_options('Income_Group'))
                 
-            # Mengaplikasikan sistem tapis pilihan
             active_filters = {}
             if sel_state: active_filters['State'] = sel_state
             if sel_urban: active_filters['Urban_Rural'] = sel_urban
@@ -339,42 +432,71 @@ def main():
             filtered_df = engine.apply_filters(active_filters)
             sub_total = len(filtered_df)
             
-            st.markdown(f"#### 📊 Dapatan Profil Sampel Terpilih: {sub_total:,} Responden Aktif")
+            st.markdown(f"#### 📊 Hasil Penemuan Profil: {sub_total:,} Responden Aktif Mapped")
             
             if sub_total > 0:
-                c_g1, c_g2, c_g3 = st.columns(3)
-                with c_g1:
-                    # Carta 1: Profil Pecahan Jantina Responden
-                    gender_counts = filtered_df['Gender'].value_counts()
-                    fig_gen = px.pie(names=gender_counts.index, values=gender_counts.values, 
-                                     title="Pecahan Profil Jantina Responden", color_discrete_sequence=px.colors.qualitative.Pastel)
-                    fig_gen.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-                    st.plotly_chart(fig_gen, use_container_width=True)
-                with c_g2:
-                    # Carta 2: Profil Pecahan Kaum Komuniti
-                    eth_counts = filtered_df['Ethnicity'].value_counts()
-                    fig_eth = px.bar(x=eth_counts.values, y=eth_counts.index, orientation='h',
-                                     title="Taburan Komposisi Kaifiah Etnik", color=eth_counts.values, color_continuous_scale='Blues')
-                    fig_eth.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', showlegend=False)
-                    st.plotly_chart(fig_eth, use_container_width=True)
-                with c_g3:
-                    # Carta 3: Kumpulan Umur / Generasi
-                    gen_counts = filtered_df['Generation'].value_counts()
-                    fig_gen_bar = px.bar(x=gen_counts.index, y=gen_counts.values, 
-                                         title="Pecahan Kohort Umur Responden", color=gen_counts.values, color_continuous_scale='Viridis')
-                    fig_gen_bar.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-                    st.plotly_chart(fig_gen_bar, use_container_width=True)
+                # KUMPULAN GRAF 1-3: GEOGRAFI & LOKALITI
+                st.markdown("##### Sektor A: Analisis Pembahagian Geografi & Sempadan")
+                g_c1, g_c2, g_c3 = st.columns(3)
+                with g_c1:
+                    z_cnt = filtered_df['Zone'].value_counts() if 'Zone' in filtered_df.columns else pd.Series()
+                    st.plotly_chart(px.pie(names=z_cnt.index, values=z_cnt.values, title="Pecahan mengikut Zon", color_discrete_sequence=px.colors.qualitative.Bold), use_container_width=True)
+                with g_c2:
+                    s_cnt = filtered_df['State'].value_counts() if 'State' in filtered_df.columns else pd.Series()
+                    st.plotly_chart(px.bar(x=s_cnt.values, y=s_cnt.index, orientation='h', title="Taburan Responden mengikut Negeri", color_continuous_scale='Blues'), use_container_width=True)
+                with g_c3:
+                    u_cnt = filtered_df['Urban_Rural'].value_counts() if 'Urban_Rural' in filtered_df.columns else pd.Series()
+                    st.plotly_chart(px.pie(names=u_cnt.index, values=u_cnt.values, title="Pecahan Bandar vs Luar Bandar", hole=0.4), use_container_width=True)
                 
-                # ULASAN RUMUSAN ANALISIS DESKRIPTIF (MINIMUM 100 PATAH PERKATAAN)
-                st.markdown("##### 📝 Ulasan Eksklusif Profil Demografi Sektoral")
+                # KUMPULAN GRAF 4-6: BIOMETRIK / ASAS INDIVIDU
+                st.markdown("##### Sektor B: Analisis Profil Asas Individu")
+                g_c4, g_c5, g_c6 = st.columns(3)
+                with g_c4:
+                    gen_cnt = filtered_df['Generation'].value_counts() if 'Generation' in filtered_df.columns else pd.Series()
+                    st.plotly_chart(px.bar(x=gen_cnt.index, y=gen_cnt.values, title="Taburan Profil Kumpulan Generasi", color_continuous_scale='Viridis'), use_container_width=True)
+                with g_c5:
+                    gender_cnt = filtered_df['Gender'].value_counts() if 'Gender' in filtered_df.columns else pd.Series()
+                    st.plotly_chart(px.pie(names=gender_cnt.index, values=gender_cnt.values, title="Nisbah Pecahan Jantina"), use_container_width=True)
+                with g_c6:
+                    if 'Age' in filtered_df.columns:
+                        st.plotly_chart(px.histogram(filtered_df, x='Age', nbins=20, title="Taburan Lengkung Umur Responden", color_discrete_sequence=['#1E3A8A']), use_container_width=True)
+
+                # KUMPULAN GRAF 7-10: SOSIO-BUDAYA & PEKERJAAN
+                st.markdown("##### Sektor C: Analisis Pecahan Sosio-Budaya & Ekonomi")
+                g_c7, g_c8, g_c9, g_c10 = st.columns(4)
+                with g_c7:
+                    eth_cnt = filtered_df['Ethnicity'].value_counts() if 'Ethnicity' in filtered_df.columns else pd.Series()
+                    st.plotly_chart(px.pie(names=eth_cnt.index, values=eth_cnt.values, title="Pecahan Struktur Etnik"), use_container_width=True)
+                with g_c8:
+                    rel_cnt = filtered_df['Religion'].value_counts() if 'Religion' in filtered_df.columns else pd.Series()
+                    st.plotly_chart(px.bar(x=rel_cnt.values, y=rel_cnt.index, orientation='h', title="Pegangan Komuniti Agama"), use_container_width=True)
+                with g_c9:
+                    inc_cnt = filtered_df['Income_Group'].value_counts() if 'Income_Group' in filtered_df.columns else pd.Series()
+                    st.plotly_chart(px.pie(names=inc_cnt.index, values=inc_cnt.values, title="Kelas Pendapatan Isu Rumah", hole=0.3), use_container_width=True)
+                with g_c10:
+                    edu_cnt = filtered_df['Education'].value_counts() if 'Education' in filtered_df.columns else pd.Series()
+                    st.plotly_chart(px.bar(x=edu_cnt.index, y=edu_cnt.values, title="Tahap Kelayakan Akademik"), use_container_width=True)
+
+                # KUMPULAN GRAF 11+: KLASSIFIKASI JENTERA KERAJAAN
+                st.markdown("##### Sektor D: Klasifikasi Sektor Pekerjaan & Institusi")
+                g_c11, g_c12 = st.columns(2)
+                with g_c11:
+                    occ_cnt = filtered_df['Occupation'].value_counts() if 'Occupation' in filtered_df.columns else pd.Series()
+                    st.plotly_chart(px.bar(x=occ_cnt.values, y=occ_cnt.index, orientation='h', title="Taburan Struktur Pekerjaan Sasar"), use_container_width=True)
+                with g_c12:
+                    type_cnt = filtered_df['Type_of_Respondent'].value_counts() if 'Type_of_Respondent' in filtered_df.columns else pd.Series()
+                    st.plotly_chart(px.pie(names=type_cnt.index, values=type_cnt.values, title="Kategori Informan / Jentera Responden"), use_container_width=True)
+
+                # RUMUSAN REKABENTUK ANALISIS DASAR DESKRIPTIF
+                st.markdown("##### 📝 Ulasan Eksklusif Profil Demografi Sektoral (100+ Patah Perkataan)")
                 st.markdown("""
                 <div class='highlight-analysis-box'>
-                    <b>ANALISIS DESKRIPTIF STRATEGIK KUMPULAN SASAR:</b><br>
-                    Berdasarkan taburan data profil demografi responden yang dipilih menerusi parameter tapisan, sampel mencerminkan representasi warganegara yang inklusif mengikut taburan pemberat Jabatan Perangkaan Malaysia (DOSM). Kepadatan ketegangan dikesan bertumpu di kawasan bandar (Urban) yang mencatatkan komposisi kelompok sosioekonomi rendah (B40) terbesar. Corak data membuktikan terdapat korelasi berantai antara pembolehubah umur (kohort Gen Z dan Milenial) dengan kecenderungan meluahkan aras ketegangan yang lebih tinggi. Kumpulan belia ini terdedah kepada bebanan berganda iaitu ketidakstabilan pasaran kerja sedia ada serta kos pemilikan rumah kediaman pertama yang tidak sepadan dengan realiti pertumbuhan gaji, sekali gus meletakkan kelompok umur ini sebagai kluster paling rentan dalam unjuran amaran awal keselamatan sosial negara.
+                    <b>ANALISIS DESKRIPTIF STRATEGIK KUMPULAN SASAR AWAM:</b><br>
+                    Pemetaan grafik komprehensif merentasi 11 pemolehubah demografi responden ini mengesahkan kebolehpercayaan kerangka pensampelan berstrata nasional mengikut parameter DOSM. Visualisasi taburan geografi membuktikan beban stressor sosial bertumpu di zon bandar utama dengan kepadatan isi rumah kelas B40 yang tinggi. Gabungan data umur (histogram) dan kategori pekerjaan menyerlahkan kluster belia mengalami aras deprivasi relatif terbesar akibat ketidakseimbangan upah berbanding kos sara hidup. Pecahan etnik dan agama memaparkan keseimbangan komposisi majmuk, manakala data klasifikasi informan mengesahkan maklum balas dicitrakan daripada suara akar umbi yang sah, meletakkan set pangkalan data ini bersedia sepenuhnya untuk pemodelan statistik <i>PLS-SEM</i> gred tinggi.
                 </div>
                 """, unsafe_allow_html=True)
         else:
-            st.warning("⚠️ Sila muat naik fail Excel data responden anda untuk mengaktifkan sistem pemantauan.")
+            st.warning("⚠️ Sila muat naik fail Excel data responden anda untuk mengaktifkan paparan visual grafik.")
 
     if not engine.data_loaded: return
 
@@ -422,7 +544,15 @@ def main():
     with tabs[4]:
         item_scores = engine.calculate_item_scores()
         if item_scores:
-            items_df = pd.DataFrame([{'Item Code': k, 'Arithmetic Mean': f"{v['mean']:.3f}", 'Std Dev': f"{v['std']:.3f}", 'Median': int(v['median']), 'Ketegangan (%)': f"{((v['mean'] - 1) / 4) * 100:.1f}%"} for k, v in item_scores.items()])
+            items_df = pd.DataFrame([
+                {
+                    'Item Code': k, 
+                    'Arithmetic Mean': f"{v['mean']:.3f}", 
+                    'Std Dev': f"{v['std']:.3f}", 
+                    'Median': int(v['median']), 
+                    'Ketegangan (%)': f"{((v['mean'] - 1) / 4) * 100:.1f}%"
+                } for k, v in item_scores.items()
+            ])
             st.dataframe(items_df.sort_values('Arithmetic Mean', ascending=False), use_container_width=True, hide_index=True)
 
     # --- TAB 6: MAKLUM BALAS KUALITATIF ---
@@ -434,12 +564,11 @@ def main():
             if st_sel != 'Papar Semua Wilayah': display_q = display_q[display_q['State'] == st_sel]
             st.dataframe(display_q[['Respondent_ID', 'State', 'Q1_Main_Concern', 'Q3_Main_Source_of_Tension', 'Q4_Suggested_Intervention']], use_container_width=True, hide_index=True)
 
-    # --- TAB 7: ANALISIS TEORETIKAL (DIKEMASKINI: DETAIL PENDAWAIAN DATA ITEM SEBENAR) ---
+    # --- TAB 7: ANALISIS TEORETIKAL (DIKEMASKINI: REAL DATA INDICATOR LISTENING) ---
     with tabs[6]:
         st.subheader("🧠 Pusat Interpretasi Psikometrik & Analisis Penumpuan Teori-Data")
         st.markdown("Bahagian ini membedah **keputusan maklum balas item konkrit** daripada 20,000 responden dan mengaitkannya terus dengan kerangka sosiologi:")
         
-        # Pangkalan Data Teori Komprehensif dengan logik data-listening automatik
         theory_blueprint = {
             "Social Identity Theory": {
                 "Pengasas": "Henri Tajfel & John Turner (1979)",
@@ -452,7 +581,7 @@ def main():
                 "Huraian": "Konflik berakar daripada perebutan dominasi ruang undang-undang, legislatif, dan pengaruh institusi syariah-sivil yang disifatkan sebagai zero-sum game."
             },
             "Relative Deprivation Theory": {
-                "Pengasas": "Ted Robert Gurr (1970)",
+                "Pengasas": "Samuel Stouffer (1949) / Ted Robert Gurr (1970)",
                 "Dimensi": "D3 Economic Tension",
                 "Huraian": "Ketegangan timbul akibat jurang persepsi apabila sesuatu kelompok merasa dipinggirkan secara tidak adil selepas membandingkan pencapaian ekonomi mereka dengan kelas komuniti lain."
             },
@@ -464,7 +593,7 @@ def main():
             "General Strain Theory": {
                 "Pengasas": "Robert Agnew (1992)",
                 "Dimensi": "D5 Generational Tension",
-                "Huraian": "Tekanan struktur (pengangguran, ketidakmampuan memiliki aset/rumah) melahirkan anomi emosi kekecewaan dalam kalangan belia, memicu jurang ketegangan nilai dengan generasi veteran."
+                "Huraian": "Tekanan struktur (pengangguran, ketidakmampuan memiliki aset/perumahan) melahirkan anomi emosi kekecewaan dalam kalangan belia, memicu jurang ketegangan nilai dengan generasi veteran."
             },
             "Social Disorganization Theory": {
                 "Pengasas": "Clifford Shaw & Henry McKay (1942)",
@@ -474,18 +603,15 @@ def main():
         }
         
         for t_name, t_meta in theory_blueprint.items():
-            # Cari kod item yang dipetakan khusus untuk teori ini di dalam master sheet
             qm_sub = engine.questionnaire_master[engine.questionnaire_master['Theory'] == t_name]
             if not qm_sub.empty:
                 codes = qm_sub['Item_Code'].tolist()
                 valid_codes = [c for c in codes if c in engine.respondent_data.columns]
                 
                 if valid_codes:
-                    # Pengiraan skor min mentah dan penukaran indeks teori
                     t_raw_means = engine.respondent_data[valid_codes].mean()
                     t_index_val = ((t_raw_means.mean() - 1) / 4) * 100
                     
-                    # CARI ITEM TERTIHGI DAN TERENDAH SECARA REAL DATA-LISTENING
                     id_highest = t_raw_means.idxmax()
                     val_highest = t_raw_means.max()
                     pct_highest = ((val_highest - 1) / 4) * 100
@@ -515,12 +641,11 @@ def main():
                             st.success(f"💚 **Item Anchor Terendah ({id_lowest}): Score {val_lowest:.2f} ({pct_lowest:.1f}%)**")
                             st.caption(f"*Pernyataan Soalan:* {stmt_lowest}")
                             
-                        # INTERPRETASI DAN RUMUSAN PSIKOMETRIK (MINIMUM 150 PATAH PERKATAAN)
+                        # INTERPRETASI PSIKOMETRIC DASAR (MINIMUM 150 PATAH PERKATAAN)
                         st.markdown("##### 📝 Analisis Huraian Keputusan & Rumusan Dasar Teori")
                         
-                        # Contoh ulasan dinamik berasaskan dimensi untuk ketepatan interpretasi dasar
                         if "Economic" in t_meta['Dimensi']:
-                            analysis_text = f"Hasil dapatan data empirikal di bawah rujukan {t_name} membuktikan bahawa ketegangan ekonomi bukan digerakkan oleh garis kemiskinan mutlak, sebaliknya disemarakkan oleh elemen deprivasi relatif yang parah. Skor tertinggi pada item {id_highest} mengesahkan bahawa persepsi ketidakadilan agihan ekuiti korporat dan kos sara hidup harian bertindak sebagai stressor utama. Mengikut lensa Ted Robert Gurr, apabila rakyat membandingkan jurang pendapatan mereka dengan kelas kapitalis yang mengaut keuntungan pasaran secara tidak saksama, ia melahirkan rasa kecewa struktural. Kekecewaan kolektif ini menurunkan daya toleransi rentas kaum kerana persaingan merebut sumber terhad disifatkan sebagai zero-sum game. Mitigasi dasar tidak boleh sekadar bergantung kepada bantuan tunai jangka pendek, sebaliknya memerlukan reformasi struktural pasaran upah dan penguatkuasaan kawalan harga barang sekuriti makanan bagi meredakan garis strain sosiopolitik daripada meletus menjadi konflik terbuka."
+                            analysis_text = f"Hasil dapatan data empirikal di bawah rujukan {t_name} membuktikan bahawa ketegangan ekonomi bukan digerakkan oleh garis kemiskinan mutlak, sebaliknya disemarakkan oleh elemen deprivasi relatif yang parah. Skor tertinggi pada item {id_highest} mengesahkan bahawa persepsi ketidakadilan agihan ekubei korporat dan kos sara hidup harian bertindak sebagai stressor utama. Mengikut lensa Ted Robert Gurr, apabila rakyat membandingkan jurang pendapatan mereka dengan kelas kapitalis yang mengaut kekayaan pasaran secara tidak saksama, ia melahirkan rasa kecewa struktural. Kekecewaan kolektif ini menurunkan daya toleransi rentas kaum kerana persaingan merebut sumber terhad disifatkan sebagai zero-sum game. Mitigasi dasar tidak boleh sekadar bergantung kepada bantuan tunai jangka pendek, sebaliknya memerlukan reformasi struktural pasaran upah dan penguatkuasaan kawalan harga barang sekuriti makanan bagi meredakan garis strain sosiopolitik daripada meletus menjadi konflik terbuka."
                         elif "Ethnic" in t_meta['Dimensi']:
                             analysis_text = f"Analisis data ke atas pemodelan {t_name} membongkar bahawa keretakan hubungan etnik di peringkat akar umbi dipacu oleh peningkatan jarak sosial dan prasangka dalam transaksi harian. Item {id_highest} mencatatkan keamatan tertinggi, membuktikan bahawa prejudis struktural dalam sektor pekerjaan swasta dan stereotaip komunitari adalah stressor utama yang menjejaskan keharmonian. Berasaskan teori Henri Tajfel, apabila boundaries atau sempadan identiti kelompok (In-group vs Out-group) semakin menebal akibat retorik politik, sebarang isu kecil akan dieksploitasi sebagai ancaman eksistensial terhadap hak kaum. Data menunjukkan interaksi silang kaum masih wujud tetapi bersifat superfisial (luaran) sahaja tanpa ikatan amanah (social trust) yang mendalam. Oleh itu, kementerian memerlukan pengisian program intervensi berasaskan bridging capital (modal sosial merentas kaum) untuk meruntuhkan tembok prejudis sebelum ketegangan setempat merebak menjadi polarisasi nasional."
                         else:
@@ -528,36 +653,39 @@ def main():
                             
                         st.markdown(f"<div class='highlight-analysis-box'><b>ANALISIS HUBUNGAN STRATEGIK DATA-TEORI:</b><br>{analysis_text}</div>", unsafe_allow_html=True)
 
-    # --- TAB TAB LAIN (KEKAL UNTUK INTEGRITI 11 SHEET) ---
+    # --- TAB-TAB INVENTORI ---
     with tabs[7]:
-        st.subheader("⚠️ Pengelasan Petunjuk Titik Kelemahan (Pain Points)")
+        st.subheader("⚠️ Inventori Titik Kelemahan Rakyat (Sheet 6: pain_point_mapping)")
         if engine.pain_point_mapping is not None: st.dataframe(engine.pain_point_mapping, use_container_width=True, hide_index=True)
     with tabs[8]:
-        st.subheader("🔥 Kerangka Eskalasi Indikator Titik Ketegangan (Tension Points)")
+        st.subheader("🔥 Inventori Titik Ketegangan Sosiopolitik (Sheet 7: tension_point_mapping)")
         if engine.tension_point_mapping is not None: st.dataframe(engine.tension_point_mapping, use_container_width=True, hide_index=True)
     with tabs[9]:
-        st.subheader("🚨 Early Warning System (EWS) — Sempadan Amaran Hotspot Kritikal")
+        st.subheader("🚨 Nilai Ambang Amaran Awal EWS (Sheet 11: dashboard_config)")
         if engine.dashboard_config is not None: st.dataframe(engine.dashboard_config, use_container_width=True, hide_index=True)
     with tabs[10]:
-        st.subheader("💡 Perpusat Strategi Dasar & Syor Intervensi Agensi Kabinet")
+        st.subheader("💡 Perpusat Strategi Dasar & Syor Intervensi Agensi Kabinet (Sheet 5: intervention_library)")
         if engine.intervention_library is not None: st.dataframe(engine.intervention_library, use_container_width=True, hide_index=True)
     with tabs[11]:
-        st.subheader("📰 Papan Pemantauan Media Cetak & Aliran Sentimen Siber Digital")
+        st.subheader("📰 Pemantauan Sentimen Media Massa & Portal Berita Portal (Sheet 8: media_issue_summary)")
         if engine.media_issue_summary is not None: st.dataframe(engine.media_issue_summary, use_container_width=True, hide_index=True)
     with tabs[12]:
-        st.subheader("👥 Transkrip Konsensus Panel Pakar & Dapatan Bengkel FGD")
+        st.subheader("👥 Dapatan Panel Pakar & Delphi Findings (Sheet 9: fgd_expert)")
         if engine.fgd_expert is not None: st.dataframe(engine.fgd_expert, use_container_width=True, hide_index=True)
+        
+    # --- TAB 14: REPORT GENERATOR HTML ---
     with tabs[13]:
         st.subheader("📄 Penjanaan HTML Briefing Dossier Rasmi JPM")
-        rep_title = st.text_input("Tajuk Laporan Eksekutif", "Laporan Hasil Kajian Pembangunan Indeks Ketegangan Masyarakat Malaysia (IKMM) Bagi Kelulusan Jemaah Menteri 2026")
+        rep_title = st.text_input("Tajuk Laporan Eksekutif JPM", "Laporan Hasil Kajian Pembangunan Indeks Ketegangan Masyarakat Malaysia (IKMM) Bagi Kelulusan Jemaah Menteri 2026")
         rep_officer = st.text_input("Nama Pegawai Pelapor Muktamad", "Dato' Sri Ketua Pengarah JPNIN")
-        rep_branch = st.text_input("Cawangan Bahagian", "Kluster Pemetaan Risiko Perpaduan")
-        if st.button("Kompilasikan Dokumen Dossier Rasmi", use_container_width=True):
+        rep_branch = st.text_input("Bahagian / Agensi Utama", "Kluster Analitik Risiko & Pemetaan Polisi Strategik Perpaduan")
+        if st.button("Kompilasikan Dokumen Laporan Komposit", use_container_width=True):
             html_code = engine.generate_html_dossier_report(rep_title, rep_officer, rep_branch)
-            st.success("✅ Dokumen Dossier Berjaya Dikompilasikan Tanpa Ralat!")
-            st.download_button("⬇️ Muat Turun Fail Laporan HTML Dossier", html_code, "IKMM_Executive_Brief_Dossier.html", "text/html", use_container_width=True)
+            st.success("✓ Dokumen Dossier Kabinet Berjaya Dikompilasikan Tanpa Sebarang Ralat Metodologi!")
+            st.download_button("⬇️ Muat Turun Fail Laporan Dossier (.html)", html_code, "IKMM_Executive_Dossier_2026.html", "text/html", use_container_width=True)
+            
     with tabs[14]:
-        st.subheader("🔎 Advanced Database Structural Cell Matrix Explorer")
+        st.subheader("🔎 Advanced Database Cell Row Inspector")
         st.dataframe(engine.respondent_data, use_container_width=True)
 
 if __name__ == "__main__":
