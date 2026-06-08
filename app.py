@@ -23,7 +23,6 @@ def apply_executive_premium_theme():
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
             
-            /* 1. Menghilangkan ruang kosong di atas applikasi (Fix Blank Space Above) */
             .block-container {
                 padding-top: 1.5rem !important;
                 padding-bottom: 2rem !important;
@@ -33,14 +32,12 @@ def apply_executive_premium_theme():
                 display: none !important;
             }
             
-            /* Aplikasi Font Global & Latar Belakang Premium */
             .stApp { 
                 background: radial-gradient(circle at 50% 0%, #F8FAFC 0%, #EFF6FF 100%) !important; 
                 color: #0F172A !important; 
                 font-family: 'Plus Jakarta Sans', -apple-system, sans-serif !important; 
             }
             
-            /* Pengepala Dashboard Utama (Wow Factor Header Block) */
             .system-banner-premium {
                 background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 50%, #2563EB 100%);
                 padding: 30px 40px;
@@ -73,7 +70,6 @@ def apply_executive_premium_theme():
                 box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
             }
             
-            /* Sidebar Kontras Tinggi - Deep Sapphire Slate */
             [data-testid="stSidebar"] { 
                 background: linear-gradient(180deg, #0A0F1D 0%, #111827 100%) !important; 
                 border-right: 1px solid rgba(255, 255, 255, 0.05) !important; 
@@ -82,7 +78,6 @@ def apply_executive_premium_theme():
             [data-testid="stSidebar"] * { color: #F8FAFC !important; font-family: 'Plus Jakarta Sans', sans-serif !important; }
             [data-testid="stSidebar"] .stMultiSelect span { color: #0F172A !important; }
             
-            /* Reka Bentuk Kepala Tulisan Konten */
             h2, h3, h4, h5 { 
                 font-family: 'Plus Jakarta Sans', sans-serif !important; 
                 font-weight: 700 !important; 
@@ -90,7 +85,6 @@ def apply_executive_premium_theme():
                 letter-spacing: -0.5px !important;
             }
             
-            /* Reka Bentuk Tab Premium - Glassmorphic Pod Style */
             .stTabs [data-baseweb="tab-list"] { 
                 gap: 8px; 
                 background: rgba(15, 23, 42, 0.04) !important; 
@@ -118,7 +112,6 @@ def apply_executive_premium_theme():
                 font-weight: 700 !important;
             }
             
-            /* Kad KPI Premium & Hover Smooth Effect */
             .kpi-card-premium { 
                 background: #FFFFFF; 
                 border: 1px solid rgba(226, 232, 240, 0.8); 
@@ -133,7 +126,6 @@ def apply_executive_premium_theme():
                 box-shadow: 0 20px 35px -5px rgba(15, 23, 42, 0.08), 0 12px 16px -6px rgba(15, 23, 42, 0.04);
             }
             
-            /* Kotak Analisis Maklumat Berwarna Eksekutif (Gradient Belakang) */
             .highlight-analysis-box { 
                 background: linear-gradient(90deg, #EFF6FF 0%, #FFFFFF 100%); 
                 border-left: 6px solid #2563EB; 
@@ -149,7 +141,6 @@ def apply_executive_premium_theme():
                 box-shadow: 0 4px 12px rgba(220, 38, 38, 0.04);
             }
             
-            /* Kad Spasial Geografi Premium */
             .loc-card-premium { 
                 border: 1px solid #E2E8F0; 
                 border-radius: 14px; 
@@ -164,7 +155,6 @@ def apply_executive_premium_theme():
                 box-shadow: 0 12px 20px -5px rgba(0,0,0,0.05);
             }
             
-            /* Butang Tindakan Kecerunan Korporat (Buttons) */
             .stButton>button {
                 background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%) !important;
                 color: #FFFFFF !important;
@@ -350,97 +340,162 @@ class IKMMDasarEngine:
             <title>{title}</title>
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             <style>
-                body {{ font-family: 'Segoe UI', Helvetica, Arial, sans-serif; background-color: #F8FAFC; color: #0F172A; padding: 50px; line-height: 1.8; }}
-                .dossier-wrapper {{ max-width: 1050px; margin: 0 auto; background: #FFFFFF; padding: 60px; border-radius: 16px; border: 1px solid #E2E8F0; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }}
-                .header-banner {{ background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%); color: #FFFFFF; padding: 45px; text-align: center; border-radius: 12px; border-bottom: 6px solid #FFD700; margin-bottom: 40px; }}
-                .confidential-tag {{ color: #EF4444; font-weight: 900; letter-spacing: 2px; font-size: 14px; margin-bottom: 10px; text-transform: uppercase; }}
-                .section-title {{ color: #1E3A8A; border-bottom: 2px solid #E2E8F0; padding-bottom: 8px; margin-top: 40px; font-size: 20px; text-transform: uppercase; letter-spacing: 0.5px; page-break-after: avoid; }}
-                .kpi-grid {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 30px 0; }}
-                .kpi-box {{ background: #F8FAFC; border: 1px solid #E2E8F0; border-top: 4px solid #1E40AF; padding: 20px; border-radius: 8px; text-align: center; }}
-                .kpi-val {{ font-size: 32px; font-weight: 800; color: #1E3A8A; margin: 10px 0; }}
-                .chart-container {{ position: relative; margin: 30px 0; padding: 20px; border: 1px solid #E2E8F0; border-radius: 8px; background: #F8FAFC; }}
-                .table-premium {{ width: 100%; border-collapse: collapse; margin: 25px 0; font-size: 14px; }}
-                .table-premium th {{ background: #0F172A; color: #FFFFFF; padding: 14px; text-align: left; font-weight: 600; }}
-                .table-premium td {{ padding: 12px; border-bottom: 1px solid #E2E8F0; color: #334155; }}
-                .table-premium tr:nth-child(even) {{ background-color: #F8FAFC; }}
-                .loc-card-html {{ border: 1px solid #CBD5E1; border-radius: 8px; padding: 20px; margin-bottom: 15px; background: #FFFFFF; border-left: 5px solid #F59E0B; font-size: 14px; }}
-                .loc-card-html.danger {{ background-color: #FEF2F2; border-left-color: #EF4444; }}
-                .loc-card-html.success {{ background-color: #F0FDF4; border-left-color: #16A34A; }}
-                .highlight-box {{ background-color: #EFF6FF; border-left: 4px solid #3B82F6; padding: 25px; border-radius: 0 8px 8px 0; margin: 20px 0; font-size: 14px; line-height: 1.8; color: #1E3A8A; }}
+                body {{ font-family: 'Segoe UI', Helvetica, Arial, sans-serif; background-color: #F0F4F8; color: #0F172A; padding: 40px; line-height: 1.7; }}
+                .dossier-wrapper {{ max-width: 1100px; margin: 0 auto; background: #FFFFFF; padding: 50px; border-radius: 20px; border: 1px solid #E2E8F0; box-shadow: 0 15px 35px rgba(15, 23, 42, 0.06); }}
+                .header-banner {{ background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 60%, #2563EB 100%); color: #FFFFFF; padding: 45px; text-align: center; border-radius: 14px; border-bottom: 6px solid #F59E0B; margin-bottom: 40px; position: relative; }}
+                .confidential-tag {{ background: rgba(239, 68, 68, 0.15); color: #EF4444; font-weight: 800; letter-spacing: 2px; font-size: 12px; padding: 4px 14px; border-radius: 30px; display: inline-block; margin-bottom: 15px; border: 1px solid rgba(239, 68, 68, 0.3); }}
+                .section-title {{ color: #1E3A8A; border-bottom: 3px solid #3B82F6; padding-bottom: 8px; margin-top: 40px; font-size: 19px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; page-break-after: avoid; }}
+                
+                /* Grid Pelbagai Corak (Asymmetric / Colourful Grid) */
+                .demo-grid {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin: 25px 0; }}
+                
+                /* Kad Demografi Dinamik mengikut Kelas Warna */
+                .demo-card {{ background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 14px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); transition: transform 0.2s; }}
+                .demo-card:hover {{ transform: translateY(-2px); }}
+                
+                /* Variasi Warna Pengepala Kad Pelbagai Corak */
+                .card-blue h4 {{ color: #1E40AF; border-left: 4px solid #2563EB; padding-left: 8px; font-size: 14px; margin: 0 0 12px 0; text-transform: uppercase; }}
+                .card-purple h4 {{ color: #6D28D9; border-left: 4px solid #8B5CF6; padding-left: 8px; font-size: 14px; margin: 0 0 12px 0; text-transform: uppercase; }}
+                .card-amber h4 {{ color: #B45309; border-left: 4px solid #F59E0B; padding-left: 8px; font-size: 14px; margin: 0 0 12px 0; text-transform: uppercase; }}
+                .card-emerald h4 {{ color: #047857; border-left: 4px solid #10B981; padding-left: 8px; font-size: 14px; margin: 0 0 12px 0; text-transform: uppercase; }}
+                
+                /* Pengiraan Lebar Kolum Asimetri */
+                .table-premium {{ width: 100%; border-collapse: collapse; font-size: 13px; }}
+                .table-premium th {{ background: #1E293B; color: #FFFFFF; padding: 10px; text-align: left; font-weight: 600; font-size: 12px; }}
+                .table-premium td {{ padding: 9px 8px; border-bottom: 1px solid #F1F5F9; color: #334155; }}
+                .col-param {{ width: 60%; font-weight: 600; color: #111827; }}
+                .col-val {{ width: 18%; text-align: right; }}
+                .col-percent {{ width: 22%; text-align: right; font-weight: 700; color: #2563EB; }}
+                
+                /* Glow Badges untuk Indeks Dimensi */
+                .badge-status {{ padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; text-align: center; display: inline-block; }}
+                .badge-hotspot {{ background: #FEE2E2; color: #EF4444; border: 1px solid rgba(239,68,68,0.2); }}
+                .badge-pain {{ background: #FCE7F3; color: #DB2777; border: 1px solid rgba(219,39,119,0.2); }}
+                .badge-tension {{ background: #FFFBEB; color: #D97706; border: 1px solid rgba(217,119,6,0.2); }}
+                .badge-low {{ background: #ECFDF5; color: #10B981; border: 1px solid rgba(16,185,129,0.2); }}
+
+                /* Kad Spasial Geografi Berwarna Kompleks */
+                .loc-card-html {{ border: 1px solid #E2E8F0; border-radius: 12px; padding: 18px; margin-bottom: 14px; background: #FFFFFF; box-shadow: 0 4px 10px rgba(0,0,0,0.01); }}
+                .loc-card-html.danger-zone {{ border-left: 6px solid #EF4444; background: linear-gradient(90deg, #FFF5F5 0%, #FFFFFF 100%); }}
+                .loc-card-html.warning-zone {{ border-left: 6px solid #F59E0B; background: linear-gradient(90deg, #FFFDF5 0%, #FFFFFF 100%); }}
+                
+                .highlight-box {{ background: linear-gradient(90deg, #EFF6FF 0%, #F8FAFC 100%); border-left: 5px solid #3B82F6; padding: 22px; border-radius: 0 10px 10px 0; margin: 20px 0; font-size: 14px; color: #1E3A8A; font-weight: 500; }}
                 .page-break {{ page-break-before: always; }}
-                .meta-footer {{ margin-top: 60px; padding-top: 20px; border-top: 2px dashed #E2E8F0; text-align: center; font-size: 12px; color: #64748B; }}
+                .meta-footer {{ margin-top: 50px; padding-top: 20px; border-top: 2px dashed #CBD5E1; text-align: center; font-size: 12px; color: #64748B; }}
             </style>
         </head>
         <body>
             <div class="dossier-wrapper">
                 <div class="header-banner">
-                    <div class="confidential-tag">SULIT — MANUSKRIP LAPORAN KESELAMATAN SOSIAL NASIONAL JPM</div>
-                    <h1 style="margin: 0; font-size: 26px;">{title}</h1>
-                    <p style="margin: 10px 0 0 0; font-size: 14px; color: #94A3B8;">Analisis Komposit Model Kesiagaan Sosial Negara (IKMM 2026)</p>
-                    <p style="margin: 5px 0 0 0; font-size: 12px; color: #CBD5E1;">Tarikh Kompleks: {now_str} | ID Arkib Pelepasan Dasar: JPM-IKMM-2026-FULLV2</p>
+                    <div class="confidential-tag">🚨 RAHSIA RASMI — AMANAH KABINET MALAYSIA</div>
+                    <h1 style="margin: 0; font-size: 25px; font-weight: 800; letter-spacing: -0.5px;">{title}</h1>
+                    <p style="margin: 8px 0 0 0; font-size: 13px; color: #94A3B8; font-weight: 500;">Modul Output Analitik Visualisasi Strategik Perdana</p>
+                    <p style="margin: 4px 0 0 0; font-size: 11px; color: #CBD5E1;">Tarikh Cetakan Dokumen: {now_str} | Urus Setia Keselamatan Kebangsaan</p>
                 </div>
                 
-                <div class="section-title">1.0 Ringkasan Petunjuk Prestasi Utama (KPI)</div>
-                <div class="kpi-grid">
-                    <div class="kpi-box">
-                        <div style="color:#64748B; font-weight:700; font-size:11px;">Indeks Ketegangan Kebangsaan</div>
-                        <div class="kpi-val">{score:.2f}%</div>
-                        <div style="font-size:11px; font-weight:600; color:#475569;">Klasifikasi: {tier.upper()}</div>
+                <div class="section-title">1.0 Ringkasan Eksekutif Petunjuk Prestasi Utama</div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 25px 0;">
+                    <div style="background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%); color: white; padding: 22px; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(30,58,138,0.2);">
+                        <div style="font-size:11px; font-weight:700; text-transform:uppercase; opacity:0.8; letter-spacing:1px;">Skor Indeks Nasional</div>
+                        <div style="font-size:32px; font-weight:800; margin:8px 0;">{score:.2f}%</div>
+                        <div style="font-size:11px; background:rgba(255,255,255,0.15); padding:3px 10px; border-radius:4px; display:inline-block; font-weight:600;">Status: {tier.upper()}</div>
                     </div>
-                    <div class="kpi-box">
-                        <div style="color:#64748B; font-weight:700; font-size:11px;">Jumlah Sampel Pool Nasional</div>
-                        <div class="kpi-val">{total_resp:,}</div>
-                        <div style="font-size:11px; font-weight:600; color:#475569;">Responden Berstrata DOSM</div>
+                    <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-top: 5px solid #10B981; padding: 22px; border-radius: 12px; text-align: center;">
+                        <div style="color:#64748B; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:1px;">Pool Responden Aktif</div>
+                        <div style="font-size:32px; font-weight:800; color:#0F172A; margin:8px 0;">{total_resp:,}</div>
+                        <div style="font-size:11px; color:#475569; font-weight:500;">Strata Multikultural DOSM</div>
                     </div>
-                    <div class="kpi-box">
-                        <div style="color:#64748B; font-weight:700; font-size:11px;">Zon Amaran Konflik siber (D9)</div>
-                        <div class="kpi-val">{self.calculate_single_dimension_score('D9 Digital Tension'):.2f}%</div>
-                        <div style="font-size:11px; font-weight:600; color:#EF4444;">Dimensi D9 Siber Menuntut Fokus</div>
+                    <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-top: 5px solid #EF4444; padding: 22px; border-radius: 12px; text-align: center;">
+                        <div style="color:#64748B; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:1px;">Ketegangan Dimensi Siber (D9)</div>
+                        <div style="font-size:32px; font-weight:800; color:#EF4444; margin:8px 0;">{self.calculate_single_dimension_score('D9 Digital Tension'):.2f}%</div>
+                        <div style="font-size:11px; color:#EF4444; font-weight:700;">Zon Kritikal Radar EWS</div>
                     </div>
                 </div>
 
                 <div class="highlight-box">
-                    <b>RUMUSAN EKSEKUTIF IMPAK STRATEGIK NEGARA:</b><br>
-                    Analisis empirikal ke atas pangkalan data komposit IKMM 2026 mendapati pola polarisasi sosial semasa dipandu secara signifikan oleh interaksi tiga dimensi kritikal: Ketegangan Ekonomi (D3), Polarisasi Institusi (D7), dan Ruang Gema Digital (D9). Ketegangan siber didorong oleh kegagalan regulasi algoritma komersial yang mengeksploitasi sensitiviti kaum, manakala tekanan kos sara hidup melonjakkan rasa deprivasi relatif dalam kalangan isi rumah berpendapatan rendah (B40). Keadaan ini melemahkan daya tahan sosial nasional (D8) and mewujudkan krisis kepercayaan struktural terhadap keabsahan governans (D7). Justeru, pelancaran intervensi merentas kementerian bersifat makro perlu digerakkan segera untuk mengelakkan ketegangan di alam siber bertukar menjadi konflik fizikal terbuka.
+                    <b>💡 MEMORANDUM ANALISIS IMPAK STRATEGIK:</b><br>
+                    Teras ancaman polarisasi dikesan bergerak pantas di atas paksi ekosistem digital (D9) and tekanan sosioekonomi akar umbi (D3). Corak data membuktikan ketidakstabilan pasaran kos sara hidup telah memicu defisit keyakinan struktural yang ketara terhadap governans institusi. Segala bentuk tindakan mitigasi harus dijajarkan terus ke lokaliti merah yang dipaparkan dalam laporan ini.
                 </div>
 
                 <div class="page-break"></div>
 
-                <div class="section-title">2.0 Visualisasi Grafik Keamatan 9 Dimensi Kebangsaan (Chart.js)</div>
+                <div class="section-title">2.0 Grafik Keamatan 9 Dimensi Utama Kebangsaan</div>
                 <div class="chart-container">
-                    <canvas id="dimensionsChart" style="max-height: 400px;"></canvas>
+                    <canvas id="dimensionsChart" style="max-height: 380px;"></canvas>
                 </div>
-
-                <div class="page-break"></div>
         """
 
-        # BLOCK 2: UNRESTRICTED ALL DEMOGRAPHIC TABLES
+        # BLOCK 2: DEMOGRAPHIC (FIX: COLOURFUL & MULTI-PATTERN 2-COLUMN GRID)
         html_master += """
-                <div class="section-title">3.0 Jadual Komprehensif Taburan Profil 11 Pemboleh Ubah Demografi</div>
-                <p>Berikut diperincikan agihan peratusan and frekuensi lengkap responden tanpa sebarang pemotongan baris:</p>
-                <table class="table-premium">
-                    <thead><tr><th>Pemboleh Ubah Demografi</th><th>Klasifikasi Parameter Kumpulan Sasar</th><th>Frekuensi (Bil.)</th><th>Peratusan (%)</th></tr></thead>
-                    <tbody>"""
-        for col in self.get_demographic_columns():
+                <div class="section-title">3.0 Matriks Profil Kumpulan Sasar Pemboleh Ubah Demografi</div>
+                <p>Berikut dipaparkan pecahan data agregasi responden menggunakan struktur taburan warna dinamik bagi mengelakkan corak visual yang bosan:</p>
+                <div class="demo-grid">"""
+                
+        # Sediakan senarai corak kelas warna untuk diputarkan secara kreatif (Loop Pattern)
+        color_patterns = ["card-blue", "card-purple", "card-amber", "card-emerald"]
+        
+        for idx, col in enumerate(self.get_demographic_columns()):
             counts = self.respondent_data[col].value_counts()
+            current_pattern = color_patterns[idx % len(color_patterns)] # Pilih corak berlainan secara dinamik
+            
+            html_master += f"""
+                    <div class="demo-card {current_pattern}">
+                        <h4>📊 Profil: {col.replace('_', ' ')}</h4>
+                        <table class="table-premium">
+                            <thead>
+                                <tr>
+                                    <th class="col-param">Kluster / Parameter</th>
+                                    <th class="col-val" style="text-align:right;">Bilangan</th>
+                                    <th class="col-percent" style="text-align:right;">Peratus (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody>"""
             for cat, val in counts.items():
                 pct = (val / total_resp) * 100
-                html_master += f"<tr><td><b>{col}</b></td><td>{cat}</td><td>{val:,}</td><td><b>{pct:.2f}%</b></td></tr>"
+                html_master += f"""
+                                <tr>
+                                    <td class="col-param">{cat}</td>
+                                    <td class="col-val">{val:,}</td>
+                                    <td class="col-percent">{pct:.2f}%</td>
+                                </tr>"""
+            html_master += """
+                            </tbody>
+                        </table>
+                    </div>"""
+                    
         html_master += """
-                    </tbody>
-                </table>
+                </div>
                 <div class="page-break"></div>
         """
 
-        # BLOCK 3: ALL 9 SECTOR DIMENSIONS INDEX CORES
+        # BLOCK 3: ALL 9 SECTOR DIMENSIONS INDEX CORES WITH COLOUR BADGES
         html_master += """
                 <div class="section-title">4.0 Analisis Keamatan Aras Ketegangan Komposit 9 Dimensi Utama</div>
-                <table class="table-premium">
-                    <thead><tr><th>Kod</th><th>Nama Dimensi Skrining Kebangsaan</th><th>Skor Ketegangan (%)</th><th>Klasifikasi Risiko Sektoral</th></tr></thead>
+                <p>Status risiko dikelaskan secara visual berasaskan kod ambang keselamatan siber nasional:</p>
+                <table class="table-premium" style="margin-top:15px;">
+                    <thead>
+                        <tr>
+                            <th style="width:10%;">Kod</th>
+                            <th style="width:50%;">Nama Dimensi Skrining Kebangsaan</th>
+                            <th style="width:20%;">Skor Ketegangan (%)</th>
+                            <th style="width:20%; text-align:center;">Klasifikasi Risiko Sektoral</th>
+                        </tr>
+                    </thead>
                     <tbody>"""
         for d_key in self.dim_item_ranges.keys():
             d_score = self.calculate_single_dimension_score(d_key)
-            html_master += f"<tr><td>{d_key[:2]}</td><td>{d_key}</td><td><b>{d_score:.2f}%</b></td><td>{self.get_tier(d_score).upper()}</td></tr>"
+            d_tier = self.get_tier(d_score)
+            
+            # Memilih badge visual yang bersesuaian agar jadual tidak hambar
+            badge_class = f"badge-{d_tier}"
+            
+            html_master += f"""
+                        <tr>
+                            <td><b>{d_key[:2]}</b></td>
+                            <td>{d_key}</td>
+                            <td><b style="font-size:14px; color:#1E3A8A;">{d_score:.2f}%</b></td>
+                            <td style="text-align:center;"><span class="badge-status {badge_class}">{d_tier}</span></td>
+                        </tr>"""
         html_master += """
                     </tbody>
                 </table>
@@ -480,48 +535,52 @@ class IKMMDasarEngine:
                     t_index_pct = ((t_means.mean() - 1) / 4) * 100
                     
                     html_master += f"""
-                    <div style='margin-bottom: 25px; padding: 20px; border: 1px solid #CBD5E1; border-radius: 8px;'>
+                    <div style='margin-bottom: 20px; padding: 15px; border: 1px solid #CBD5E1; border-radius: 8px;'>
                         <h4>📚 {t_name} — Mapped to {t_meta['Dimensi']}</h4>
-                        <p style='margin:0; font-size:12px; color:#475569;'><b>Tokoh Pelopor:</b> {t_meta['Pengasas']} | <b>Theory Index:</b> {t_index_pct:.2f}%</p>
-                        <p style='margin-top:10px;'><b>Analisis Dinamika Teori-Data:</b> {t_meta['Analisis']}</p>
-                        <div style='margin-top:12px; background-color:#FEE2E2; padding:12px; border-radius:4px; border-left:5px solid #EF4444; font-size:12.5px; color:#991B1B;'>
+                        <p style='margin:0; font-size:11.5px; color:#475569;'><b>Tokoh Pelopor:</b> {t_meta['Pengasas']} | <b>Theory Index:</b> {t_index_pct:.2f}%</p>
+                        <p style='margin-top:8px; font-size:13px;'><b>Analisis Dinamika Teori-Data:</b> {t_meta['Analisis']}</p>
+                        <div style='margin-top:10px; background-color:#FEE2E2; padding:10px; border-radius:4px; border-left:5px solid #EF4444; font-size:12px; color:#991B1B;'>
                             🚨 <b>Stressor Utama Terkesan ({id_max}): Min Skala {val_max:.2f} ({pct_max:.1f}%)</b><br>
                             <i>Kenyataan Item Soalan:</i> "{stmt_max}"
                         </div>
                     </div>"""
         html_master += """<div class="page-break"></div>"""
 
-        # BLOCK 5: ALL GEOGRAPHICAL LOCATION CHAINS UNRESTRICTED
+        # BLOCK 5: HIERARKI SPASIAL COLOURFUL ZONE CARD (FIXED TOP 10)
         html_master += """
-                <div class="section-title">6.0 Laporan Hierarki Spasial Rantaian Lokasi Terjejas & Sebab Utama (Stressor)</div>
-                <p>Berikut diperincikan rantaian geografi berstruktur penuh (Zon &rarr; Negeri &rarr; Daerah &rarr; Lokaliti) yang dikesan mengalami pola ketegangan berserta punca item konkrit:</p>"""
+                <div class="section-title">6.0 Laporan Hierarki Spasial Rantaian Lokasi Paling Terjejas (Top 10 Hotspots)</div>
+                <p>Rantaian geografi kritikal di bawah dipaparkan mengikut skema impak suhu konflik siber setempat:</p>"""
         
-        for rank, ((zn, st_n, ds_n, ur_n), v_score) in enumerate(geo_means_html.items()):
+        for rank, ((zn, st_n, ds_n, ur_n), v_score) in enumerate(geo_means_html.head(10).items()):
             pct_v = ((v_score - 1) / 4) * 100
-            
-            if pct_v >= 50.0:
-                sub_df = self.respondent_data[(self.respondent_data['Zone']==zn) & (self.respondent_data['State']==st_n) & (self.respondent_data['District']==ds_n) & (self.respondent_data['Urban_Rural']==ur_n)]
+            sub_df = self.respondent_data[(self.respondent_data['Zone']==zn) & (self.respondent_data['State']==st_n) & (self.respondent_data['District']==ds_n) & (self.respondent_data['Urban_Rural']==ur_n)]
+            if not sub_df.empty:
                 sub_item = sub_df[items].mean().idxmax()
                 sub_stmt = self.questionnaire_master[self.questionnaire_master['Item_Code'] == sub_item]['Statement'].values[0]
                 
-                tier_tag = "danger" if pct_v >= 80.0 else ("success" if pct_v < 60.0 else "")
+                # Pemilihan kelas rupa kad berdasarkan gred amaran bahaya (Colourful Logic)
+                zone_color_style = "danger-zone" if pct_v >= 70.0 else "warning-zone"
+                
                 html_master += f"""
-                <div class="loc-card-html {tier_tag}">
-                    <b>📍 RANTAIAN SPASIAL: Zon {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} &rarr; Lokaliti {ur_n}</b><br>
-                    * Aras Indeks Ketegangan Komposit: <b>{pct_v:.2f}%</b> (Klasifikasi EWS: {self.get_tier(pct_v).upper()})<br>
-                    * 💥 **Sebab Utama Krisis (Stressor Konkrit):** Item {sub_item} &rarr; <i>"{sub_stmt}"</i>
+                <div class="loc-card-html {zone_color_style}">
+                    <span style="font-weight:800; text-transform:uppercase; font-size:11px; color:#1E3A8A;">🔥 Hotspot Rank #{rank+1}</span>
+                    <h3 style="margin:4px 0 8px 0; font-size:15px; color:#111827;">📍 Wilayah {zn} &rarr; Negeri {st_n} &rarr; Daerah {ds_n} ({ur_n})</h3>
+                    <p style="margin:0; font-size:13px; color:#475569;">
+                        * Skor Komposit Komparatif Indeks: <b style="color:#EF4444;">{pct_v:.2f}%</b> (EWS Klasifikasi: {self.get_tier(pct_v).upper()})<br>
+                        * 🔍 <b>Punca Akar Umbi Utama (Stressor):</b> Item {sub_item} &rarr; <i style="color:#0F172A; font-weight:500;">"{sub_stmt}"</i>
+                    </p>
                 </div>"""
         html_master += """<div class="page-break"></div>"""
 
-        # BLOCK 6: UNRESTRICTED ALL SCRAPING OSINT DATA LOGS FROM SHEET 8
+        # BLOCK 6: OSINT MEDIA SCRAPING LOGS (FIXED TOP 10)
         html_master += """
-                <div class="section-title">7.0 Log Tangkapan Data Scraping Siber Digital (OSINT Logs Lengkap)</div>
-                <p>Berikut dipaparkan keseluruhan data perbincangan siber asli secara telus daripada lembaran <i>media_issue_summary</i>:</p>
+                <div class="section-title">7.0 Log Tangkapan Data Scraping Siber Digital (Top 10 OSINT Logs)</div>
+                <p>Berikut dipaparkan 10 data perbincangan siber utama yang disaring berdasarkan keutamaan profil isu risiko:</p>
                 <table class="table-premium">
                     <thead><tr><th>Tarikh</th><th>Platform</th><th>Wilayah Negeri</th><th>Kategori Isu</th><th>Aras Risiko</th><th>Ringkasan Fail Master</th></tr></thead>
                     <tbody>"""
         if self.media_issue_summary is not None:
-            for _, row in self.media_issue_summary.iterrows():
+            for _, row in self.media_issue_summary.head(10).iterrows():
                 html_master += f"""
                 <tr>
                     <td>{row.get('Date','N/A')}</td>
@@ -545,13 +604,20 @@ class IKMMDasarEngine:
                             datasets: [{{
                                 label: 'Indeks Ketegangan Dimensi (%)',
                                 data: {dim_values},
-                                backgroundColor: 'rgba(30, 64, 175, 0.8)',
-                                borderColor: 'rgba(30, 64, 175, 1)',
+                                backgroundColor: [
+                                    'rgba(37, 99, 235, 0.8)',   'rgba(139, 92, 246, 0.8)',
+                                    'rgba(245, 158, 11, 0.8)',  'rgba(239, 68, 68, 0.8)',
+                                    'rgba(16, 185, 129, 0.8)',  'rgba(6, 182, 212, 0.8)',
+                                    'rgba(236, 72, 153, 0.8)',  'rgba(100, 116, 139, 0.8)',
+                                    'rgba(15, 23, 42, 0.8)'
+                                ],
+                                borderColor: 'rgba(15, 23, 42, 1)',
                                 borderWidth: 1
                             }}]
                         }},
                         options: {{
                             responsive: true,
+                            plugins: {{ legend: {{ display: false }} }},
                             scales: {{
                                 y: {{ beginAtZero: true, max: 100 }}
                             }}
@@ -600,7 +666,7 @@ def main():
     apply_executive_premium_theme()
     engine = st.session_state.engine
     
-    # --- RENDER TOP HERO BANNER (Wow Factor & Brand Identity) ---
+    # --- RENDER TOP HERO BANNER ---
     st.markdown("""
         <div class="system-banner-premium">
             <div class="system-tag">🔐 KAWALAN RAHSIA RASMI</div>
@@ -613,11 +679,9 @@ def main():
         </div>
     """, unsafe_allow_html=True)
     
-    # --- INSULASI AWAL LOGIK PARAMETER (ANTI-CRASH) ---
     active_filters = {}
     sel_state = []
     
-    # Memastikan data diproses dengan selamat jika wujud
     if engine.data_loaded and engine.respondent_data is not None:
         filtered_df = engine.apply_filters(active_filters)
         sub_total = len(filtered_df)
@@ -629,7 +693,6 @@ def main():
         items_list_main = []
         geo_means_main = pd.Series()
 
-    # --- RENDERING CONTROLLER DI SIDEBAR ---
     if engine.data_loaded and engine.respondent_data is not None:
         with st.sidebar:
             st.markdown("### 🗺️ Pengendali Penapis Geografi Dinamik")
@@ -674,7 +737,6 @@ def main():
             st.markdown("### 🗺️ Pengendali Penapis Geografi")
             st.info("Sila muat naik fail data induk (.xlsx) untuk mengaktifkan fungsi tapisan.")
 
-    # --- PENJANAAN STRUKTUR HALAMAN TAB ---
     tabs = st.tabs([
         "📁 Profil Demografi", "📈 Ringkasan Executive", "🗺️ Penilaian Geografi", 
         "📊 Indeks Dimensi", "🚨 Item Stressor", "💬 NLP Kualitatif", 
@@ -683,7 +745,6 @@ def main():
         "👥 Dapatan FGD", "📄 Report Generator", "🔎 Cell Matrix Explorer"
     ])
 
-    # --- TAB 1: PORTAL GATEWAY & FILE MANAGER ---
     with tabs[0]:
         st.subheader("📂 Pengurusan Fail & Analisis Deskriptif Profil Demografi")
         uploaded_file = st.file_uploader("Sila Pilih / Lepaskan Fail Pangkalan Data Excel Master IKMM (.xlsx)", type=['xlsx'])
@@ -726,7 +787,6 @@ def main():
                     if 'Age' in filtered_df.columns:
                         st.plotly_chart(px.histogram(filtered_df, x='Age', nbins=20, title="Taburan Profil Umur Responden"), use_container_width=True)
 
-    # --- TAB 2: RINGKASAN EKSEKUTIF ---
     with tabs[1]:
         st.subheader("📈 Pusat Kawalan KPI Ketegangan Nasional")
         if engine.data_loaded and sub_total > 0:
@@ -745,7 +805,6 @@ def main():
         else:
             st.info("Sila pautkan fail pangkalan data aktif terlebih dahulu.")
 
-    # --- TAB 3: PENILAIAN GEOGRAFI ---
     with tabs[2]:
         st.subheader("🗺️ Analisis Ketegangan Geospatial Mengikut Negeri")
         if engine.data_loaded and sub_total > 0 and items_list_main:
@@ -759,7 +818,6 @@ def main():
         else:
             st.info("Menunggu data untuk divisualisasikan.")
 
-    # --- TAB 4: PENGIRAAN 9 INDEKS DIMENSI ---
     with tabs[3]:
         st.subheader("📊 Pengiraan Spesifik Komposit Setiap Dimensi Skrining")
         if engine.data_loaded and sub_total > 0:
@@ -773,7 +831,6 @@ def main():
         else:
             st.info("Tiada data.")
 
-    # --- TAB 5: AMARAN ITEM STRESSOR ---
     with tabs[4]:
         st.subheader("🚨 Pengesanan Awal: 5 Indikator Utama Paling Tegang (Stressor Wilayah)")
         if engine.data_loaded and sub_total > 0:
@@ -791,7 +848,6 @@ def main():
         else:
             st.info("Tiada pangkalan data dikesan.")
 
-    # --- TAB 6: SENTIMEN NLP KUALITATIF ---
     with tabs[5]:
         st.subheader("💬 Suara Marhaen: Analisis Klasifikasi Tema & Sentimen NLP Teks Rakyat")
         if engine.qualitative_response is not None and not engine.qualitative_response.empty:
@@ -802,12 +858,10 @@ def main():
         else:
             st.info("Matriks kualitatif perbincangan rakyat tidak dimuatkan.")
 
-    # --- TAB 7: ANALISIS TEORETIKAL ---
     with tabs[6]:
         st.subheader("🧠 Pusat Interpretasi Psikometrik & Analisis Penumpuan Teori-Data")
         st.info("Pusat semakan rujukan teori Tajfel, Gurr, and Agnew.")
 
-    # --- TAB 08: PAIN POINTS ---
     with tabs[7]:
         st.subheader("⚠️ Pengelasan Petunjuk Titik Kelemahan Struktur (Pain Points)")
         if not geo_means_main.empty and items_list_main:
@@ -831,7 +885,6 @@ def main():
         else:
             st.info("Pangkalan data belum diaktifkan.")
 
-    # --- TAB 09: TENSION POINTS ---
     with tabs[8]:
         st.subheader("🔥 Kerangka Eskalasi Indikator Titik Ketegangan (Tension Points)")
         if not geo_means_main.empty and items_list_main:
@@ -855,7 +908,6 @@ def main():
         else:
             st.info("Tiada pangkalan data dikesan.")
 
-    # --- TAB 10: AMARAN HOTSPOT ---
     with tabs[9]:
         st.subheader("🚨 Early Warning System (EWS) — Sempadan Amaran Hotspot Kritikal")
         if not geo_means_main.empty and items_list_main:
@@ -879,7 +931,6 @@ def main():
         else:
             st.info("Pangkalan data belum diimport.")
 
-    # --- TAB 11: STRATEGI INTERVENSI ---
     with tabs[10]:
         st.subheader("💡 Enjin Pemetaan Strategi Intervensi Dasar Agensi Kabinet")
         if engine.intervention_library is not None and not engine.intervention_library.empty:
@@ -898,7 +949,6 @@ def main():
         else:
             st.info("Modul mitigasi kabinet belum diimport.")
 
-    # --- TAB 12: MEDIA SCRAPING ---
     with tabs[11]:
         st.subheader("📰 Papan Pemantauan Media Cetak & Aliran Sentimen Siber Digital")
         if engine.media_issue_summary is not None and not engine.media_issue_summary.empty:
@@ -912,7 +962,6 @@ def main():
         else:
             st.info("Log OSINT media kosong.")
 
-    # --- TAB 13: DAPATAN FGD ---
     with tabs[12]:
         st.subheader("👥 Transkrip Consensus Panel Pakar & Dapatan Bengkel FGD")
         if engine.fgd_expert is not None and not engine.fgd_expert.empty:
@@ -920,7 +969,6 @@ def main():
         else:
             st.info("Tiada data konsensus pakar.")
 
-    # --- TAB 14: REPORT GENERATOR HTML ---
     with tabs[13]:
         st.subheader("📄 Penjanaan HTML Briefing Dossier")
         rep_title = st.text_input("Tajuk Laporan Eksekutif JPM", "Laporan Hasil Kajian Indeks Ketegangan Masyarakat Malaysia (IKMM) 2026")
@@ -934,7 +982,6 @@ def main():
             else:
                 st.error("Gagal! Fail data induk tiada di dalam memori awan.")
             
-    # --- TAB 15: EXPLORER ---
     with tabs[14]:
         st.subheader("🔎 Advanced Database Structural Cell Matrix Explorer")
         if sub_total > 0:
