@@ -29,7 +29,7 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
     menu_items={
-        'About': 'Malaysian Societal Tension Index Dashboard v3.0'
+        'About': 'Malaysian Societal Tension Index Dashboard v3.1'
     }
 )
 
@@ -423,6 +423,17 @@ def create_kpi_card(label, value, unit="", color="accent"):
 def init_session():
     if 'dashboard' not in st.session_state:
         st.session_state.dashboard = IKMDashboardAdvanced()
+    else:
+        # LOGIK AUTO-REPAIR: Memastikan objek hot-reload mempunyai semua atribut terkini
+        required_attrs = [
+            'respondent_data', 'questionnaire_master', 'qualitative_response', 
+            'theory_mapping', 'intervention_library', 'media_issue_summary', 
+            'fgd_expert', 'state_zone_mapping', 'dashboard_config', 'data_loaded'
+        ]
+        for attr in required_attrs:
+            if not hasattr(st.session_state.dashboard, attr):
+                setattr(st.session_state.dashboard, attr, None if attr != 'data_loaded' else False)
+                
     if 'logged_in' not in st.session_state:
         st.session_state.logged_in = False
 
